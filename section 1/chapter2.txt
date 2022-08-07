@@ -1,0 +1,54 @@
+Virtual Machines(VM) VS Containers:
+container :
+an isolated enviroment for running an application.
+Virtual Machines:
+an abstraction of a machine (physical hardware)
+=> so we can run several virtual machines on real physical mashine
+
+Ex:
+we have mac
+we can run on it two virtual machines (on is Windows and the other is  Linux)
+
+to run a virtual machine:
+we use  a tool called Hypervisor
+
+Hypervisor is software we use to create a mange virtual machines
+
+some Hypervisor softwares:
+VirtualBox (cross platform)
+VMware (cross platform)
+Hyper-v (Windows only)
+
+the benefit of VM:
+we can run an applications in isolation inside a virtual machine
+=> in the same physical machine we can have two virtual machines
+everyone is run a complatly different application and each application
+has the exac dependencies it means
+
+Ex:
+VM1(Windows):
+mongo 3
+node 14
+
+VM2(Linux):
+mongo 3
+node 9
+
+all is running on the same physical machine but in different isolated enviroment.
+
+
+Problem with VM:
+- each VM needs a full-blow OS
+- slow to start (cuz all the OS has to be loaded just like starting computer)
+- Resource intensive (cuz each VM takes a slice of actual
+physical hard of resources like CPU and memory and else) => we can`t run too mach VM
+
+
+container:
+- allows running multiple apps in isolation
+- more lightwight than VM
+- use only the OS of the host
+- start quickly (cuz aleady installed on the host)
+- need less hardware resources (we can run 100 of conta side by side)
+
+

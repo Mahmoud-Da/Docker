@@ -1,0 +1,69 @@
+What is Docker:
+A platform for building, running, and shipping applications
+in consistent manner.
+
+
+So if your applications workds on your development mashine,it
+can run and function the same way on other mashines.
+
+the reasons why
+somtimes the applications works on some mashines and not works
+for other.
+
+why:
+- one or more files is missing.
+- software versoin mismatch
+- different configurations settings
+
+and here where docker comses to the rescue
+with docker:
+we can packge our application with everything it need,
+and run it anywhere on any machine with docker.
+
+So, if your application need a giver versoin of node or MangoDB
+all of these will be included in your applications package
+Now, you can take this package and run it on any machine that runs
+docker.
+
+So, if it works on your development machine, it`s definitely going
+to work on your test and production machinees
+
+
+besides if somenew enter this team they don`t have
+to spend day or half a day or so to setting up new
+machine to run your application.
+they don`t have to install and configure all these dependencies.
+they simply tell docker to bring up (docker-compose up) your application
+and docker itself will automatically download and run this
+dependencies inside an isolated enviroment called a container.
+
+the beuty of docker:
+this isolated enviroment allows multiple applications use different
+version of same software side by side.
+
+
+So one application may use node versoin 14
+another application may use node versoin 9
+both these applications can run side by side on the same machine
+without messing with each other.
+so this how docker allows us consistently run an application on
+different machines.
+
+another benefit:
+when we`re done with this application and don`t
+want to work on it anymore. you can remove the application
+and all its dependencies in one go.
+
+
+without docker => as we work on different projects. our
+development mashines gets clutterd with so many libraries
+and tool that are used by different applications.
+and then after a while, we don`t know if we can remove one or more of these tools
+because we`re always afraid that we will mess up with some application
+
+
+with docker we don`t have to worry about this. because each
+application runs with its dependencies inside an isolated enviroment
+so we can remove an application with all its dependencies to clean up our machine
+
+
