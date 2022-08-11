@@ -1,0 +1,18 @@
+- docker pull 'image name'
+to download an image
+
+- docker run 'image name'
+to run image if exict locally, or download it
+and run it
+
+- docker  -it run 'image name'
+to run image if exict locally, or download it
+and run it (in interactive mode)
+
+- docker ps
+see the list of running containers and it`s status and so
+
+- docker ps -a
+with all command we can see even the stopped containers as well.
+
+
