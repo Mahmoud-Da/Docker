@@ -1,0 +1,8 @@
+why we should know linux:
+Cuz Docker is built on basic linux concepts
+
+Most Docker tutorials are based on linix commands
+
+learning linux is like learning english these days
+you don`t need to speak it or write a book in it but
+you need to understand

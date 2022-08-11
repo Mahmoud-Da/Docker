@@ -1,0 +1,21 @@
+Linux is open software source that`s why many of individual and communities have
+created there own version of linux called
+Linux distributions
+
+each of these distributions made to fit specialized needs
+like:
+ru servers, desktop computers, mobile phones, and so on
+
+famous Linux distributions:
+Ubuntu (very famous)
+Debian
+Alpine (very light)
+Fedora
+CentOS
+
+
+* most of these distributions support pretty much the same set
+but of commands. but sometimes you might discover differences along
+
+
+and their more than 1000 Linux distributions out there
