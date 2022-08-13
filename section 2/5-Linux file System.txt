@@ -1,0 +1,22 @@
+in Linux everything is files including devices, directories,
+Net work socket, pipes, and so on.
+
+EX:
+in Windows:
+c:\  (drive)
+    program files (directory)
+    Windows (directory)
+    and so
+
+in Linux we have
+/ (the root directory)
+    (standerd directories)
+    bin (includ binaiers or program)
+    boot (all the files related to booting)
+    dev (devies files)
+    etc (we have configurations files)
+    home (where home directories for user stored)
+    root (home directory for only root user)
+    lib (for keeping the library files like software library dependencies)
+    var ( where we have files updated frequently)
+    proc (including files that repreasent running processes)
