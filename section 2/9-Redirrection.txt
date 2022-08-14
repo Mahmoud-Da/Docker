@@ -1,0 +1,25 @@
+Redirection: (>)to redirect output | (<) to redirect input
+one of the most important concepts in linux
+is the concept of the input and output.
+
+=> so the standerd input repreasents the keyboard,
+and standerd output repreasents the screen
+
+but we can always change the source of the input and output
+this is called => Redirection
+
+ex:
+when we use
+'cat file1.txt'
+cat program read the data from file1.txt and prints
+it on the standerd output (screen)
+
+so we can use the redirection operator
+ex:
+cat file1.txt > file2.txt
+here we redirect the output from the screen to the another file
+
+to use cat command to combaine multiple files
+ex:
+cat file1.txt file2.txt > combaine.txt
+here we combaine two files to one file
