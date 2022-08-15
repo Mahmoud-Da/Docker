@@ -43,5 +43,5 @@ SO, with this linux kernel we run Linux applications natively on windows
 
 on MAC OS has it own karnel which is different from Linux and Windows karnel
 and this kernel doesn`t have native support for containerized applications.
-=> So Docker on Mac uses a lightweight linux virtual machine to run 
+=> So Docker on Mac uses a lightweight linux virtual machine to run
 linux containers
