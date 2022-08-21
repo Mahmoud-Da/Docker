@@ -1,0 +1,67 @@
+Environment Variables in linux
+which we can set for storing configurations settings
+for our application
+so => our application can read configurations settings from
+this environment variables
+
+
+
+commands:
+- printenv (we cann see all the environment variables on this mashine)
+inside the result we have
+very important environmentVariables called path
+result:
+PATH=/opt/homebrew/bin:/Library/Frameworks/Python.framework/Versions/3.10/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+somtimes when we run a program from the command line we get
+an error saying "the command or the progra is not found"
+even thogh that we installed the program
+often coz:
+our OS (linux or Windows) cann`t find that program
+to find a program
+=> our OS is not going looking through our entire hard drive
+is only going to look at specific directories.
+and those specific directories are specified using the "PATH" variable
+where OS looking for program in our hardware
+"/opt/homebrew/bin:/Library/Frameworks/Python.framework/Versions/3.10/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+
+to see the value of particular value
+- printenv PATH
+we pass the value "Path" like an argement
+another way
+- echo $PATH (we use $ to refer to environment variable)
+
+to set a value
+- export
+ex:
+export DB_USER=moody
+
+however, this variable is only available in the current terminal session
+=> if we close the current terminal session and open a new one
+this variable will not exist
+(we can terminal the session by typing "exit)
+
+to make it persistent we have to write it to special file (.bashrc)
+
+.bashrc is the user personal startup file
+so every time a user log in Linux loads this command
+from the user's home directory.
+
+** we never should store a sensitive information in environment variables (like passwords)
+coz at the end of the day this variables are stored in plain text files.
+and anyone access the mashine we will be able to see it
+
+- the changes that we make to the .bashrc file are only
+effective until the next terminal session.
+
+to solve that:
+we have two solutions:
+1- terminate the terminal session and reopen a new one
+or:
+2-we can easily use
+- source
+ex: source .bashrc
+to reload the .bashrc file
+we have to run it from the home directory
+if we are not in the home directory
+we use
+source ~/.bashrc

@@ -131,3 +131,11 @@ mkdir test && cd test && echo done
 mkdir test &&\ (press Enter)
 > cd test &&\ (press Enter)
 > echo done
+
+
+usful commands
+to write somthing inside a file
+- echo hello world > file.txt
+(but if the file.txt is already full it will rewrite it)
+to prevent that we use ">>" appen operator
+- echo hello world >> file.txt
