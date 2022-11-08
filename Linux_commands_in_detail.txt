@@ -1,0 +1,141 @@
+and all the commands of the linux are programs or binaiers
+in the bin directory
+
+
+-pwd (print working directory)
+
+
+-ls (shorting for list)
+to show the files and directories (which not hidden)
+options
+ls -1 for viewing the files horizontally
+ls -l to see all the files in details
+ls -a (to show the files  and directories even the hidden ones)
+we can check a file even if we are not in the current path
+ls bin
+
+
+-cd (to enter a directory)
+we can use a relative or absolute path
+cd .. (to go up one level)
+cd ../.. (to go two levels up)
+cd ~ (to go to our home directory)
+
+To Edit a file:
+-mkdir (to create a directory)
+
+
+-mv (to rename a directory)
+ex: mv test docker (rename test to docker)
+
+
+-touch (to create a new file)
+ex: touch hello.txt
+ez2: touch hello.txt hello.py (multiple files as same time)
+
+
+-rm to remove a file or multiple files
+ex; rm hello.txt hi.txt
+ex:rm file* (remove all the files which start with files)
+
+
+- rm -r (to remove a directory and all it`s recursively)
+
+
+- nano filename (to edit a file after installing nano library)
+
+
+to view a file:
+-cat file.txt (too se the content of a file)
+cat is usful when the file is short and fits on one age
+but if are dealing with a long file it`s better to use more
+commands
+
+- more (to see the content of a file)(long file)
+problem (we can scroll only down)
+
+-less (to see the content of a file)(long file)
+we can scroll up and down
+
+-head (to reviw a few lines of the file)(first)
+ex: head -n 5 file.txt
+the first 5 lines of file.txt
+
+-tail (to reviw a few lines of the file)(last)
+ex: tail -n 5 file.txt
+the last 5 lines of file.txt
+
+
+searching commands:
+-grep (global regular expression print)
+-if want to search in file
+ex: grep hello file1.txt
+-if the "Hello" was in upper case
+we use
+grep -i hello file1.txt (-i to cancel the insensitive)
+resule "Hello"
+-if want to search in multi files
+grep -i hello file1.txt file2.txt
+or
+grep -i hello file* (all the files which name started with file)
+-if want to search in directories
+we use -r
+grep -i -r hello . (period to refer to a directory and sub_directories)
+
+
+*in Linux we can combine multiple options
+ex : grep -i -r hello .
+=>  grep -ir hello .
+
+
+11- Finding_Files_and_Directories
+-find
+for Finding Files and Directories
+if we type find without any argements
+=> we see all the files and directories in the current directory recursively
+-find /path (to search in other path)
+- find . -type d (show only the directories)
+- find . -type f (show only the files)
+- find . -type f -name "f*" (to show all the files which starts with f) (case sensitive)
+- find . -type f -iname "f*" (case insensitive)
+ex:
+find . -name "*.py" > python.txt (find all the python files and put them in python.txt)
+
+12-Chaining_Commands (combine multiple commands)
+
+-we use ";" to type multiple commands together in one line
+ex:
+mkdir test; cd test; echo done (even the first command is fails the next command will excut)
+
+- if we want to (first command is fails the next command will not excuted)
+we use &&
+ex:
+mkdir test && cd test && echo done
+
+- or operator ||
+ex:
+mkdir test || echo "directory exists"
+
+- pip
+command1 | command2
+the output of the command1 goes to the command2
+ex:
+ls / bin | less
+
+* somtimes when we dealing with the long command
+our command sequence might look hard to read
+to split it into multiple lines
+=> we use bach slash \
+ex:
+mkdir test && cd test && echo done
+mkdir test &&\ (press Enter)
+> cd test &&\ (press Enter)
+> echo done
+
+
+usful commands
+to write somthing inside a file
+- echo hello world > file.txt
+(but if the file.txt is already full it will rewrite it)
+to prevent that we use ">>" appen operator
+- echo hello world >> file.txt

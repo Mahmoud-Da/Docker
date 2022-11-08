@@ -1,0 +1,81 @@
+we will use Ubuntu (coz most famous)
+
+
+to install:
+- we go to hup.docker.com and search for the Ubuntu
+- we will download the official image for Ubuntu(more than 10M+)
+- we click on the image and the download command will appear
+download command
+docker pull ubuntu
+
+but instade of running Docker pull,
+we can use docker run ubuntu directly
+=>
+NOW,
+if we have this image locally:
+Docker is going to start a container with this image.
+
+otherwise:
+it`s going to pull the image behind the scene and then start
+a container
+
+when we typed 'docker run ubuntu' Docker started a container
+but cuz we didn`t interact with the container the container stopped
+(run 'docker ps -a' to check )
+
+to solve that we have to start the container in
+interactive mode
+
+after typing:
+docker  -it run ubentu
+we will have
+root@2f759e6996e9:/#
+
+we will have a shell: (root@2f759e6996e9:/#)
+shell is a program that takes our commands and passes
+them to the OP (karnel) for excution
+
+root is repreasents the currently logged in user
+(root has the highest prvileges)
+after the @ sign
+we have (2f759e6996e9) the name of the mashine
+
+So, this container has this ID, which is automatically
+created by docker.
+
+(/) this repreasents whree we are in the file system
+in this case forward slash is repreasents the root directly
+(the highest directly file in the system)
+
+(#) means we have the highest prvileges, cuz we logged as root user
+if logged as normal user we will find ($1) instead
+
+if we type 'echo $0'
+result '/bin/bash'
+inside the shell we will have the location of the shell program
+bin is directly and bash is program which is a shirtcut
+for "Bourne again shell"
+Steve Bourne is the first person who created a shell program
+
+in linux:
+-we use forward slash to sperad the directly but in windows we use
+back slashes
+-the other difference is Linux is case sensitive OP,
+So if we type 'Echo' we capital e it`s not going to work
+so lower case and upper case are different not only in commands but it`s
+aplicable everywhere
+=> if we want to refrence a user or directly or command we should
+spell it properly with the right uppercases and lowecases
+
+if we want to play with history
+- we can use arrows up and down to see the previos command
+- use history command
+ex:
+'history'
+result
+1 *
+2 whoami
+3 echo $0
+
+if we run '!2'
+same as running 'whoami'

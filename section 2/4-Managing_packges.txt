@@ -1,0 +1,29 @@
+package manager:
+most of development platform or  OS comes with package manager
+
+ex:
+npm
+yarn
+pip
+NuGet
+apt (fro Ubuntu)
+
+Ex:
+if we want a package like nano(text editer)
+
+'apt install nano'
+=> unable to locate package nano
+
+cuz nano package is not installed in apt package manager(Ubuntu)
+we can type
+'apt list' to check all the list of packages in apt
+
+to solve that we use
+'apt update' to update our package manager database
+=> now if we typed
+'apt list' we will see more packages
+and we can install a package like nano
+
+SO, before we install a package we always must update our
+package manager database
+
