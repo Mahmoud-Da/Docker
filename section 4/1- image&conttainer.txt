@@ -1,0 +1,11 @@
+image:
+include everything (configration and settings) that application needs to run
+=> (contains: a cut-down OS, Third-party libraries, Application files, Environment variables)
+
+Container:
+once we have image we can started from it
+- Provides on isolated environment 
+=> (what is happen in container will be invisible to another one)
+- can be stopped & restart
+- is just a process
+=> (its spacial process coz it has it owns files)
