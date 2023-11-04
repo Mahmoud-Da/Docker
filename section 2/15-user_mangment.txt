@@ -1,0 +1,24 @@
+# -> root user 
+$ -> rugular user
+
+
+*useradd
+for adding new user (orginal api that build)
+
+*adduser 
+for adding new user (more intractive that run useradd command inder the hood )
+
+*usermod
+to modifiy a user
+
+
+*userdel
+to delete user
+
+
+*cat /etc/passwd 
+to check the name of users
+
+*to log to docker as diffrent user
+docker exec -it -u newuser containerid bash
+
