@@ -1,0 +1,23 @@
+we use group so all user inside this group has the same kind of permission
+all linux user has primary group and multi secondary group
+*groupadd
+for adding new group (orginal api that build)
+
+
+*groupmod
+to modifiy a group
+
+
+*groupdel
+to delete group
+
+*gruops user-name 
+to check all the gruop of that user
+
+*cat /etc/group 
+to check all the group
+
+
+to add user to group
+usermod -G gruop-name user-name
+
