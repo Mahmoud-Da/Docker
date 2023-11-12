@@ -1,0 +1,10 @@
+{
+  "name": "moody",
+  "age": 25,
+  "is_engineer": true,
+  "languges": ["arabic", "english", "japanese"],
+  "family":{
+    "father": "Abdul Monium",
+    "mather": "Hasnna"
+  }
+}

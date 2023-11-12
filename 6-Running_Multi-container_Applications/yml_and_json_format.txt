@@ -1,0 +1,6 @@
+json: is human readable languge to present data
+ex: data.json
+Yml / Yaml : is also human readable languge to present data (easily to read)
+
+- why we don`t Yml more than Json coz is slower from json (in json we spicife every type of data)
+that`s why we use Yml for configuration files (more readble) and json for sending data (faster)
