@@ -1,0 +1,75 @@
+Kubernetes is tool for managing and automating containerized workloads in the cloud
+
+Imagine you have an orchestra 
+think of each individual musician as doocker container 
+
+to create beautiful music we need a conductor to manage the musicians and set the tempo.
+
+now Imagine the conductor as Kubernetes and the orchestra as an app like robinhood when the markets are closed 
+an app like robinhood isn`t doning much but when they open it need to fullfill millions of trades for overpriced stocks like tesla and shopify
+
+Kubernetes is the tool that orchestrates the infrastructure to handle the changing workload it it can scale containers across multiple machines
+and if one fails it know how to replace it with a new one 
+
+a system deployed on Kubernetes is known as Cluster
+the brain of the opraation is known as control plane it exposes an api server
+ that can handle both internal and external requests to manage the Cluster
+it also contains its own key value databae called ercd {store data a bout the cluster}
+  used to store important information a bout the running cluster
+
+what is managing is one or more worker machinees called nodes {when you hear node think about machine }
+each node running somthing called a Kubelet 
+which is a tiny application that runs on the machine to communicate back with the main control plane mother ship
+inside of each node we have multiple pods which is the smallest deployable unit og Kubernetes 
+
+pod: of whales is like containes running togather 
+
+as the workload increases Kubernetes can automatically scale horizontally by adding more nodes to the cluster in the 
+process it takes care of complicated things like networking/secret manegment/presistent storage and so on
+
+it`s designed for high availability and one way to achives that is by maintaining a replica set
+Replica set: which is just a set of running pods or containers ready to go at any given time as developer you define objects in Yml
+that describe the desired state of your cluster 
+
+for ex:
+we might have an nginx deployment that has a replica set with three pods 
+in the spec field we can define exacly how it should behave like it`s container volumes ports and so on
+we can take this configuration and use it to provision and scale container automatically
+and ensure that they`re always up and running and healthy. 
+
+コンテナの運用管理と自動化を行うために設計されたオープンソースソフトウェアです
+Kubernetesギリシャ語で、操舵手・パイロットを意味します
+
+Kubernetes を利用する7つのメリット
+ここまで、Kubernetesの概要について紹介してきました。それでは、Kubernetes を利用するとどのようなメリットがあるのでしょうか？ここからは、以下の7つのポイントについて紹介します。
+
+*アプリケーションの効率的な新機能リリースが可能：
+が一、アプリケーションに不具合があった場合には、修正後のバージョンへ入れ替えたり、ロールバックをしたりする作業も自動で行われます。
+
+*障害に強い自己回復機能：
+Kubernetes には自己回復機能が備わります。そのため、コンテナがダウンしたり、操作ミスで削除してしまったりした場合も、
+自動回復が可能です。障害に強く、いざという時にも焦らずに操作ができるのは、大きなメリット
+
+*オンプレミス・クラウドの両環境で利用可能
+オンプレミスとクラウドのどちらでも利用できることです。オンプレミスでの利用の場合、 Kubernetes 用のソフトウェア・ハードウェアを使えます。クラウドでの利用の場合は、
+パブリッククラウド上で提供される Kubernetes 用のサービスを利用
+
+*高速・軽量な起動で開発スピードを加速できる
+Kubernetes で従来の仮想ソフトウェアよりも動作が軽量化されているため、アプリケーションの効率的な開発が可能となっています。
+
+*柔軟にスケーリングできる
+Kubernetes に搭載されるPodの「水平オートスケーリング機能」によるものです。この機能により、会社の規模や状況に応じてリソースの最適化が可能となります。
+
+*サービスディスカバリーで動作を把握できる (まとめ)
+
+Kubernetes のメリットの6つ目は、「サービスディスカバリー」によって動いているサービスを見つけやすくなることです。Kubernetes の大きな特徴は、複数のアプリケーションを同時に実行できることです。しかし、「実行アプリケーションの数が増えると、動いているサービスを見つけることが難しくなるのでは？」と疑問に思う人もいますよね。
+
+ところが、Kubernetes にはサービスディスカバリーという仕組みがあります。これは、サーバー上のアプリケーションのポート番号や IP アドレスを知らせてくれるものです。これにより、どのアプリケーションが動いているのかをすぐに把握することが可能です。
+
+*セキュリティを強化できる
+セキュリティを強化できることです。Kubernetes には、パスワードや SSH キーなどの情報を保全する機能が備わります。加えて、Kubernetes ではコンテナを再構築せずに、
+アプリケーションの構成情報の更新が可能です。そのため、情報管理の面においてもセキュリティが高いと言えます。
+
+引用：
+https://www.youtube.com/watch?v=PziYflu8cB8
+https://cloud-ace.jp/column/detail229/
