@@ -449,3 +449,64 @@ bash: /usr/bin/nano: No such file or directory
 - Homework: use apt to install python in this image.
 Make sure it works and then remove it.
 
+*** 5- Linux File System ***
+
+- So, in Linux, just like Windows,
+our files and directories are organized in a tree,
+in a hierarchical structure. So, in Windows
+we have a structure like this, with C drive on top
+of the hierarchy, then below that we have directories like
+program files, windows and so on. 
+-------------------code----------------------
+C:\
+  Program Files
+  Windows
+-------------------code----------------------
+
+- In Linux we have the root directory on top of the hierarchy.
+Below that we have a bunch of standard directories, for example
+we have bin, which includes binaries or programs. We have boot, which includes all the
+files related to booting. Then we have dev, the first time we saw this, we thought this is short for development.
+It's not. It's short for devices. So, in Linux
+everything is a file, including devices,
+directories, network sockets, pipes and so on.
+
+-------------------code----------------------
+- /
+  bin
+  boot
+  dev
+  etc
+  home
+  root
+  lib
+  var
+  proc
+-------------------code----------------------
+
+
+
+- So, the files that are needed to access devices are
+stored in this directory. Then we have etsy,
+there are different opinions what is this short for, but one common
+opinion is, this is short for editable text configuration.
+So, this is where we have configuration files.
+
+- We also have home, this is where home directories
+for users are stored. So, on a machine with multiple users,
+each user is going to have a home directory here.
+We also have root, which is the home directory of the root user.
+Only the root user can access this directory.
+Then we have lib, which is used for keeping library files
+like software library dependencies. We have var,
+which is short for variable, and this is where we have files
+that are updated frequently, like log files,
+application data and so on. And finally, we have proc,
+which includes files that represent running processes.
+
+- So, once again, in Linux, everything is a file.
+Processes, devices, even directories are files.
+Now, we don't need to memorize any of these directories.
+we just listed them here, so as we go through the course,
+these directories look familiar to us.
+
