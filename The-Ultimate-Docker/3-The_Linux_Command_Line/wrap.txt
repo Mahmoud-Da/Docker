@@ -1226,3 +1226,141 @@ root@8a65a7f2dd58:~# grep -ir hello .
 -------------------code---------------------
 
 - So using the grep command, we can search for a string in one or more files.
+
+*** 11- Finding Files and Directories ***
+
+- Let's talk about finding files and directories. So we're currently in my home directory
+as we can tell from the tilde. Let's run ls so here we have combined file1, file2, files and hello.txt
+Now of course on our machine we might have different files, it doesn't matter.
+-------------------code---------------------
+root@8a65a7f2dd58:~# ls
+combined.txt  etc_files.tsxt  file1.txt  file2.txt  hello.txt
+-------------------code---------------------
+
+- Now in Linux we have the find command for finding files
+and directories. If we execute this command without any arguments
+we see all the files and directories in the current directory
+recursively. So this command is going to go through every directory
+in this directory and list their files. So on the top we have
+.bashrc and .profile, these are two hidden files in the
+current directory. we didn't see this earlier when we executed ls,
+because by default ls doesn't show the hidden files and directories.
+-------------------code---------------------
+root@8a65a7f2dd58:~# find
+.
+./.bashrc
+./.profile
+./hello.txt
+./file1.txt
+./.local
+./.local/share
+./.local/share/nano
+./etc_files.tsxt
+./combined.txt
+./file2.txt
+./.lesshst
+-------------------code---------------------
+
+- Now, what option should we use to see the hidden files and directories?
+Do we remember, dash a which is short for all. So now
+we can see bashrc, profile, and local which is
+a directory because it's blue. 
+-------------------code---------------------
+root@8a65a7f2dd58:~# ls -a
+.  ..  .bashrc  .lesshst  .local  .profile  combined.txt  etc_files.tsxt  file1.txt  file2.txt  hello.txt
+-------------------code---------------------
+
+- So back to the find command, here we can see all the files and directories in the current directory.
+Now, if we want to look somewhere else, we can supply a path.
+So, we can search in the etsy directory. Now we can see all the files and directories starting from etsy.
+-------------------code---------------------
+root@8a65a7f2dd58:~# find /etc/
+/etc/
+/etc/dpkg
+/etc/dpkg/dpkg.cfg
+/etc/dpkg/origins
+/etc/dpkg/origins/debian
+/etc/dpkg/origins/default
+/etc/dpkg/origins/ubuntu
+/etc/dpkg/dpkg.cfg.d
+/etc/dpkg/dpkg.cfg.d/docker-apt-speedup
+/etc/dpkg/dpkg.cfg.d/excludes
+/etc/group-
+/etc/passwd-
+.....
+.....
+....
+-------------------code---------------------
+
+- Okay? Now, let's get back to the current directory.
+a various ways to filter the result. If we want to see only the directories,
+we pass an option called type with the value of d.
+Now we can see only the directories in the current directory.
+-------------------code---------------------
+root@8a65a7f2dd58:~# find -type d
+.
+./.local
+./.local/share
+./.local/share/nano
+-------------------code---------------------
+
+- Alternatively, we can search for files. 
+-------------------code---------------------
+root@8a65a7f2dd58:~# find -type f
+./.bashrc
+./.profile
+./hello.txt
+./file1.txt
+./etc_files.tsxt
+./combined.txt
+./file2.txt
+./.lesshst
+-------------------code---------------------
+- We can also filter by name. So, let's say we want to find
+all the files whose name start with, let's say F.
+Here in double quotes, we can type a pattern, we can say F star.
+-------------------code---------------------
+root@8a65a7f2dd58:~# find -type f -name "f*"
+./file1.txt
+./file2.txt
+-------------------code---------------------
+
+- Now just remember that this search is case sensitive just like everything else in Linux.
+So if we type a capital F here, we don't find anything.
+-------------------code---------------------
+root@8a65a7f2dd58:~# find -type f -name "F*"
+-------------------code---------------------
+
+- Now, to make the search case insensitive, instead of name,
+we use a different option that is iname.
+-------------------code---------------------
+root@8a65a7f2dd58:~# find -type f -iname "F*"
+./file1.txt
+./file2.txt
+-------------------code---------------------
+
+Alright, beautiful. Now here's a little exercise for we.
+Using the find command, we want we to find all the python files in this image
+and then write the result to a file called pythonfiles.txt.
+-------------------code---------------------
+root@8a65a7f2dd58:~# find / -type f -name "*.py"
+/usr/share/apport/package-hooks/source_shadow.py
+/usr/share/gdb/auto-load/usr/lib/aarch64-linux-gnu/libstdc++.so.6.0.33-gdb.py
+/usr/share/gcc/python/libstdcxx/v6/__init__.py
+/usr/share/gcc/python/libstdcxx/v6/printers.py
+/usr/share/gcc/python/libstdcxx/v6/xmethods.py
+/usr/share/gcc/python/libstdcxx/__init__.py
+-------------------code---------------------
+
+- Now, to write the result to a file, we're going to use the redirection operator.
+So, we can write it to a file called pythonfiles.txt.
+-------------------code---------------------
+root@8a65a7f2dd58:~# find / -type f -name "*.py" > python-files.txt
+root@8a65a7f2dd58:~# cat python-files.txt
+/usr/share/apport/package-hooks/source_shadow.py
+/usr/share/gdb/auto-load/usr/lib/aarch64-linux-gnu/libstdc++.so.6.0.33-gdb.py
+/usr/share/gcc/python/libstdcxx/v6/__init__.py
+/usr/share/gcc/python/libstdcxx/v6/printers.py
+/usr/share/gcc/python/libstdcxx/v6/xmethods.py
+/usr/share/gcc/python/libstdcxx/__init__.py
+-------------------code---------------------
