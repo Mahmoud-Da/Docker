@@ -1142,3 +1142,87 @@ in this lesson.
 -------------------code----------------------
 root@8a65a7f2dd58:~# >
 -------------------code----------------------
+
+
+*** 10- Searching for Text ***
+
+- Let's see how we can search for a string in a file.
+So we have this grep command which is short for global regular
+expression print. 
+
+
+- let's say we want to search for the word hello in file1.txt.
+What happened? Didn't we write hello to file1.txt?
+Yes we did, but this search is case sensitive just like
+everything else in Linux. 
+-------------------code----------------------
+root@8a65a7f2dd58:~# grep Hello file1.txt
+-------------------code----------------------
+
+- we research with case sensitive
+-------------------code----------------------
+root@8a65a7f2dd58:~# grep hello file1.txt
+hello
+-------------------code----------------------
+
+- If we want to remove case sensitivity,
+we have to use an option. That is
+dash i. So case insensitive. Now we see the word hello highlighted in red. 
+-------------------code----------------------
+root@8a65a7f2dd58:~# grep -i Hello file1.txt
+hello
+-------------------code----------------------
+
+- Let's look at another example. This time
+we want to search for the word root in slash etsy slash password.
+This file contains the list of user accounts on this machine. Not their
+passwords, just their accounts.
+On this line, which we think is the first line in this file,
+we have three occurrences of root and that's why they're displayed in red.
+-------------------code---------------------
+root@8a65a7f2dd58:~# grep -i root /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+-------------------code---------------------
+
+- Now we can also search in multiple files. So let's search for hello
+in file1.txt and file2.txt. That's one way. 
+-------------------code---------------------
+root@8a65a7f2dd58:~# grep -i hello file1.txt file2.txt
+file1.txt:hello
+file2.txt:hello
+-------------------code---------------------
+
+- We can also use a pattern. So we can say we want to search in all files whose name starts with file.
+So we use a wild card here.
+-------------------code---------------------
+root@8a65a7f2dd58:~# grep -i hello file*
+file1.txt:hello
+file2.txt:hello
+-------------------code---------------------
+
+- Now we can see in file1.txt we have hello and the same is true in file2.txt.
+Now we can also search in a directory. So instead of typing a file name, we can type a directory name or we can use a period to refer to the current directory.
+Now we get an error saying period is a directory. 
+
+
+- So here we have to use an additional option
+dash r which is short for recursive. So with this we can search this directory and all its subdirectories recursively.
+Now look, in all these files we have references to hello. We have references to hello. 
+-------------------code---------------------
+root@8a65a7f2dd58:~# grep -i hello .
+grep: .: Is a directory
+-------------------code---------------------
+
+- Now one last thing. In Linux we can combine multiple options.
+So instead of having two different options, dash i and dash r,
+we can combine them into one option. This gives us the exact same result.
+-------------------code---------------------
+root@8a65a7f2dd58:~# grep -ir hello .
+./hello.txt:hello
+./file1.txt:hello
+./combined.txt:hello
+./combined.txt:hello
+./file2.txt:hello
+-------------------code---------------------
+
+- So using the grep command, we can search for a string in one or more files.
