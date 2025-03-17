@@ -167,3 +167,44 @@ linux containers.
 https://docs.docker.com/engine/install/
 -------------------code----------------------
 
+*** 6- Development Workflow ***
+
+- Now let's talk about our development workflow when using docker.
+So to start off, we take an application, it doesn't matter what kind of application it is
+or how it's built, we take that application and dockerize it.
+
+- Which means we make a small change so that it can be run by docker.
+How? We just add a docker file to it. A docker file is a plain text file that includes instructions that docker uses to package
+of this application into an image. 
+
+- This image contains everything our application needs to run. Everything. Typically, a cut down
+operating system, a runtime environment like node or python, it also contains application files,
+third party libraries, environment variables and so on. 
+
+- So we create a docker file and give it to docker for packaging our application into an image.
+Once we have an image, we tell docker to start a container using that image.
+
+- So a container, as we told we, it's just a process. But it's a special kind of process because
+it has its own file system which is provided by the image.
+
+- So our application gets loaded inside a container or a process and this is how
+we run our application locally on our development machine.
+
+- So instead of directly launching the application and running it inside a typical process,
+we tell docker to run it inside a container, an isolated environment.
+Now here's the beauty of docker. Once we have this image, we can push it
+to a docker registry like docker hub. Docker hub to docker is like
+github to git. It's a storage for docker images that anyone can use.
+So once our application image is on docker hub, then we can put it on any
+machines running docker.
+
+- This machine has the same image we have on our
+development machine which contains a specific version of our application
+with everything it needs. So we can start our application the same way we
+started it on our development machine.
+
+- We just tell docker to start a container using this image. 
+So with docker, we no longer need to maintain long complex release documents that have to be precisely followed. All the
+instructions for building an image of an application are written in a docker
+file. With that, we can package up our application into an image and run it
+virtually anywhere. This is the beauty of docker. 
