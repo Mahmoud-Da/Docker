@@ -1364,3 +1364,157 @@ root@8a65a7f2dd58:~# cat python-files.txt
 /usr/share/gcc/python/libstdcxx/v6/xmethods.py
 /usr/share/gcc/python/libstdcxx/__init__.py
 -------------------code---------------------
+
+*** 12- Chaining Commands ***
+
+- In Linux, we have a few different ways for chaining or combining multiple commands. 
+
+- So once again we're in my home directory. Let's say we want to create a directory called test
+and right after this we want to go into this directory and echo something to the terminal.
+Now we don't want to press enter here and then type the second command.
+we want to type multiple commands and execute them in one go.
+So here we type a semicolon and then type the second command which is cd test. Now once again
+we type a semicolon and type the third command. So echo, done. Now if we press enter
+all these commands will get executed one after another.
+-------------------code---------------------
+root@8a65a7f2dd58:~# mkdir test;cd test;echo done
+done
+-------------------code---------------------
+
+- Now, some people prefer to add a space
+around these semicolons to make their
+command sequence more clear, more readable. That's optional,
+it's entirely up to us. So look, we see
+the done message and we're currently inside the
+test directory.
+-------------------code---------------------
+mkdir test ; cd test ; echo done
+-------------------code---------------------
+
+- Now, if we go one level up and execute the last command, we're going to get an error
+because we already have the test directory.
+But the other two commands will get executed. Take a look.
+So, look, here's the error saying
+the test directory exists, but we also see the done message
+and we're currently inside the test directory.
+-------------------code---------------------
+root@8a65a7f2dd58:~/test# cd ..
+root@8a65a7f2dd58:~# mkdir test;cd test;echo done
+mkdir: cannot create directory 'test': File exists
+done
+-------------------code---------------------
+
+- Now, what if we want to stop execution? So, if one command
+fails, the other commands are not going to get executed.
+Well, this is where we use the and operator.
+Now, instead of a semicolon, we're going to use
+double ampersands. That is the and operator.
+So, if this command fails, the other commands will not get executed.
+Take a look. Alright, we saw an error
+saying the directory exists, but we're still inside the home directory.
+We didn't go inside the test directory.
+-------------------code---------------------
+root@8a65a7f2dd58:~# mkdir test && cd test && echo done
+mkdir: cannot create directory 'test': File exists
+root@8a65a7f2dd58:~#
+-------------------code---------------------
+
+- Now, we also have the or operator. So, if we say
+create the test directory or echo
+directory exists. If this command gets executed,
+this command will not get executed. But if this command fails,
+this command gets executed. Make sense?
+So, essentially it's saying create this directory
+or print directory exists. Let's try it.
+So, we got this message because the directory already exists.
+-------------------code---------------------
+root@8a65a7f2dd58:~# mkdir test || echo "directory exists"
+mkdir: cannot create directory 'test': File exists
+directory exists
+-------------------code---------------------
+
+- But if we bring up this command and change the directory name to test2,
+this time we are not going to see this message
+because we can successfully create this directory.
+-------------------code---------------------
+root@8a65a7f2dd58:~# mkdir test2 || echo "directory exists"
+-------------------code---------------------
+
+- So, these techniques are very powerful.
+we use them a lot when it comes to deploying our applications using docker.
+we'll see more examples in the future.
+
+- Now, another way to chain commands is piping.
+And this is extremely powerful. So, let's look at the content of
+the bin directory. So, here we have a long list of files,
+but what if we want to look at this list using the less command. So, remember
+earlier we talked about the less command. With this we can look at the content of a file
+and then we have the ability to scroll up and down or go line by line and then quit.
+This is where we can use piping.
+So, we use the ls command, get the content of the bin directory
+and then create a pipe. So, we get the output of this command
+and then send it to the less command.
+to the less command. So, essentially we're creating a pipe.
+What comes out of this command
+goes into the second command. So, now less doesn't need a file name
+because it gets the input from the first command.
+So, now we're seeing the output of the less command using the up and down arrows
+we can scroll using space we can go to the next page
+and then we can exit using q.
+-------------------code---------------------
+root@8a65a7f2dd58:~# ls /bin | less
+-------------------code---------------------
+
+- We can also use the head and tail commands here.
+Pretty much any commands. So, if we use head
+by default we can see the first ten lines
+-------------------code---------------------
+root@8a65a7f2dd58:~# ls /bin | head
+[
+addpart
+apt
+apt-cache
+apt-cdrom
+apt-config
+apt-get
+apt-key
+apt-mark
+arch
+-------------------code---------------------
+
+- we can supply an option and see the first five lines.
+Pretty useful.
+-------------------code---------------------
+root@8a65a7f2dd58:~# ls /bin | head -n 5
+[
+addpart
+apt
+apt-cache
+apt-cdrom
+-------------------code---------------------
+
+
+- Now, one last thing before we finish this lesson.
+Sometimes when dealing with a long command
+our command sequence might look a little bit hard to read.
+how we can split it into multiple lines. So, we're going to create a directory called
+hello, then we're going to go into this directory and echo
+done. Now, this is a fairly short command
+but imagine this was really long and we had to scroll horizontally.
+We don't want to do that. So, we create a directory
+and then terminate this command using a semicolon. Now, if we type a backslash
+and press enter, we go to the second line and the command prompt changes
+so we can type the rest of the command here. Now, we're going to go to the hello directory
+and terminate this command
+and add a backslash so on the third line
+we can echo done. And of course,
+we can keep going as much as we want.
+So, this is how we can break up a long command
+into multiple lines by using a backslash.
+
+-------------------code---------------------
+root@8a65a7f2dd58:~# mkdir hello;\
+> cd hello;\
+> echo done
+done
+-------------------code---------------------
