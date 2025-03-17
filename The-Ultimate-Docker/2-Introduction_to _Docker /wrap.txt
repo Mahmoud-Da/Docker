@@ -20,6 +20,7 @@ So by the end of this section, we will have an idea of what Docker is all about.
 
 
 *** 2- What is Docker ***
+
 - So what is docker and why is everyone using it these days? Well,
 docker is a platform for building, running, and shipping applications in a consistent manner.
 
@@ -64,4 +65,60 @@ with all its dependencies to clean up our machine. Isn't that great?
 
 - So, in a nutshell, docker helps us consistently build, run, and ship our applications.
 And that's why a lot of employers are looking for people with docker skills these days.
+
+*** 3- Virtual Machines vs Containers ***
+ 
+- So in the last lesson, we briefly talked about containers. A container is an isolated environment
+for running an application.
+
+- Now, one of the questions that often comes up is
+how are containers different from virtual machines or VMs?
+
+- Well, a virtual machine as the name implies is an abstraction of a machine or
+physical hardware. So we can run several virtual machines on a real physical machine. For example, we can have a Mac
+and on this Mac we can run two virtual machines. One running Windows
+the other running Linux. How do we do that? Using a tool called
+hypervisor. we know, it's one of those computer science names. In simple terms
+a hypervisor is software we use to create and manage virtual
+machines. There are many hypervisors available out there like VirtualBox
+and VMware which are cross-platform so they can run on Windows
+Mac OS and Linux. And Hyper-V which is only for Windows.
+So with a hypervisor, we can manage virtual machines.
+
+- Now, what is the benefit of building virtual machines?
+Well, for us software developers, we can run an application
+in isolation inside a virtual machine. So on the same
+physical machine, we can have two different virtual machines,
+each running a completely different application and each
+application has the exact dependencies it needs. So application one
+may use node version 14 and MongoDB version 4 while application two
+may use node version 9 and MongoDB version 3. All these are running
+on the same machine but in different isolated environments. That's one
+of the benefits of virtual machines. 
+
+- But there are a number of problems with this model. Each virtual machine needs a full copy of an operating
+system that needs to be licensed, patched, and monitored. And that's why
+these virtual machines are slow to start because the entire operating system
+has to be loaded just like starting our computer. 
+
+- Another problem is that these virtual machines are resource intensive because each virtual
+machine takes a slice of the actual physical hardware resources
+like CPU, memory, and disk space. So if we have 8 gigabytes of memory,
+that memory has to be divided between different virtual machines. Of course,
+we can decide how much memory to allocate to each virtual machine. But at the end
+of the day, we have a limit in terms of the number of VMs we can run
+on a machine. Usually a handful, otherwise we're going to run out
+of hardware resources.
+
+- Now let's talk about containers. Containers give us the same kind of isolation. So we can run multiple
+applications in isolation, but they're more lightweight. They don't
+need a full operating system. In fact, all containers on a single
+machine share the operating system of the host. So that means
+we need to license, patch, and monitor a single operating system.
+Also, because the operating system has already started on the host,
+a container can start up pretty quickly. Usually in a second.
+Sometimes less. And also, these containers don't need a slice of the hardware resources on the host.
+So we don't need to give them a specific number of CPU cores or a slice of memory or disk space. So on a single host,
+we can run tens or even hundreds of containers side by side. So these are the differences between
+containers and virtual machines.
 
