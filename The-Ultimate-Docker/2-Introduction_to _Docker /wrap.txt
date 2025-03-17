@@ -122,3 +122,42 @@ So we don't need to give them a specific number of CPU cores or a slice of memor
 we can run tens or even hundreds of containers side by side. So these are the differences between
 containers and virtual machines.
 
+*** 4- Docker Architecture ***
+Let's talk about the architecture of docker so we understand how it works.
+Docker uses a client server architecture, so it has a client component
+that talks to a server component using a restful API.
+
+- The server, also called the docker engine, sits on the background
+and takes care of building and running docker containers. Now technically
+a container is just a process, like other processes running on our computer.
+But it's a special kind of process which we're going to talk about soon.
+
+
+- Now as we told we, unlike virtual machines, containers don't contain
+a full blown operating system. Instead, all containers on a host share the operating system of the host. 
+Now more accurately all those containers share the kernel of the host. What's a kernel?
+
+- A kernel is the core of an operating system. It's like the engine
+of a car. It's the part that manages all applications as well as hardware
+resources like memory and CPU. Every operating system has its own kernel or engine and these kernels
+have different APIs. That's why we cannot run a windows application
+on linux because under the hood this application needs to talk to the kernel of the underlying operating system.
+
+- So, that means, on a linux machine
+we can only run linux containers because these containers need linux.
+
+- On a windows machine however, we can run both windows and linux containers
+because windows 10 is now shipped with a custom built linux kernel.
+This is in addition to the windows kernel that's always been in windows. It's not a replacement.
+So, with this linux kernel, now we can run linux applications natively on windows.
+So, on windows, we can run both linux and windows containers.
+Our windows containers share the windows kernel and our linux containers share the
+linux kernel.
+
+- Now, what about macOS? Well, macOS
+has its own kernel which is different from linux and windows kernels
+and this kernel does not have native
+support for containerized applications. So, docker on
+mac uses a lightweight linux virtual machine to run
+linux containers.
+
