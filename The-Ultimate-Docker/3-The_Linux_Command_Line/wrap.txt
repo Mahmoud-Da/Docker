@@ -15,3 +15,29 @@ You don't need to speak it or write a book in it, but we need to understand it.
 So unless we're a power Linux user, do not skip this section.
 It's going to be super easy and extremely useful.
 So let's jump in and get started.
+
+*** 2- Linux Distributions ***
+
+- Let's start off this section by talking about Linux distributions, 
+also called Linux distros.
+
+- So, as we probably know, Linux is open source software.
+And for this reason, many individuals and communities
+have created their own version of Linux called Linux distributions.
+
+- Each of these distributions is made to fit specialized needs
+like running servers, desktop computers, mobile phones and so on.
+
+- So we have Ubuntu, which is one of the most popular Linux distributions.
+We also have Debian, Alpine, which we briefly talked about, it's a very small Linux distribution.
+
+- We also have Fedora, CentOS and so on.
+
+- Believe it or not, there are more than a thousand Linux distributions out there.
+
+- Now, most of these distributions support pretty much the same set of commands,
+but sometimes we might discover differences along the way. So be aware of that.
+
+- In this section, we're going to use Ubuntu Linux because it's one of the most popular distributions.
+But if we have a preference for another distribution, that's totally fine.
+
