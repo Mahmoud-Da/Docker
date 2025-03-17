@@ -698,3 +698,92 @@ tilde, we go to our home directory.
 root@8a65a7f2dd58:/# cd ~
 root@8a65a7f2dd58:~#
 -------------------code----------------------
+
+*** 7- Manipulating Files and Directories ***
+
+- Let's see how we can manipulate files and directories. So, we're currently in the root
+directory and we want to go to my home directory. How can we do that? Do we remember? We type
+cd tilde. Great.
+-------------------code----------------------
+root@8a65a7f2dd58:/# cd ~
+-------------------code----------------------
+
+- Now, in this directory we want to create a directory called test. So
+we type mkdir test, let's verify, it's right here. As we told before, blue represents
+a directory. 
+-------------------code----------------------
+root@8a65a7f2dd58:~# mkdir test
+root@8a65a7f2dd58:~# ls
+test
+-------------------code----------------------
+
+- Now, let's say we want to rename this directory. How do we do that? We use
+the move command. With this we can rename files and folders or move them somewhere else. So,
+we can move or rename test to docker. Alright, beautiful.
+-------------------code----------------------
+root@8a65a7f2dd58:~# mv test docker
+root@8a65a7f2dd58:~# ls
+docker
+-------------------code----------------------
+
+- Now, let's go in this directory. Now, to create a new file, we use the touch command. So we can create hello.txt. Look,
+we have this new file here. This is a new empty file. 
+-------------------code----------------------
+root@8a65a7f2dd58:~# cd docker/
+root@8a65a7f2dd58:~/docker# touch hello.txt
+root@8a65a7f2dd58:~/docker# ls
+hello.txt
+-------------------code----------------------
+
+- Also, using the touch command, we can
+create multiple files in one go. So we can create file 1, file 2, and file 3.
+-------------------code----------------------
+root@8a65a7f2dd58:~/docker# touch file1.txt file2.txt file3.txt
+root@8a65a7f2dd58:~/docker# ls
+file1.txt  file2.txt  file3.txt  hello.txt
+-------------------code----------------------
+
+- let's say we want to rename hello.txt to something else. Once again, we can use the move command. So we type h, press tab to get
+autocompletion. We can rename this to hello-docker.txt. Or, we can move it to a different directory.
+For example, we can move it to the etc directory. And here we're using an absolute path, because
+my path has started from the root directory. Now, in this lesson, we don't want to move
+this anywhere. So, we just want to rename this to hello-docker.txt.
+-------------------code----------------------
+root@8a65a7f2dd58:~/docker# mv hello.txt hello-docker.txt
+root@8a65a7f2dd58:~/docker# ls
+file1.txt  file2.txt  file3.txt  hello-docker.txt
+-------------------code----------------------
+
+- Ahow we removed this entire word in one go, we pressed cmd and w. 
+
+- back, hello-docker.txt. Now, let's see how we can remove one or more
+files. To do that, use the rm command. Now, here we can type one or more files, so we can
+say file 1.txt, file 2.txt.
+-------------------code----------------------
+root@8a65a7f2dd58:rm file1.txt file2.txt
+-------------------code----------------------
+
+- or we can use a pattern. For example, we can say, we want to
+remove all files that start with file. Let's verify it. Beautiful, we only have hello-docker.
+-------------------code----------------------
+root@8a65a7f2dd58:~/docker# rm file*
+root@8a65a7f2dd58:~/docker# ls
+hello-docker.txt
+-------------------code----------------------
+
+Now, let's get out of this directory and remove the directory itself. So, we type rm docker.
+Now, we get an error saying docker is a directory.
+-------------------code----------------------
+root@8a65a7f2dd58:~/docker# cd ../
+root@8a65a7f2dd58:~# rm docker/
+rm: cannot remove 'docker/': Is a directory
+-------------------code----------------------
+
+- So, to remove directories, we have to use
+the r option, which is short for recursive. So, we want to remove this directory and all
+its content recursively.
+-------------------code----------------------
+root@8a65a7f2dd58:~# rm -r docker/
+root@8a65a7f2dd58:~# ls
+root@8a65a7f2dd58:~#
+-------------------code----------------------
