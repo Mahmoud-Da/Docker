@@ -161,3 +161,9 @@ support for containerized applications. So, docker on
 mac uses a lightweight linux virtual machine to run
 linux containers.
 
+*** 5- Installing Docker ***
+
+-------------------code----------------------
+https://docs.docker.com/engine/install/
+-------------------code----------------------
+
