@@ -1,0 +1,21 @@
+*** 1- Introduction ***
+
+- our journey to master Docker begins here. In every section, we're going to discover
+something new about Docker. In this section,
+- we're going to talk about what Docker is and
+why it's so popular. 
+
+- Then we're going to talk about virtual machines and containers.
+
+- Next, we're going to talk about the architecture of Docker so we understand how it works.
+
+- Then we're going to install Docker and get our hands dirty.
+
+- we're going to give we an overview of wer development workflow with Docker.
+
+- And then we're going to see that in action using a really simple example. 
+
+So by the end of this section, we will have an idea of what Docker is all about.
+
+
+
