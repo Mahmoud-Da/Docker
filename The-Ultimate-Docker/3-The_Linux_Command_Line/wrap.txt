@@ -11,7 +11,7 @@ we need to know some of the basic Linux commands.
 So if we don't understand these basic commands, we're not going to get far.
 learning Linux is like learning English.
 so everybody should know some English these days.
-You don't need to speak it or write a book in it, but we need to understand it.
+we don't need to speak it or write a book in it, but we need to understand it.
 So unless we're a power Linux user, do not skip this section.
 It's going to be super easy and extremely useful.
 So let's jump in and get started.
@@ -222,7 +222,7 @@ root
 *** 4- Managing Packages ***
 
 - These days, most operating systems
-and development platforms come with a package manager. You've probably
+and development platforms come with a package manager. we've probably
 worked with tools like npm, yarn, pip, and so on.
 
 - Here in Ubuntu, we also have a package manager called apt, which is short
@@ -510,3 +510,191 @@ Now, we don't need to memorize any of these directories.
 we just listed them here, so as we go through the course,
 these directories look familiar to us.
 
+*** 6- Navigating the File System ***
+
+- Let's see how we can navigate the Linux file system. So the first command we're going to talk about is pwd
+which is short for print working directory. With this we can see
+where we are in the file system. So a forward slash
+represents the root directory. 
+-------------------code----------------------
+root@8a65a7f2dd58:/# pwd
+/
+-------------------code----------------------
+
+- Now to see the files and directories here, we type ls which is short for list. So we have
+bin which we talked about earlier, that is short for binaries, this is where we have binary
+files and programs, we have dev which includes files for devices,
+we have boot which includes boot files, etsy which includes configuration
+files and so on. 
+-------------------code----------------------
+root@8a65a7f2dd58:/# ls
+bin  boot  dev  etc  home  lib  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
+-------------------code----------------------
+
+- Now, by default ls lists these items on multiple lines. If we don't like this layout and want to show
+one item per line, we need to pass an option, that is dash
+one. we might prefer this layout.
+-------------------code----------------------
+root@8a65a7f2dd58:/# ls -1
+bin
+boot
+dev
+etc
+home
+lib
+media
+mnt
+opt
+proc
+root
+run
+sbin
+srv
+sys
+tmp
+usr
+var
+-------------------code----------------------
+
+- We have another option, dash l, for seeing a long listing.
+This listing includes more details. So in the first column we have the permissions of this file or directory.
+The first time we see this, it might look really scary,
+We'll talk about that later in this section. Over here, we can see
+the user that owns this file or directory, we can see the size, we can see
+the date and so on. 
+-------------------code----------------------
+root@8a65a7f2dd58:/# ls -l
+total 48
+lrwxrwxrwx   1 root root    7 Apr 22  2024 bin -> usr/bin
+drwxr-xr-x   2 root root 4096 Apr 22  2024 boot
+drwxr-xr-x   5 root root  360 Mar 17 15:46 dev
+drwxr-xr-x   1 root root 4096 Mar 17 15:46 etc
+drwxr-xr-x   3 root root 4096 Jan 27 02:19 home
+lrwxrwxrwx   1 root root    7 Apr 22  2024 lib -> usr/lib
+drwxr-xr-x   2 root root 4096 Jan 27 02:12 media
+drwxr-xr-x   2 root root 4096 Jan 27 02:12 mnt
+drwxr-xr-x   2 root root 4096 Jan 27 02:12 opt
+dr-xr-xr-x 168 root root    0 Mar 17 15:46 proc
+drwx------   2 root root 4096 Jan 27 02:19 root
+drwxr-xr-x   4 root root 4096 Jan 27 02:19 run
+lrwxrwxrwx   1 root root    8 Apr 22  2024 sbin -> usr/sbin
+drwxr-xr-x   2 root root 4096 Jan 27 02:12 srv
+dr-xr-xr-x  11 root root    0 Mar 17 15:46 sys
+drwxrwxrwt   2 root root 4096 Jan 27 02:19 tmp
+drwxr-xr-x  11 root root 4096 Jan 27 02:12 usr
+drwxr-xr-x  11 root root 4096 Jan 27 02:19 var
+-------------------code----------------------
+
+- Now to change the current directory, we use
+the cd command, we have the same command in windows. Now here we can
+type a relative or an absolute path. A relative path
+is relative to where we are. So in this root directory, we have directories like bin, boot and so on. So this is a relative
+path. Now in contrast, an absolute path
+always starts from the root directory. So, let's go to a directory starting with
+e. Now we can press tab to get autocompletion, beautiful.
+Now let's go to a directory starting with a. Now if we press tab,
+nothing happens because we have multiple directories starting with a.
+-------------------code----------------------
+root@8a65a7f2dd58:/# cd etc/a
+alternatives/ apt/
+-------------------code----------------------
+
+- So we have to press tab one more time, great. So, we have
+three entries, three directories, add user.conf, alternatives
+and apt. So, let's type the second letter, p and then press tab.
+-------------------code----------------------
+root@8a65a7f2dd58:/# cd etc/apt/
+-------------------code----------------------
+
+- Now let's see what we have in this directory. So,
+these blue items are directories and sources that list is a file.
+-------------------code----------------------
+root@8a65a7f2dd58:/etc/apt# ls
+apt.conf.d  auth.conf.d  keyrings  preferences.d  sources.list  sources.list.d  trusted.gpg.d
+-------------------code----------------------v
+
+- Now to get out of this directory we can go one level up by typing two periods.
+-------------------code----------------------
+root@8a65a7f2dd58:/etc/apt# cd ..
+-------------------code----------------------
+
+- Again, to get to the etsy directory or two levels up to get to the root directory.
+Look, we're currently in the root directory.
+-------------------code----------------------
+root@8a65a7f2dd58:/etc# cd ../..
+-------------------code----------------------
+
+-  Now, when using ls, we can optionally specify a path. Let's say we're somewhere in the file system, but we want to
+look at the content of another directory. we don't want to navigate to that directory.
+So, we're currently in the root directory, we want to know what files and directories
+we have inside the bin directory. So once again, we can type a
+relative path or an absolute path starting from the root directory.
+So, here are the binaries in this directory. Look at pwd. That's the command
+that we just executed. So, pwd is a program in this directory. Here's another example.
+Look at echo. So, most of the commands we have been exploring so far are programs
+or binaries in the bin directory.
+-------------------code----------------------
+root@8a65a7f2dd58:/# ls bin
+'['              cut                       expiry      join               mount           readlink            skill       uncompress
+ addpart         dash                      expr        kill               mountpoint      realpath            slabtop     unexpand
+ apt             date                      factor      last               mv              rename.ul           sleep       uniq
+ apt-cache       dd                        faillog     lastb              namei           renice              snice       unlink
+ apt-cdrom       deb-systemd-helper        fallocate   lastlog            nawk            reset               sort        unminimize
+ apt-config      deb-systemd-invoke        false       ld.so              newgrp          resizepart          split       unshare
+ apt-get         debconf                   fgrep       ldd                nice            rev                 stat        update-alternatives
+ apt-key         debconf-apt-progress      find        link               nisdomainname   rgrep               stdbuf      uptime
+ apt-mark        debconf-communicate       findmnt     linux32            nl              rm                  stty        users
+ arch            debconf-copydb            flock       linux64            nohup           rmdir               su          utmpdump
+ awk             debconf-escape            fmt         ln                 nproc           run-parts           sum         vdir
+ b2sum           debconf-set-selections    fold        locale             nsenter         runcon              sync        vmstat
+ base32          debconf-show              free        locale-check       numfmt          savelog             tabs        w
+ base64          delpart                   getconf     localedef          od              script              tac         wall
+ basename        df                        getent      logger             pager           scriptlive          tail        watch
+ basenc          diff                      getopt      login              partx           scriptreplay        tar         wc
+ bash            diff3                     gpasswd     logname            passwd          sdiff               taskset     wdctl
+ bashbug         dir                       gpgv        ls                 paste           sed                 tee         whereis
+ captoinfo       dircolors                 grep        lsattr             pathchk         select-editor       tempfile    which
+ cat             dirname                   groups      lsblk              perl            sensible-browser    test        which.debianutils
+ chage           dmesg                     gunzip      lscpu              perl5.38.2      sensible-editor     tic         who
+ chattr          dnsdomainname             gzexe       lsipc              pgrep           sensible-pager      timeout     whoami
+ chcon           domainname                gzip        lslocks            pidof           sensible-terminal   tload       xargs
+ chfn            dpkg                      hardlink    lslogins           pidwait         seq                 toe         yes
+ chgrp           dpkg-deb                  head        lsmem              pinky           setarch             top         ypdomainname
+ chmod           dpkg-divert               hostid      lsns               pkill           setpriv             touch       zcat
+ choom           dpkg-maintscript-helper   hostname    man                pldd            setsid              tput        zcmp
+ chown           dpkg-query                iconv       mawk               pmap            setterm             tr          zdiff
+ chrt            dpkg-realpath             id          mcookie            pr              sg                  true        zdump
+ chsh            dpkg-split                infocmp     md5sum             printenv        sh                  truncate    zegrep
+ cksum           dpkg-statoverride         infotocap   md5sum.textutils   printf          sha1sum             tset        zfgrep
+ clear           dpkg-trigger              install     mesg               prlimit         sha224sum           tsort       zforce
+ clear_console   du                        ionice      mkdir              ps              sha256sum           tty         zgrep
+ cmp             echo                      ipcmk       mkfifo             ptx             sha384sum           tzselect    zless
+ comm            egrep                     ipcrm       mknod              pwd             sha512sum           uclampset   zmore
+ cp              env                       ipcs        mktemp             pwdx            shred               umount      znew
+ csplit          expand                    ischroot    more               rbash           shuf                uname
+-------------------code----------------------
+
+ 
+- Now, let me show we a shortcut. Earlier we
+told we that, here we have this home directory where each user
+has a home directory. But the root user has a special home directory called root.
+-------------------code----------------------
+root@8a65a7f2dd58:/# ls
+bin  boot  dev  etc  home  lib  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
+-------------------code----------------------
+
+- Now, to get here, there are two options.
+We can type an absolute or relative path and go to root.
+-------------------code----------------------
+cd root/
+-------------------code----------------------
+
+- But there is a shortcut. So, we're currently in the root directory. To get to my
+home directory, we can type a tilde. And this applies to all
+users, not just the root user. Whenever we type cd
+tilde, we go to our home directory. 
+
+-------------------code----------------------
+root@8a65a7f2dd58:/# cd ~
+root@8a65a7f2dd58:~#
+-------------------code----------------------
