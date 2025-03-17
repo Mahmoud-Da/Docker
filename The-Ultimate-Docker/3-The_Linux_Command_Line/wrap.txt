@@ -787,3 +787,182 @@ root@8a65a7f2dd58:~# rm -r docker/
 root@8a65a7f2dd58:~# ls
 root@8a65a7f2dd58:~#
 -------------------code----------------------
+
+*** 8- Editing and Viewing Files ***
+
+- Alright, let's see how we can edit and
+view files. So earlier we briefly talked about nano.
+Nano is a basic text editor for Linux. Now, on this image that we are running,
+we don't have nano, so we have to install it. Do we remember the command for installing nano?
+That is apt install nano.
+- first we update apt
+-------------------code----------------------
+root@8a65a7f2dd58:~# apt update
+Get:1 http://ports.ubuntu.com/ubuntu-ports noble InRelease [256 kB]
+Get:2 http://ports.ubuntu.com/ubuntu-ports noble-updates InRelease [126 kB]
+Get:3 http://ports.ubuntu.com/ubuntu-ports noble-backports InRelease [126 kB]
+Get:4 http://ports.ubuntu.com/ubuntu-ports noble-security InRelease [126 kB]
+Get:5 http://ports.ubuntu.com/ubuntu-ports noble/multiverse arm64 Packages [274 kB]
+Get:6 http://ports.ubuntu.com/ubuntu-ports noble/restricted arm64 Packages [113 kB]
+Get:7 http://ports.ubuntu.com/ubuntu-ports noble/universe arm64 Packages [19.0 MB]
+Get:8 http://ports.ubuntu.com/ubuntu-ports noble/main arm64 Packages [1776 kB]
+Get:9 http://ports.ubuntu.com/ubuntu-ports noble-updates/restricted arm64 Packages [1090 kB]
+Get:10 http://ports.ubuntu.com/ubuntu-ports noble-updates/main arm64 Packages [1167 kB]
+Get:11 http://ports.ubuntu.com/ubuntu-ports noble-updates/multiverse arm64 Packages [32.7 kB]
+Get:12 http://ports.ubuntu.com/ubuntu-ports noble-updates/universe arm64 Packages [1315 kB]
+Get:13 http://ports.ubuntu.com/ubuntu-ports noble-backports/universe arm64 Packages [16.1 kB]
+Get:14 http://ports.ubuntu.com/ubuntu-ports noble-security/multiverse arm64 Packages [30.8 kB]
+Get:15 http://ports.ubuntu.com/ubuntu-ports noble-security/universe arm64 Packages [1028 kB]
+Get:16 http://ports.ubuntu.com/ubuntu-ports noble-security/restricted arm64 Packages [1041 kB]
+Get:17 http://ports.ubuntu.com/ubuntu-ports noble-security/main arm64 Packages [843 kB]
+Fetched 28.4 MB in 16s (1754 kB/s)
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+18 packages can be upgraded. Run 'apt list --upgradable' to see them.
+-------------------code----------------------
+
+- next install nano
+-------------------code----------------------
+root@8a65a7f2dd58:~# apt install nano
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+Suggested packages:
+  hunspell
+The following NEW packages will be installed:
+  nano
+0 upgraded, 1 newly installed, 0 to remove and 18 not upgraded.
+Need to get 281 kB of archives.
+After this operation, 909 kB of additional disk space will be used.
+Get:1 http://ports.ubuntu.com/ubuntu-ports noble-updates/main arm64 nano arm64 7.2-2ubuntu0.1 [281 kB]
+Fetched 281 kB in 2s (154 kB/s)
+debconf: delaying package configuration, since apt-utils is not installed
+Selecting previously unselected package nano.
+(Reading database ... 4378 files and directories currently installed.)
+Preparing to unpack .../nano_7.2-2ubuntu0.1_arm64.deb ...
+Unpacking nano (7.2-2ubuntu0.1) ...
+Setting up nano (7.2-2ubuntu0.1) ...
+update-alternatives: using /bin/nano to provide /usr/bin/editor (editor) in auto mode
+update-alternatives: warning: skip creation of /usr/share/man/man1/editor.1.gz because associated file /usr/share/man/man1/nano.1.gz (of link group editor) doesn't exist
+update-alternatives: using /bin/nano to provide /usr/bin/pico (pico) in auto mode
+update-alternatives: warning: skip creation of /usr/share/man/man1/pico.1.gz because associated file /usr/share/man/man1/nano.1.gz (of link group pico) doesn't exist
+-------------------code----------------------
+
+
+- Alright, now we have nano, so we can launch it,
+and optionally supply a file name, let's say file1.txt.
+So here we have a basic text editor, we can type
+whatever we want, and when we are done, look down below,
+the shortcut for exiting is control and x, so we're going to press that.
+Now it's asking if we want to save the changes, so we press yes.
+And here we confirm the file name, we can keep the same file, or change the file name.
+Let's go ahead. So now, in this directory we have
+file1.txt, beautiful. 
+-------------------code----------------------
+root@8a65a7f2dd58:~# nano file1.txt
+root@8a65a7f2dd58:~# ls
+file1.txt
+-------------------code----------------------
+
+
+- Now, to see the content of this file,
+we have a few different commands. The simplest one is cat,
+and this has nothing to do with cat, it's short for concatenate.
+So later we will show we how we can use this command to concatenate or combine multiple files.
+But with cat we can also see the content of a file, so if we say
+cat file1.txt, we can see the content of this file.
+-------------------code----------------------
+root@8a65a7f2dd58:~# cat file1.txt
+hello
+world
+-------------------code----------------------
+
+
+- Now, cat is useful if our file is short and
+fits on one page, but if we're dealing with a long file, it's better to use
+the more command. Let me give we an example, so
+we're going to use cat to show the content of this file.
+This is a really long file, so if we scroll up, look, we have a lot of text.
+Now, sometimes we don't want to see all the content in one go,
+we want to scroll down.
+-------------------code----------------------
+root@8a65a7f2dd58:/# cat /etc/debconf.conf
+# This is the main config file for debconf. It tells debconf where to
+# store data. The format of this file is a set of stanzas. Each stanza
+# except the first sets up a database for debconf to use. For details, see
+# debconf.conf(5) (in the debconf-doc package).
+#
+# So first things first. This first stanza gives the names of two databases.
+
+# Debconf will use this database to store the data we enter into it,
+# and some other dynamic data.
+Config: configdb
+# Debconf will use this database to store static template data.
+Templates: templatedb
+
+# World-readable, and accepts everything but passwords.
+Name: config
+Driver: File
+Mode: 644
+Reject-Type: password
+Filename: /var/cache/debconf/config.dat
+.....
+-------------------code----------------------
+
+-if we want to go page by page. This is where
+we use the more command.  Now, down below, look, we can see
+more 15%, so we are seeing 15% of this file. Now, if we press space, we can go to the next
+page, so now we are at the position 33%. Alternatively, we can press enter
+to go one line at a time.
+-------------------code----------------------
+root@8a65a7f2dd58:~# more /etc/debconf.conf
+# Set up the configdb database. By default, it consists of a stack of two
+# databases, one to hold passwords and one for everything else.
+Name: configdb
+Driver: Stack
+Stack: config, passwords
+
+# Set up the templatedb database, which is a single flat text file
+--More--(39%)
+-------------------code----------------------
+
+-  Now, the problem with more is that we can only scroll down, we cannot
+scroll up. So, to do that, we have to use a different command called less. So, to exit
+here, we press q, good. Now, in this image we don't have less, so once again we have to manually
+install it. So, apt install less.
+-------------------code----------------------
+root@8a65a7f2dd58:~# apt install less
+-------------------code----------------------
+
+- So, less is a newer command that is supposed to replace more. Let's go ahead.
+Great. So, let's look at the same file using the less command.
+So, now using the up and down arrows we can scroll down or up.
+So, just by pressing up and down arrows. We also have space, we can go to the next page
+and enter, just like the more command. And when we are done, we can press q.
+-------------------code----------------------
+root@8a65a7f2dd58:~# less /etc/debconf.conf
+-------------------code----------------------
+
+- Now, we have a couple more commands for viewing the content of a file.
+We have head, which we can use to display the first
+few lines. So, here we can supply an option and say, the number of lines we want to see is five.
+Let's look at the same file. So, this shows the first five lines of this file.
+-------------------code----------------------
+root@8a65a7f2dd58:~# head -n 5 /etc/debconf.conf
+# This is the main config file for debconf. It tells debconf where to
+# store data. The format of this file is a set of stanzas. Each stanza
+# except the first sets up a database for debconf to use. For details, see
+# debconf.conf(5) (in the debconf-doc package).
+#
+-------------------code----------------------
+
+- Similarly, we have tail, which shows the last few lines. So, we supply an option and say we want to look at the last five files.
+-------------------code----------------------
+root@8a65a7f2dd58:~# tail -n 5 /etc/debconf.conf
+# In this example, we'd use Config: fulldb at the top of the file
+# to make it use the combination of the databases.
+#
+# Even more complex and interesting setups are possible, see the
+# debconf.conf(5) page for details.
+-------------------code----------------------
