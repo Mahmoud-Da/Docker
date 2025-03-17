@@ -1,0 +1,17 @@
+*** 1- Introduction ***
+All right, the next stop in our journey is the Linux command line.
+
+- But why Linux? What if we're a Windows user?
+Well, we still need to know a bit of Linux for a number of reasons.
+For starters, Docker has its foundations built on top of basic Linux concepts.
+So if we want to be productive and troubleshoot issues easily,
+we need to know some of the basic Linux commands.
+
+- Also, most tutorials online are based on Linux commands.
+So if we don't understand these basic commands, we're not going to get far.
+learning Linux is like learning English.
+so everybody should know some English these days.
+You don't need to speak it or write a book in it, but we need to understand it.
+So unless we're a power Linux user, do not skip this section.
+It's going to be super easy and extremely useful.
+So let's jump in and get started.
