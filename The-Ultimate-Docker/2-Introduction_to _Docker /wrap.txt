@@ -19,3 +19,49 @@ So by the end of this section, we will have an idea of what Docker is all about.
 
 
 
+*** 2- What is Docker ***
+- So what is docker and why is everyone using it these days? Well,
+docker is a platform for building, running, and shipping applications in a consistent manner.
+
+- so if our application works on our development machine, it can run and function the same way on other machines.
+
+- If we have been developing software for a while, we've probably come across this situation where
+our application works on our development machine, but doesn't somewhere else. Can we think of
+three reasons why this happens? Well, this can happen if one or more files are not included as
+part of our deployment. So our application is not completely deployed, it's missing something.
+This can also happen if the target machine is running a different version of some software
+that our application needs. Let's say our application needs node version 14, but the
+target machine is running node version 9. This can also happen if the configuration settings,
+like environment variables, are different across these machines.
+
+
+- And this is where docker comes to the rescue. With docker, we can easily package up our
+application with everything it needs and run it anywhere on any machine with docker. So if our
+application needs a given version of node and mongodb, all of these will be included in our
+application's package. Now we can take this package and run it on any machine that runs docker.
+So if it works on our development machine, it's definitely going to work on our test and
+production machines.
+
+- Now there's more. If someone joins our team, they don't have to spend half a
+day or so setting up a new machine to run our application. They don't have to install and configure
+all these dependencies. They simply tell docker to bring up our application and docker itself will
+automatically download and run these dependencies inside an isolated environment called a container.
+
+- And this is the beauty of docker. This isolated environment allows multiple applications
+use different versions of some software side by side. So one application may use node version 14,
+another application may use node version 9. Both these applications can run side by side on the same
+machine without messing with each other. So this is how docker allows us to consistently run an
+application on different machines.
+
+- Now there's one more benefit here. When we're done with this application and don't want to work on it anymore,
+we can remove the application and all its dependencies in one go. Without docker, as we work on different projects,
+our development machine gets cluttered with so many libraries and tools that are used by different applications.
+
+- And then after a while, we don't know if we can remove one or more of these tools because we're always afraid that we would
+mess up with some application. With docker, we don't have to worry about this. Because each application
+runs with its dependencies inside an isolated environment, we can safely remove an application
+with all its dependencies to clean up our machine. Isn't that great?
+
+- So, in a nutshell, docker helps us consistently build, run, and ship our applications.
+And that's why a lot of employers are looking for people with docker skills these days.
+
