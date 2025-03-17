@@ -966,3 +966,179 @@ root@8a65a7f2dd58:~# tail -n 5 /etc/debconf.conf
 # Even more complex and interesting setups are possible, see the
 # debconf.conf(5) page for details.
 -------------------code----------------------
+
+*** 9- Redirection ***
+
+- One of the important concepts in Linux is the concept of standard input
+and output. So standard input represents the keyboard and standard
+output represents the screen. But we can always change the source
+of the input or the output. This is called redirection.
+
+
+- a few examples. So we talked about the cat command to see the content
+of a file. Let's say file1.txt. When we execute
+this command, this command or this program reads data from this file
+and prints it on the standard output which is the screen.
+That is why we see the content.
+-------------------code----------------------
+root@8a65a7f2dd58:~# cat file1.txt
+hello
+world
+-------------------code----------------------
+
+
+- But using the redirection operator
+which is the greater than sign, we can redirect the output
+from the screen to, let's say, a different file.
+So now cat will read the content from this file and write it to this file.
+Take a look. So we have file2.txt if we view it, we see
+the exact same content as file1.
+-------------------code----------------------
+root@8a65a7f2dd58:~# cat file1.txt > file2.txt
+root@8a65a7f2dd58:~# ls
+file1.txt  file2.txt
+root@8a65a7f2dd58:~# cat file2.txt
+hello
+world
+-------------------code----------------------
+
+- Okay, now what is the point of this?
+Well, earlier we told we that we can use the cat command to concatenate
+or combine multiple files. So here we can say cat file1.txt
+and file2.txt. If we press enter, cat is going to read the data
+from both these files and print it on the terminal which is the standard
+output. 
+-------------------code----------------------
+root@8a65a7f2dd58:~# cat file1.txt  file2.txt
+hello
+world
+hello
+world
+-------------------code----------------------
+
+- But once again, using the redirection operator we can write the result to a different file.
+Combine.txt So this is how we can use this command to combine multiple files.
+-------------------code----------------------
+root@8a65a7f2dd58:~# cat file1.txt  file2.txt  > combined.txt
+root@8a65a7f2dd58:~# cat combined.txt
+hello
+world
+hello
+world
+-------------------code----------------------
+
+- Now, the redirection operator is not
+limited to the cat command, we can use it pretty much anywhere. For example,
+earlier we talked about the echo command. If we say echo hello,
+we see the result on the terminal. 
+-------------------code----------------------
+root@8a65a7f2dd58:~# echo hello.txt
+hello.txt
+-------------------code----------------------
+
+- But if we say echo hello to
+hello.txt Now we have a new file here, hello.txt which contains hello.
+-------------------code----------------------
+root@8a65a7f2dd58:~# echo "hello" > hello.txt
+root@8a65a7f2dd58:~# cat hello.txt
+hello
+-------------------code----------------------
+
+- So if we want to write a single line to a file, we don't have to use nano,
+we can use the echo command. So echo whatever to
+whatever file.txt. Okay? 
+
+- another example we want we to get a long listing
+of the files in the etsy directory and write the output to a file.
+so To get a long listing, we type ls-l, then we specify the path, the etsy directory, now
+instead of printing the result on the terminal we're going to write it to a file called
+etc_list.txt.
+-------------------code----------------------
+root@8a65a7f2dd58:~# ls -l /etc/ > etc_files.tsxt
+root@8a65a7f2dd58:~# cat etc_files.tsxt
+total 300
+drwxr-xr-x 1 root root    4096 Mar 17 16:30 alternatives
+drwxr-xr-x 8 root root    4096 Jan 27 02:13 apt
+-rw-r--r-- 1 root root    2319 Mar 31  2024 bash.bashrc
+-rw-r--r-- 1 root root     367 Aug  2  2022 bindresvport.blacklist
+drwxr-xr-x 2 root root    4096 Jan 27 02:19 cloud
+drwxr-xr-x 2 root root    4096 Jan 27 02:19 cron.d
+drwxr-xr-x 2 root root    4096 Jan 27 02:19 cron.daily
+-rw-r--r-- 1 root root    2967 Apr 12  2024 debconf.conf
+-rw-r--r-- 1 root root      11 Apr 22  2024 debian_version
+drwxr-xr-x 2 root root    4096 Jan 27 02:19 default
+drwxr-xr-x 4 root root    4096 Jan 27 02:19 dpkg
+-rw-r--r-- 1 root root     685 Apr  8  2024 e2scrub.conf
+-rw-r--r-- 1 root root     106 Jan 27 02:12 environment
+-rw-r--r-- 1 root root      37 Jan 27 02:12 fstab
+-rw-r--r-- 1 root root    2584 Jan 31  2024 gai.conf
+drwxr-xr-x 2 root root    4096 Jan 27 02:19 gnutls
+-rw-r--r-- 1 root root     503 Jan 27 02:19 group
+-rw-r--r-- 1 root root     434 Jan 27 02:12 group-
+-rw-r----- 1 root shadow   429 Jan 27 02:19 gshadow
+-rw-r----- 1 root shadow   364 Jan 27 02:12 gshadow-
+-rw-r--r-- 1 root root      92 Apr 22  2024 host.conf
+-rw-r--r-- 1 root root      13 Mar 17 15:46 hostname
+-rw-r--r-- 1 root root     174 Mar 17 15:46 hosts
+drwxr-xr-x 2 root root    4096 Jan 27 02:19 init.d
+-rw-r--r-- 1 root root      26 Aug 23  2024 issue
+-rw-r--r-- 1 root root      19 Aug 23  2024 issue.net
+drwxr-xr-x 3 root root    4096 Jan 27 02:13 kernel
+-rw-r--r-- 1 root root    5199 Jan 27 02:19 ld.so.cache
+-rw-r--r-- 1 root root      34 Aug  2  2022 ld.so.conf
+drwxr-xr-x 2 root root    4096 Jan 27 02:19 ld.so.conf.d
+-rw-r--r-- 1 root root     267 Apr 22  2024 legal
+-rw-r--r-- 1 root root     191 Mar 31  2024 libaudit.conf
+-rw-r--r-- 1 root root   12345 Feb 22  2024 login.defs
+drwxr-xr-x 2 root root    4096 Jan 27 02:19 logrotate.d
+-rw-r--r-- 1 root root     104 Aug 23  2024 lsb-release
+-rw-r--r-- 1 root root       0 Jan 27 02:19 machine-id
+-rw-r--r-- 1 root root     744 Apr  8  2024 mke2fs.conf
+lrwxrwxrwx 1 root root      12 Mar 17 15:46 mtab -> /proc/mounts
+-rw-r--r-- 1 root root   11424 May 23  2023 nanorc
+-rw-r--r-- 1 root root      91 Apr 22  2024 networks
+-rw-r--r-- 1 root root     494 Aug  2  2022 nsswitch.conf
+drwxr-xr-x 2 root root    4096 Jan 27 02:12 opt
+lrwxrwxrwx 1 root root      21 Aug 23  2024 os-release -> ../usr/lib/os-release
+-rw-r--r-- 1 root root     552 Oct 13  2022 pam.conf
+drwxr-xr-x 2 root root    4096 Jan 27 02:19 pam.d
+-rw-r--r-- 1 root root     888 Jan 27 02:19 passwd
+-rw-r--r-- 1 root root     839 Jan 27 02:12 passwd-
+-rw-r--r-- 1 root root     582 Apr 22  2024 profile
+drwxr-xr-x 2 root root    4096 Jan 27 02:19 profile.d
+drwxr-xr-x 2 root root    4096 Dec  6  2023 rc0.d
+drwxr-xr-x 2 root root    4096 Dec  6  2023 rc1.d
+drwxr-xr-x 2 root root    4096 Dec  6  2023 rc2.d
+drwxr-xr-x 2 root root    4096 Dec  6  2023 rc3.d
+drwxr-xr-x 2 root root    4096 Dec  6  2023 rc4.d
+drwxr-xr-x 2 root root    4096 Dec  6  2023 rc5.d
+drwxr-xr-x 2 root root    4096 Dec  6  2023 rc6.d
+drwxr-xr-x 2 root root    4096 Jan 27 02:12 rcS.d
+-rw-r--r-- 1 root root     222 Mar 17 15:46 resolv.conf
+lrwxrwxrwx 1 root root      13 Apr  8  2024 rmt -> /usr/sbin/rmt
+drwxr-xr-x 4 root root    4096 Jan 27 02:19 security
+drwxr-xr-x 2 root root    4096 Jan 27 02:17 selinux
+-rw-r----- 1 root shadow   502 Jan 27 02:19 shadow
+-rw-r----- 1 root shadow   474 Jan 27 02:12 shadow-
+-rw-r--r-- 1 root root     118 Jan 27 02:13 shells
+drwxr-xr-x 2 root root    4096 Jan 27 02:13 skel
+-rw-r--r-- 1 root root      20 Jan 27 02:19 subgid
+-rw-r--r-- 1 root root       0 Jan 27 02:13 subgid-
+-rw-r--r-- 1 root root      20 Jan 27 02:19 subuid
+-rw-r--r-- 1 root root       0 Jan 27 02:13 subuid-
+-rw-r--r-- 1 root root    2209 Mar 24  2024 sysctl.conf
+drwxr-xr-x 2 root root    4096 Jan 27 02:19 sysctl.d
+drwxr-xr-x 4 root root    4096 Dec  6  2023 systemd
+drwxr-xr-x 2 root root    4096 Jan 27 02:18 terminfo
+drwxr-xr-x 2 root root    4096 Jan 27 02:19 update-motd.d
+-rw-r--r-- 1 root root     681 Apr  8  2024 xattr.conf
+-------------------code----------------------
+
+
+- Using the greater than sign we can redirect the standard output
+but we also have the less than sign to redirect the standard input.
+we personally haven't found many use cases for this so we didn't cover it
+in this lesson. 
+-------------------code----------------------
+root@8a65a7f2dd58:~# >
+-------------------code----------------------
