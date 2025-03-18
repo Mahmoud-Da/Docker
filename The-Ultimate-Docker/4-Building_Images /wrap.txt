@@ -1,0 +1,15 @@
+*** 1- Introduction ***
+The first step in using Docker to build and deploy applications is creating images. 
+So having a solid understanding of Docker images is crucial for us. And that's what this section is all about.
+
+- We'll be talking about creating Docker files, versioning images, sharing them, saving and
+loading them, and a few optimization techniques for reducing the image size and speeding up builds.
+
+In this section:
+• Creating Docker files
+• Versioning images
+• Sharing images
+• Saving and loading images
+• Reducing the image size
+• Speeding up builds
+
