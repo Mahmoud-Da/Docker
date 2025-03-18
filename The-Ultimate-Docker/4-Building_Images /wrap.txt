@@ -6,10 +6,95 @@ So having a solid understanding of Docker images is crucial for us. And that's w
 loading them, and a few optimization techniques for reducing the image size and speeding up builds.
 
 In this section:
+-------------------code----------------------
 • Creating Docker files
 • Versioning images
 • Sharing images
 • Saving and loading images
 • Reducing the image size
 • Speeding up builds
+-------------------code----------------------
 
+*** 2- Images and Containers ***
+
+Alright, before we get started, let's make sure we have the right understanding of
+images and containers. 
+- Can we define what an image is, and how it's different from a container? 
+An image includes everything
+an application needs to run. So, it contains a cut down
+operating system, like Linux or Windows. It also contains third party libraries,
+application files, environment variables and so on. So, an image
+contains all the files and configuration settings needed to run
+an application. Once we have an image, we can start a container from it.
+-------------------code----------------------
+IMAGE
+• A cut-down OS
+• Third-party libraries
+• Application files
+• Environment variables
+-------------------code----------------------
+
+- A container is kind of like a virtual machine in the sense that it provides
+an isolated environment for executing an application. And similar
+to virtual machines, we can stop and restart containers. Now
+technically, a container is just an operating system process, but it's a
+special kind of process because it has its own file system which is provided
+by the image.
+-------------------code----------------------
+CONTAINER
+• Provides an isolated environment
+• Can be stopped & restarted
+• Is just a process!
+-------------------code----------------------
+
+-  Now, In the previous section we started a container from the Ubuntu image. Now we're going to
+open up another terminal window. 
+-------------------code----------------------
+~  $ docker start -i 8a6
+root@8a65a7f2dd58:/#
+-------------------code----------------------
+
+- Let's run docker ps to see the running processes or running containers.
+So here's the container that we started in the previous section.
+-------------------code----------------------
+~  $ docker ps
+CONTAINER ID   IMAGE     COMMAND       CREATED        STATUS          PORTS     NAMES
+8a65a7f2dd58   ubuntu    "/bin/bash"   14 hours ago   Up 45 seconds             eloquent_lichterman
+-------------------code----------------------
+PS: start command to start and exist container
+
+- Now we're going to start a new container from the same image.
+We type docker run, we want to run this in the interactive mode so we can work with it. And then we type
+the name of the image, so Ubuntu.
+-------------------code----------------------
+~  $ docker run -it ubuntu
+root@17e332c0bbd7:/#
+-------------------code----------------------
+PS: to create new container and start it
+
+- here's the container ID and as we can see, this is different from
+this other container. Now, back to our first container, we're currently
+inside the home directory. So in the previous section we created
+a bunch of directories and this deployment file.
+-------------------code----------------------
+~  $ docker ps
+CONTAINER ID   IMAGE     COMMAND       CREATED          STATUS          PORTS     NAMES
+c315081d7859   ubuntu    "/bin/bash"   2 seconds ago    Up 1 second               charming_mccarthy
+17e332c0bbd7   ubuntu    "/bin/bash"   24 seconds ago   Up 23 seconds             blissful_albattani
+-------------------code----------------------
+
+- Now, back to our new container, let's go to the home directory
+and see what is here. There's nothing here. Here's the reason. A container gets its file system
+from the image, but each container has its own write layer. So what we write in a given container
+is invisible from other containers.
+-------------------code----------------------
+root@17e332c0bbd7:/# cd home/
+root@17e332c0bbd7:/home# ls
+ubuntu
+-------------------code----------------------
+
+- Of course, there is a way to share data between containers and we'll talk about that later in the course.
+But what I want we to understand here
+is that each container is an isolated environment for executing an application.
+It's an isolated universe. So whatever happens inside that universe
+is invisible to other containers.
