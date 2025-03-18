@@ -539,3 +539,68 @@ So, this is all about copying files.
 /app # ls
 Dockerfile    README.md     package.json  public        src           yarn.lock
 -------------------code----------------------
+
+*** 7- Excluding Files and Directories ***
+
+- In the last lesson we saw that when we build our application, docker
+client takes everything in this directory which is called the build context or
+the context directory. So docker client takes everything here and sends
+it to docker engine or docker daemon. 
+
+- Now for this simple application which has absolutely no features, our build context was about
+150 megabytes. But why is it so large? That's the
+result of the node modules directory. So if we look over here, we can see
+tons of directories and sub directories and this is a very simple project.
+
+- As our application gets more complex and we use more third party
+libraries, this node modules directory gets larger and larger. Now
+there's a problem here. Later in the course when we talk about deployment, we will see
+that our docker client will talk to a docker engine on a different machine.
+So that means whatever we have in the build context has to be transferred
+over the network. So if we have a large build context with a million files
+in it, all these files have to be sent to the docker engine on the remote machine.
+We don't want that. We don't really need to transfer this node modules directory
+because all these dependencies are defined in package.json. So we can simply exclude this directory
+and copy everything else and then restore these dependencies on the target
+image. 
+
+- And this has two benefits. The first benefit is that our build context
+is smaller. So we transfer less data over the network.
+The second benefit is that our build is going to be faster. So we don't have to wait
+for all these files to be transferred to docker engine.
+
+- Now how do we exclude this directory? Very easy. we are probably familiar
+with the file ".gitignore" With this file, we can exclude some files and directories
+from git. Now we have the same concept in docker. So we can
+create a file in the root of this project called ignore and everything
+is in lowercase. And here we can list the files and directories that should be excluded.
+-------------------code----------------------
+.dockerignore
+-------------------code----------------------
+ 
+- So we can exclude node modules.
+Now, when we build a new image, docker will no longer transfer
+this large gigantic directory to docker engine. Let's take a look.
+So, we're going to run the build command one more time.
+-------------------code----------------------
+node_modules
+-------------------code----------------------
+
+- Look at our build context. It's only 10 kilobytes. So we reduce
+our build context from 150 megabytes to 10 kilobytes.
+That's a huge improvement. There is a problem though. If we start
+a new container and look at the file system
+of that container, we're not going to see
+the node modules directory because we excluded
+it, Let's verify it. 
+
+- So, we're going to run a new container
+from react app and then run shell inside that container.
+Now in the app directory, let's look at all the files and directories.
+Look, we only have two directories here, public and source. So node modules
+is not here. This is where we need to run
+npm install to install this dependencies. And that's what we will do next.
+-------------------code----------------------
+/app # ls
+Dockerfile    README.md     package.json  public        src           yarn.lock
+-------------------code----------------------
