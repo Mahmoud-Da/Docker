@@ -2250,3 +2250,160 @@ root@8a65a7f2dd58:/# groups john
 john : john developers
 -------------------code---------------------
 
+*** 17- File Permissions ***
+
+- Alright, the last thing we're going to talk about in this section is file permissions.
+This is one of those areas that a lot of people find confusing or complicated,
+it's actually very easy. 
+
+- So, we've logged in as root and we're in my home directory. Let's go
+to the home directory and in this directory we want to create a file
+called deploy.sh. Files with this extension
+are called shell scripts. In this files we can write any of the Linux
+commands we have learned so far. So we can combine all these commands and create
+a deployment script. So, to write to this file we're going to use the echo command. we're going to write
+echo hello to deploy.sh. So we're writing
+this line to this file. Let's go ahead and now let's verify it. So we have echo hello
+so when we execute this file, we're going to see hello on the terminal.
+-------------------code---------------------
+root@8a65a7f2dd58:/# cd /home
+root@8a65a7f2dd58:/home# echo echo hello > deploy.sh
+root@8a65a7f2dd58:/home# cat deploy.sh
+echo hello
+-------------------code---------------------
+PS: home directory has the shared files while the root directory "~" has the personal
+files for each user.
+
+- Now, to see the permissions for this file we have to get a long listing.
+Take a look. So in this directory we have three directories.
+Now in the first column, we can see the permissions for each item.
+Now look at the first letter. If the first letter is D, that means
+this is a directory. If it's a hyphen, that means this is a file.
+Pretty straightforward. Now what about the other letters?
+Well, these letters, there are actually nine letters divided into three groups.
+Here's the first group, then we have the second group, and the third group. In each group
+we have read which is "r", write which is "w", and execute permissions which is "x".
+-------------------code---------------------
+root@8a65a7f2dd58:/home# ls -l
+total 12
+-rw-r--r-- 1 root   root     11 Mar 18 03:24 deploy.sh
+drwxr-x--- 2 john   john   4096 Mar 18 02:42 john
+drwxr-x--- 2 ubuntu ubuntu 4096 Jan 27 02:19 ubuntu
+-------------------code---------------------
+
+- So for this item, for deploy.sh, for this file
+we only have read and write permissions, but the execute permission is missing
+because we have a hyphen. Now in contrast, look at the permissions
+for this directory. We have read, write, and execute.
+Execute is used so we can go into that directory. So we can use
+the cd command with it. So by default, all directories have the
+execute permission. Now, in the second group, we only have the read permission
+and this is true for the third group.
+
+
+- But what are these groups for? Well, the first group
+represents the permissions for the user who owns this file.
+That is the root user here. The second group represents the
+permissions for the group that owns this file, and that is
+this group. So by default every user that is created is
+automatically placed inside a group with the same name.
+
+- Now, the third group represents permissions for everyone else.
+Now, to execute this file, we have to type
+period, referring to the current directory
+then, forward slash deploy.sh We get a permission error
+because even we as the root user do not have the execute permission on this file.
+This is where we use the change mode command "chmod".
+-------------------code---------------------
+root@8a65a7f2dd58:/home# ./deploy.sh
+bash: ./deploy.sh: Permission denied
+-------------------code---------------------
+
+-  So, we type chmod, then here we can change the permissions for the user
+that owns the file, or the group or others. For the user, we're going to add
+the execute permission. 
+-------------------code---------------------
+chmod u+x
+-------------------code---------------------
+
+- If we want to remove the execute permission we would have to use a hyphen.
+-------------------code---------------------
+chmod  u-x
+-------------------code---------------------
+
+
+- So, we want to add the execute permission to deploy.sh.
+-------------------code---------------------
+root@8a65a7f2dd58:/home# chmod u+x deploy.sh
+-------------------code---------------------
+
+- Now, let's get a long listing one more time.
+Look at the color of this file. It turned green because now it's executable.
+-------------------code---------------------
+root@8a65a7f2dd58:/home# ls -l
+total 12
+-rwxr--r-- 1 root   root     11 Mar 18 03:24 deploy.sh
+drwxr-x--- 2 john   john   4096 Mar 18 02:42 john
+drwxr-x--- 2 ubuntu ubuntu 4096 Jan 27 02:19 ubuntu
+-------------------code---------------------
+
+
+- Now, look at the first group. We have read, write, and execute.
+So, we can call deploy.sh and we see hello on the terminal.
+-------------------code---------------------
+root@8a65a7f2dd58:/home# ./deploy.sh
+hello
+-------------------code---------------------
+
+
+- Now, with this setup, the root user is
+the only user who can execute this file. So if we go to this other window
+where we've logged in as John, we're currently in John's home directory.
+So let's go one level up. Now we are inside the home directory
+of all users and over here we have the deployment script. But if we try
+to execute this file, we get a permission error.
+-------------------code---------------------
+john@8a65a7f2dd58:~$ cd ..
+john@8a65a7f2dd58:/home$ ls -l
+total 12
+-rwxr--r-- 1 root   root     11 Mar 18 03:24 deploy.sh
+drwxr-x--- 2 john   john   4096 Mar 18 02:42 john
+drwxr-x--- 2 ubuntu ubuntu 4096 Jan 27 02:19 ubuntu
+-------------------code---------------------
+
+
+- So, how do we enable John to execute this file? Well,
+back to our first window, we're going to use chmod one more time. This time we're going to
+apply the permission for others. We want to enable the execute permission
+to deploy.sh.
+-------------------code---------------------
+root@8a65a7f2dd58:/home# chmod o+x deploy.sh
+root@8a65a7f2dd58:/home# ls -l
+total 12
+-rwxr--r-x 1 root   root     11 Mar 18 03:24 deploy.sh
+drwxr-x--- 2 john   john   4096 Mar 18 02:42 john
+drwxr-x--- 2 ubuntu ubuntu 4096 Jan 27 02:19 ubuntu
+-------------------code---------------------
+
+- Now, back to John's window, we can call deploy.sh
+and we say hello on the terminal. Beautiful. So this is how we can
+change permissions for files.
+-------------------code---------------------
+john@8a65a7f2dd58:/home$ ./deploy.sh
+hello
+-------------------code---------------------
+
+- Now, let's talk about variations
+of this command. So, we can also combine groups, so we can
+say OG, that means others and the group that owns this file.
+So, for others and the group owner, we can add
+the execute permission, we can also add the write permission, and
+we can remove the read permission. So
+this is the syntax to use this command. And of course, we don't have to type
+a single file name, we can type multiple file names or
+use patterns, for example. We can apply these permissions to any files
+with the shell extension.
+-------------------code---------------------
+root@8a65a7f2dd58:/home# chmod og+x+w-r *.sh
+-------------------code---------------------
+
