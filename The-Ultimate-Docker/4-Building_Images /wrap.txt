@@ -164,3 +164,200 @@ DOCKERFILE
 
 Now, over the next few lessons, we're going to explore each of these commands in detail.
 Pull our basic commands in detail.
+
+*** 5- Choosing the Right Base Image ***
+
+- Alright, let's start off by adding a dockerfile to this project. So,
+here in the root of this project, we're going to add a new file called dockerfile.
+Now the first instruction we're going to use is from, which we use for specifying the base image. The base image can be an
+operating system like Linux or Windows or it can be an operating system
+plus a runtime environment. 
+
+- For example, if we're a C sharp developer, we want to start from a dotnet image. If we're a python developer,
+we want to start from a python image. If we're a javascript developer, we want to start
+from a node image. Now if we google docker samples, we can find
+this page.
+-------------------code----------------------
+docs.docker.com/samples/
+-------------------code----------------------
+
+- in the left menu, we can see various examples of docker files for different technology
+stacks. For example, for an aspen.net core application,
+we can see a docker file. Now look at the from instruction. Over here, we have a full url
+instead of an image. Because microsoft images are not hosted on docker
+hub. They're hosted in microsoft container registry. That's why we have
+MCR, which is short for microsoft container registry.
+So an image can be in any registries. The default registry that docker
+uses is docker hub. For any images, in other registries,
+we have to type the full url. 
+-------------------code----------------------
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build-env
+-------------------code----------------------
+
+- Now, don't just blindly take this url. Because the url can change, or the version
+can change. So always do our own research. So that's one example.
+If we're a Django developer, we want to start from
+python 3. Or in the future, we might want to use
+python 4. Now what about this project? Well, for this project,
+we need node. Because as we saw, we need
+npm to install the application dependencies and start the application. 
+
+- So let's go to hub.docker.com and search for node.
+-------------------code----------------------
+hub.docker.com
+-------------------code----------------------
+
+- Now this is where things get a little bit interesting.
+Because node repository on docker hub has hundreds of node images.
+And this can be a little bit confusing. So, let's go to the tags.
+Here we can see various node images. So if we scroll down, we can see there are
+tons of node images for different versions built on
+different versions of Linux.
+For example, we have node version 14.16.0
+on top of buster which, if we're not wrong, is
+Debian Linux version 10.
+
+- So we have different versions of node on different
+versions of Linux. The image we should choose really depends on our application.
+What version of node do we want to target? We can go to our docker file
+and say, we want to start from node and by default, docker
+assumes the latest tag. Do not ever use this.
+Because if we build our application against the latest version of node, next time there is
+a new version of node, if we rebuild our application's image, our application will
+be built with a different version of node
+and things can get unpredictable. So always use a specific version.
+-------------------code----------------------
+FROM node:latest
+-------------------code----------------------
+
+- So, back to docker hub. Let's say we want to build this application
+against node version 14. So here we search for 14. Now once again we have
+tens or maybe hundreds of node images for version 14.
+Here's one we just talked about. There is more.
+We have version 14 on top of buster. So this one doesn't have
+the minor build number. It's just a major version number.
+Now look at the size of this image. It's around 300 megabytes.
+And why do we have multiple items in this list? Well, this image is built
+for different operating system and CPU architectures.
+So, there's two more here. As we can see, all of these
+are built on top of Linux. So as far as we know, we don't have a node image
+built on top of Windows. we could be wrong. But if we want to run on top of Windows,
+we have to start from a Windows image and then install node on top of it.
+There's no reason we want to do this
+because Windows images are really large. we think they're over 2 gigabytes.
+
+- So, back to the story. Depending on our CPU architecture,
+when we pull an image, docker will automatically download the right docker image
+for our CPU architecture, Now, we don't want to use any of these images
+because these are way too large. And this is the compressed size.
+When this is uncompressed, it's going to be around 1 gigabyte.
+we want to go for a smaller image and deployments faster.
+
+- So, on this page, let's search for Alpine.
+Earlier we told we that, Alpine images are really small.
+Look at this. The compressed size is around 40 megabytes.
+This image is almost 10 times smaller than the other image we saw.
+Now look at the image tag. It's very specific.
+Version 14.16.0 of node, built on top of
+Alpine 3.13. we're happy with this version, so we're going to copy this.
+And then paste it after the FROM.
+-------------------code----------------------
+FROM node:14.16.0-alpine3.13
+-------------------code----------------------
+
+- So that was the first step.
+Now, back to our terminal window, here in the project directory, we're going to build an image.
+So, we run docker build dash t for tagging the image.
+We're going to call this image react app
+and we type a period to tell docker where it can find a docker file.
+That means in the current directory.
+-------------------code----------------------
+docker build -t react-app .
+-------------------code----------------------
+
+- Let's go ahead. Okay, the image was built.
+So now, we're going to look at all the images
+we have on this machine using docker images or docker image ls.
+So currently we have three images.
+Here's the image that we just built.
+-------------------code----------------------
+REPOSITORY     TAG       IMAGE ID       CREATED        SIZE
+hello-docker   latest    817ba4c523a5   27 hours ago   160MB
+<none>         <none>    8af7922e7fd1   27 hours ago   160MB
+ubuntu         latest    c3d1a3432580   7 weeks ago    101MB
+react-app      latest    322425dfa4aa   3 years ago    116MB
+-------------------code----------------------
+
+
+- Now let's start a container with this image
+and see what happens. So docker run, we want to run this in the interactive mode
+so we can play with it and the image is react app.
+-------------------code----------------------
+~  $ docker run -it react-app
+Welcome to Node.js v14.16.0.
+Type ".help" for more information.
+>
+-------------------code----------------------
+
+- What's going on here? We're inside a node environment.
+So here we can write javascript code and node will execute it.
+For example, we can define a constant and then log the constant.
+-------------------code----------------------
+> const x = 1
+undefined
+> console.log(x)
+1
+-------------------code----------------------
+
+- So we're inside a node environment.
+We don't want this. We want to run bash
+so we can look at the file system. So we press control and see.
+Now it says to exit, press control and see one more time.
+So the container is stopped. Let's run it one more time.
+So docker run interactive react app. Now at the end,
+we can specify the command to run
+when starting this container. We want to run bash.
+Now look. We get an error saying
+this module is not found. Why is that?
+Because alpine Linux doesn't come with bash. That's why it's a very small
+Linux distribution. So it doesn't have many of the utilities
+we're familiar with. 
+-------------------code----------------------
+~  $ docker run -it react-app bash
+internal/modules/cjs/loader.js:883
+  throw err;
+  ^
+
+Error: Cannot find module '/bash'
+    at Function.Module._resolveFilename (internal/modules/cjs/loader.js:880:15)
+    at Function.Module._load (internal/modules/cjs/loader.js:725:27)
+    at Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)
+    at internal/main/run_main_module.js:17:47 {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+-------------------code----------------------
+
+- Instead of bash, it comes with shell. The original shell program.
+So one more time. Docker run interactive
+react app. Instead of bash, we're going to use shell.
+-------------------code----------------------
+~  $ docker run -it react-app sh
+/ # ls
+bin    dev    etc    home   lib    media  mnt    opt    proc   root   run    sbin   srv    sys    tmp    usr    var
+-------------------code----------------------
+
+- Now we're doing a shell session inside this container.
+So let's look around. We have all these directors we're familiar with.
+So this is alpine Linux and in this image we also have node.
+So if we type node dash dash version, we can see the version of node
+which is 14.16.0.
+
+- Now in this image we don't have our application files.
+We only have alpine Linux and node. So in the next lesson we're going to show we
+how to copy application files into this image.
+-------------------code----------------------
+/ # node --version
+v14.16.0
+-------------------code----------------------
+
