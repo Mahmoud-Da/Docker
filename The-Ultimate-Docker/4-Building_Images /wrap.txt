@@ -361,3 +361,181 @@ how to copy application files into this image.
 v14.16.0
 -------------------code----------------------
 
+*** 6- Copying Files and Directories ***
+
+- Now that we have a base image, the next step is to copy the application
+files into the image. So for that we have two instructions, one is
+copy, the other is add. They have the exact same syntax,
+but add has a couple additional features, we'll talk about that later in this lesson.
+-------------------code----------------------
+ADD 
+COPY
+-------------------code----------------------
+
+- So, let's start with copy. With this we can copy one or
+more files or directories from the current directory, meaning
+this directory over here into the image. So we cannot copy
+anything outside of this directory. 
+
+- Here's the reason. When we execute the build command, look at the last argument. A period means the
+current directory. So when we execute this command, docker client
+sends the content of this directory to docker engine. This is called the
+build context. So docker client sends the build context to docker
+engine, and then docker engine will start executing these commands
+one by one. So at that point, docker engine does not have access
+to any files or directories outside of this directory.
+-------------------code----------------------
+docker build -t react-app .
+-------------------code----------------------
+
+- So, here we can copy one or more files. For example, we can copy
+package.json into slash app into the image. Now if this directory doesn't exist, docker will automatically
+create it.
+-------------------code----------------------
+COPY package.json /app
+-------------------code----------------------
+
+-  We can also copy more than one file, so we can say
+readme.md, and by the way, remember this is case sensitive because under the hood we are using
+Linux. 
+-------------------code----------------------
+COPY package.json README.md /app
+=> when using COPY with more than one source file, the destination must be a directory and end with a / or a \
+-------------------code----------------------
+
+- Now here we have a syntax arrow, look, when using
+copy with more than one source file the destination must be a directory
+and end with a forward slash. So, here we need to add a
+forward slash.
+-------------------code----------------------
+FROM node:14.16.0-alpine3.13
+COPY package.json README.md /app/
+-------------------code----------------------
+
+- We can also use patterns. So, let's say, we want to copy all files
+that start with package and end with json. So, whatever comes in between
+we don't care. That's why we're using a wild card. So, in this directory
+we have two files that match this pattern we have package-lock.json
+and package.json. Package.json as we told we before includes the list of dependencies
+and their versions. But the actual versions that may be installed on this machine
+might be a little bit different from what we see here.
+So, package-lock.json keeps track of the exact version of these dependencies
+installed on this machine.
+-------------------code----------------------
+COPY package*.json /app/
+-------------------code----------------------
+
+- Now, what if we want to copy everything in the current directory into the
+app directory? We use a period. So, this is all about source files
+and directories.
+-------------------code----------------------
+COPY . /app/
+-------------------code----------------------
+
+-  Now, let's talk about the destination. So, here we're using
+an absolute path because our path starts with a forward slash.
+We can also use a relative path if we set the working directory first.
+So, using the workdir instruction we can set the working directory.
+Now, all the instructions that come after will be executed inside
+this working directory. And with this we can replace this absolute path
+with a relative path. So, we can use a period meaning the current directory. Okay?
+-------------------code----------------------
+WORKDIR /app
+COPY . . 
+-------------------code----------------------
+
+- Now, one last thing about copy.
+What if we want to copy a file that has
+a space in it? So, let's say we have a file called hello world
+dot txt. Look, we immediately get a syntax error.
+-------------------code----------------------
+COPY hello world.txt . 
+=> when using COPY with more than one source file, the destination must be a directory and end with a / or a 
+-------------------code----------------------
+
+- This is where we use the other form of the
+copy instruction. So, copy has another form where
+we can pass an array of strings.
+-------------------code----------------------
+["", "", ""]
+-------------------code----------------------
+
+- So, multiple strings. Each string represents an
+argument of the copy instruction. So, here, we're going to wrap
+all these arguments inside brackets. Then, we're going to wrap
+the first item, which is our source file in double quotes.
+Then, we add a comma, and wrap the second argument in double quotes.
+It's not a form that we use that often, but we thought to cover it to make this less
+uncomprehending.
+-------------------code----------------------
+COPY ["hello world.txt", "."]
+-------------------code----------------------
+
+- So, let's simplify things. We're going to copy everything
+in our context directory, which is the current directory,
+into the current working directory of the image. Okay? Now,
+we also have add, it has the exact same syntax as copy,
+but add has two additional features. 
+-------------------code----------------------
+COPY . . 
+ADD . .
+-------------------code----------------------
+
+- With add, we can add a file from a url, so here we can type
+http, some url, and let's say some
+file.json. So, if we have access to this file, we can add it to our
+image. The other feature is that if we pass
+a compressed file, add will automatically uncompress this
+into a directory. So, we can use either of these instructions, but the
+best practice is to use copy, because it's more straightforward, there's no magic
+around it. Use that only if we need one of these additional features.
+If we want to add a file from a url, or if we want to uncompress a compressed
+file. 
+-------------------code----------------------
+ADD http://.../file.json .
+ADD file.zip .
+-------------------code----------------------
+
+- So, let's get rid of this. We're going to copy everything
+in the current directory into our image. So, let's go ahead and
+rebuild our image. 
+-------------------code----------------------
+FROM node:14.16.0-alpine3.13
+WORKDIR /app
+COPY . . 
+-------------------code----------------------
+
+- Alright, now look at this line.
+Transferring context. So, all the files and directors
+in our current directory are being sent to docker engine.
+Alright, the image is built, so let's start the container with this image.
+-------------------code----------------------
+app [master] $ docker build -t react-app .
+[+] Building 1.8s (8/8) FINISHED                                                                                                   docker:desktop-linux
+ => [internal] load build definition from Dockerfile                                                                                               0.0s
+ => => transferring dockerfile: 125B                                                                                                               0.0s
+ => [internal] load metadata for docker.io/library/node:14.16.0-alpine3.13                                                                         1.7s
+ => [internal] load .dockerignore                                                                                                                  0.0s
+ => => transferring context: 2B                                                                                                                    0.0s
+ => CACHED [1/3] FROM docker.io/library/node:14.16.0-alpine3.13@sha256:2c51dc462a02f15621e7486774d36d048a27225d581374b002b8477a79a59b4b            0.0s
+ => [internal] load build context                                                                                                                  0.0s
+ => => transferring context: 546.22kB                                                                                                              0.0s
+ => [2/3] WORKDIR /app                                                                                                                             0.0s
+ => [3/3] COPY . .                                                                                                                                 0.0s
+ => exporting to image                                                                                                                             0.0s
+ => => exporting layers                                                                                                                            0.0s
+ => => writing image sha256:8816b1815607d3d204cd7f33a3fc141a29e6f96809a6a9a932af2bc578a20463                                                       0.0s
+ => => naming to docker.io/library/react-app                                                                                                       0.0s
+-------------------code----------------------
+
+- we're going to run shell, so we can look at the file
+system. Okay, look, we're inside the app directory,
+because in our docker file, we set this directory as the current working
+directory. Now, let's run ls. So, here we can see all the files
+and directories we have in our project, including node modules.
+So, this is all about copying files.
+-------------------code----------------------
+~  $ docker run -it react-app sh
+/app # ls
+Dockerfile    README.md     package.json  public        src           yarn.lock
+-------------------code----------------------
