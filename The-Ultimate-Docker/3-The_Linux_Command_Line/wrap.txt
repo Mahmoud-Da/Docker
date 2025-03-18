@@ -1848,3 +1848,273 @@ root@8a65a7f2dd58:~# ps
     1 pts/0    00:00:00 bash
    30 pts/0    00:00:00 ps
 -------------------code---------------------
+
+*** 15- Managing Users ***
+
+- Alright, let's talk about managing users.
+So in this lesson, we're going to show we how to create a new user and then login
+as that user.
+
+- So in Linux we have this command
+user add for adding a new user. We also have user
+mod for modifying a user and user del
+for deleting a user. 
+-------------------code---------------------
+useradd
+usermod
+userdel
+-------------------code---------------------
+
+- So we're going to call user add.
+Now let's look at the options. Here we have a bunch of options and none of them are managed.
+We can use them based on our needs. In this lesson
+we're going to use an option. This one.
+Each option as we can see has two forms. The short form
+with one hyphen and the long
+descriptive form with two hyphens. Different people have
+different preferences. So with this option
+we can create the home directory for this user.
+-------------------code---------------------
+root@8a65a7f2dd58:/# useradd
+Usage: useradd [options] LOGIN
+       useradd -D
+       useradd -D [options]
+
+Options:
+      --badname                 do not check for bad names
+  -b, --base-dir BASE_DIR       base directory for the home directory of the
+                                new account
+      --btrfs-subvolume-home    use BTRFS subvolume for home directory
+  -c, --comment COMMENT         GECOS field of the new account
+  -d, --home-dir HOME_DIR       home directory of the new account
+  -D, --defaults                print or change default useradd configuration
+  -e, --expiredate EXPIRE_DATE  expiration date of the new account
+  -f, --inactive INACTIVE       password inactivity period of the new account
+  -F, --add-subids-for-system   add entries to sub[ud]id even when adding a system user
+  -g, --gid GROUP               name or ID of the primary group of the new
+                                account
+  -G, --groups GROUPS           list of supplementary groups of the new
+                                account
+  -h, --help                    display this help message and exit
+  -k, --skel SKEL_DIR           use this alternative skeleton directory
+  -K, --key KEY=VALUE           override /etc/login.defs defaults
+  -l, --no-log-init             do not add the user to the lastlog and
+                                faillog databases
+  -m, --create-home             create the user's home directory
+  -M, --no-create-home          do not create the user's home directory
+  -N, --no-user-group           do not create a group with the same name as
+                                the user
+  -o, --non-unique              allow to create users with duplicate
+                                (non-unique) UID
+  -p, --password PASSWORD       encrypted password of the new account
+  -r, --system                  create a system account
+  -R, --root CHROOT_DIR         directory to chroot into
+  -P, --prefix PREFIX_DIR       prefix directory where are located the /etc/* files
+  -s, --shell SHELL             login shell of the new account
+  -u, --uid UID                 user ID of the new account
+  -U, --user-group              create a group with the same name as the user
+  -Z, --selinux-user SEUSER     use a specific SEUSER for the SELinux user mapping
+      --extrausers              Use the extra users database
+-------------------code---------------------
+
+- So we're going to say user add and the name of the user is John.
+-------------------code---------------------
+root@8a65a7f2dd58:/# useradd -m john 
+-------------------code---------------------
+
+Where is this user? Well, this user is stored
+in a configuration file in the etsy directory.
+So using cat we can look at that
+cat slash etsy slash password.
+Now the name is misleading. Passwords are not stored here.
+We only have user account information. So take a look.
+So down below. We have John. So we have multiple fields
+separated by a colon. First we have the user name.
+Then we have a colon as a separator.
+X means the password is stored somewhere else.
+we'll show we that in a second. Then we have this field.
+That's the user ID. Now on our machine we're probably going to see
+So John's ID is 1001. Then we have the group ID. We'll talk about this in the next lesson.
+Over here we have the home directory of this user.
+So slash home slash John. And then we have the shell program used
+when this user logs in. So slash bin slash shell represents
+the old original shell program.
+-------------------code---------------------
+root@8a65a7f2dd58:/# cat /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/run/ircd:/usr/sbin/nologin
+_apt:x:42:65534::/nonexistent:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+ubuntu:x:1000:1000:Ubuntu:/home/ubuntu:/bin/bash
+john:x:1001:1001::/home/john:/bin/sh
+-------------------code---------------------
+
+- But we also have bash which is born again shell
+which is the enhanced version of this program.
+Okay? Now let's say when we log in
+instead of using shell, we want to use bash.
+So we're going to use user mod to modify this record.
+So, let's look at user mod. The option that we're going to use in this lesson is
+dash s or shell. This is for setting the shell for this user.
+-------------------code---------------------
+root@8a65a7f2dd58:/# usermod
+Usage: usermod [options] LOGIN
+
+Options:
+  -a, --append                  append the user to the supplemental GROUPS
+                                mentioned by the -G option without removing
+                                the user from other groups
+  -b, --badname                 allow bad names
+  -c, --comment COMMENT         new value of the GECOS field
+  -d, --home HOME_DIR           new home directory for the user account
+  -e, --expiredate EXPIRE_DATE  set account expiration date to EXPIRE_DATE
+  -f, --inactive INACTIVE       set password inactive after expiration
+                                to INACTIVE
+  -g, --gid GROUP               force use GROUP as new primary group
+  -G, --groups GROUPS           new list of supplementary GROUPS
+  -h, --help                    display this help message and exit
+  -l, --login NEW_LOGIN         new value of the login name
+  -L, --lock                    lock the user account
+  -m, --move-home               move contents of the home directory to the
+                                new location (use only with -d)
+  -o, --non-unique              allow using duplicate (non-unique) UID
+  -p, --password PASSWORD       use encrypted password for the new password
+  -P, --prefix PREFIX_DIR       prefix directory where are located the /etc/* files
+  -r, --remove                  remove the user from only the supplemental GROUPS
+                                mentioned by the -G option without removing
+                                the user from other groups
+  -R, --root CHROOT_DIR         directory to chroot into
+  -s, --shell SHELL             new login shell for the user account
+  -u, --uid UID                 new UID for the user account
+  -U, --unlock                  unlock the user account
+  -v, --add-subuids FIRST-LAST  add range of subordinate uids
+  -V, --del-subuids FIRST-LAST  remove range of subordinate uids
+  -w, --add-subgids FIRST-LAST  add range of subordinate gids
+  -W, --del-subgids FIRST-LAST  remove range of subordinate gids
+  -Z, --selinux-user SEUSER     new SELinux user mapping for the user account
+-------------------code---------------------
+
+
+- So, we're going to say to modify the shell for the user jhon to /bin/bash
+-------------------code---------------------
+root@8a65a7f2dd58:/# usermod -s /bin/bash john
+-------------------code---------------------
+
+-  now to check that it's changed
+-------------------code---------------------
+root@8a65a7f2dd58:/# tail -n 2 /etc/passwd
+ubuntu:x:1000:1000:Ubuntu:/home/ubuntu:/bin/bash
+john:x:1001:1001::/home/john:/bin/bash
+-------------------code---------------------
+
+- Now where are the passwords?
+Well, in the same directory we have another file
+that is shadow. So, this is where
+passwords are stored in encrypted format. we don't know how this really works.
+But just be aware of this file, this file is only accessible to the root user.
+-------------------code---------------------
+root@8a65a7f2dd58:/# tail -n 2 /etc/shadow
+ubuntu:!:20115:0:99999:7:::
+john:!:20165:0:99999:7:::
+-------------------code---------------------
+
+- Now let's say we want to log in as John.
+How do we do that? So, we open up a new terminal window
+to log into our container as John. First we run docker ps
+to see the running containers.
+-------------------code---------------------
+~  $ docker ps
+CONTAINER ID   IMAGE     COMMAND       CREATED        STATUS         PORTS     NAMES
+8a65a7f2dd58   ubuntu    "/bin/bash"   11 hours ago   Up 6 minutes             eloquent_lichterman
+-------------------code---------------------
+
+- So, here's our container id.
+Now we're going to execute a bash session
+inside this container. So, we type docker
+execute then we paste the container id
+or we can type the first few letters.
+
+- Now, we want to run a bash session here.
+Now if we press enter, nothing happens
+because we didn't interact with bash. so, we have to specify
+dash it interactive.
+
+- Now if we run this,
+we'll log in as root. So now we have
+two bash sessions, one is in this window,
+the other is in this other window.
+-------------------code---------------------
+~  $ docker exec 8a65a7f2dd58 bash
+~  $ docker exec -it 8a65a7f2dd58 bash
+root@8a65a7f2dd58:/#
+-------------------code---------------------
+
+- Now, we don't want to log in as root, we want to log in as John.
+So, let's terminate this session one more time.
+You're going to execute a bash session in this container,
+but before the container name, we're going to supply another option
+for specifying the user.
+-------------------code---------------------
+~  $ docker exec -it -u john 8a65a7f2dd58 bash
+john@8a65a7f2dd58:/$
+-------------------code---------------------
+
+Now, we've logged in as John, we can see that.
+So, John at, and here's the container id which acts like the host name.
+
+- Now, look at the prompt. Here we have a dollar sign,
+which means, we're not a root user.
+we're just a regular user. In contrast,
+in this other window, where we logged in as root,
+we have a pound.
+-------------------code---------------------
+root@8a65a7f2dd58:/#
+john@8a65a7f2dd58:/$
+-------------------code---------------------
+
+
+- So, here we have extra privileges. So,
+back to John's window,
+let's see what happens if we try to access the shadow file.
+We get a permission denied error.
+So, this verifies that we're not a root user.
+-------------------code---------------------
+john@8a65a7f2dd58:/$ cat /etc/shadow
+cat: /etc/shadow: Permission denied
+-------------------code---------------------
+
+- Also, John has a home directory,
+so, if we type
+cd tilde, we go to John's home directory.
+Let's look at the path for this directory.
+So, that is home slash John.
+So, in this directory, we can store John's files.
+-------------------code---------------------
+john@8a65a7f2dd58:/$ cd ~
+john@8a65a7f2dd58:~$ pwd
+/home/john
+-------------------code---------------------
+
+- And when we are done, we can remove John by typing user del John.
+Now, we're not going to delete John,
+because in the next lesson, we're going to add John to a group.
+So, we're going to keep him for now.
+
+-------------------code---------------------
+john@8a65a7f2dd58:~$ userdel john
+-------------------code---------------------
+
