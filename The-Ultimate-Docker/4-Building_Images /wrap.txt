@@ -604,3 +604,61 @@ npm install to install this dependencies. And that's what we will do next.
 /app # ls
 Dockerfile    README.md     package.json  public        src           yarn.lock
 -------------------code----------------------
+
+*** 8- Running Commands ***
+
+- Alright, the next step is to install
+our project dependencies using npm. This is where we use the run command.
+
+- With this command, we can execute any commands that we normally execute
+in a terminal session. So we can run npm install, we can also run any of the Linux or Windows commands.
+For example, let's say we want to install Python on this image as well.
+We can use apt or apt-get to install Python.
+-------------------code----------------------
+RUN npm install
+RUN apt install python
+-------------------code----------------------
+- Now if we run this, we're going to get an error because alpine Linux doesn't have
+apt package manager. It has another package manager called
+APK. So be aware of these differences depending on the type of Linux
+or Windows we're using.
+
+- So, we don't need to do this in this lesson. Let's just install the dependencies of our project.
+So, now, back to our terminal, let's rebuild the image.
+-------------------code----------------------
+FROM node:14.16.0-alpine3.13
+WORKDIR /app
+COPY . . 
+RUN npm install
+-------------------code----------------------
+
+- Alright, so now, docker engine is running npm install to download and install
+these dependencies. This is going to take a few seconds, our image is ready.
+-------------------code----------------------
+app [master] $ docker build -t react-app .
+[+] Building 10.5s (7/8)                                                                                                           docker:desktop-linux
+ => [internal] load build definition from Dockerfile                                                                                               0.0s
+ => => transferring dockerfile: 141B                                                                                                               0.0s
+ => [internal] load metadata for docker.io/library/node:14.16.0-alpine3.13                                                                         4.7s
+ => [internal] load .dockerignore                                                                                                                  0.0s
+ => => transferring context: 89B                                                                                                                   0.0s
+ => [1/4] FROM docker.io/library/node:14.16.0-alpine3.13@sha256:2c51dc462a02f15621e7486774d36d048a27225d581374b002b8477a79a59b4b                   0.0s
+ => [internal] load build context                                                                                                                  0.0s
+ => => transferring context: 1.67kB                                                                                                                0.0s
+ => CACHED [2/4] WORKDIR /app                                                                                                                      0.0s
+ => [3/4] COPY . .                                                                                                                                 0.0s
+ => [4/4] RUN npm install                                                                                                                          5.7s
+ => => # npm WARN deprecated
+ .....
+-------------------code----------------------
+
+- So, let's start a new container with this image
+and run shell. Good. Now let's look at our app directory.
+Alright, and here we have the node modules directory.
+Beautiful. So, we're done with this step.
+-------------------code----------------------
+~  $ docker run -it react-app sh
+/app # ls
+Dockerfile         node_modules       package.json       src
+README.md          package-lock.json  public             yarn.lock
+-------------------code----------------------
