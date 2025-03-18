@@ -2118,3 +2118,135 @@ So, we're going to keep him for now.
 john@8a65a7f2dd58:~$ userdel john
 -------------------code---------------------
 
+*** 16- Managing Groups ***
+
+- So we created a new user in the last lesson. Now let's talk about managing
+groups. So in the last lesson we talked about three commands that start
+with user. We have user add, user mod, and user del. We have similar
+commands for managing groups. So we have group add, group mod, and
+group del. 
+-------------------code---------------------
+groupadd 
+groupmod
+groupdel
+-------------------code---------------------
+
+- So let's add a new group called developers.
+Now why do we need groups? You probably know this, but we use groups so
+all users in the same group have the same kind of permission.
+-------------------code---------------------
+groupadd developers 
+-------------------code---------------------
+
+- So now we have a new group. Where is this group? It's in a file in
+the etsy directory. So cat slash etsy slash
+group. Here are all the groups in this image. So down the bottom, we can see the group of developers
+and this is the idea of this group, 1002.
+-------------------code---------------------
+root@8a65a7f2dd58:/# tail /etc/group
+video:x:44:ubuntu
+sasl:x:45:
+plugdev:x:46:ubuntu
+staff:x:50:
+games:x:60:
+users:x:100:
+nogroup:x:65534:
+ubuntu:x:1000:
+john:x:1001:
+developers:x:1002:
+-------------------code---------------------
+
+- Now we want to add John to this group. How do we do that? Let's bring up
+user mod. So here we have an option for setting
+the group. Here it is. Again we have a short form with a capital G and a long form that says groups.
+With this we can set the supplementary groups for this user.
+But we also have another option with a lowercase g or
+GID that is for setting the primary group of the user.
+-------------------code---------------------
+root@8a65a7f2dd58:/# usermod
+Usage: usermod [options] LOGIN
+
+Options:
+  -a, --append                  append the user to the supplemental GROUPS
+                                mentioned by the -G option without removing
+                                the user from other groups
+  -b, --badname                 allow bad names
+  -c, --comment COMMENT         new value of the GECOS field
+  -d, --home HOME_DIR           new home directory for the user account
+  -e, --expiredate EXPIRE_DATE  set account expiration date to EXPIRE_DATE
+  -f, --inactive INACTIVE       set password inactive after expiration
+                                to INACTIVE
+  -g, --gid GROUP               force use GROUP as new primary group
+  -G, --groups GROUPS           new list of supplementary GROUPS
+  -h, --help                    display this help message and exit
+  -l, --login NEW_LOGIN         new value of the login name
+  -L, --lock                    lock the user account
+  -m, --move-home               move contents of the home directory to the
+                                new location (use only with -d)
+  -o, --non-unique              allow using duplicate (non-unique) UID
+  -p, --password PASSWORD       use encrypted password for the new password
+  -P, --prefix PREFIX_DIR       prefix directory where are located the /etc/* files
+  -r, --remove                  remove the user from only the supplemental GROUPS
+                                mentioned by the -G option without removing
+                                the user from other groups
+  -R, --root CHROOT_DIR         directory to chroot into
+  -s, --shell SHELL             new login shell for the user account
+  -u, --uid UID                 new UID for the user account
+  -U, --unlock                  unlock the user account
+  -v, --add-subuids FIRST-LAST  add range of subordinate uids
+  -V, --del-subuids FIRST-LAST  remove range of subordinate uids
+  -w, --add-subgids FIRST-LAST  add range of subordinate gids
+  -W, --del-subgids FIRST-LAST  remove range of subordinate gids
+  -Z, --selinux-user SEUSER     new SELinux user mapping for the user account
+-------------------code---------------------
+
+- so what is the difference? Well,
+every Linux user has one primary group and zero or more supplementary
+groups. Now why are these groups separated? Well, let's say John
+is part of five groups and now he wants to create a new file.
+Every file, as we will show we in the next lesson is owned by one user and one
+group. Here's a question. If John is part of five groups, which group should we use for
+owning that new file that John is going to create? That's why we need a primary group.
+Now the primary group is automatically created when we create a new
+user. It's the group with the same name as the user.
+
+- So here we're going to use this other option
+to set the supplementary groups for John. So we say user mod
+dash capital G. Now here we type the group name that is
+developers and then we add John to this group.
+-------------------code---------------------
+root@8a65a7f2dd58:/# usermod -G developers john
+-------------------code---------------------
+
+- Now let's look at the password file one more time.
+So cat slash etsy password Now what if we only want to see the
+record for John? We can use piping again. So
+here we can use grep and search for John. That's one
+way.
+-------------------code---------------------
+root@8a65a7f2dd58:/# cat /etc/passwd | grep john
+john:x:1001:1001::/home/john:/bin/bash
+-------------------code---------------------
+
+- Another way is to use grep and search for John in etsy slash
+password. So in this record, we told that
+this is the user ID for John and this is the group ID. This is the idea
+of John's primary group. 
+-------------------code---------------------
+root@8a65a7f2dd58:/# grep john /etc/passwd
+john:x:1001:1001::/home/john:/bin/bash
+-------------------code---------------------
+
+- Now where the secondary groups are stored we can't
+recall on top of my head and it doesn't really
+matter. We actually have a command for seeing the groups of a user. We
+type groups and then the name of the user.
+So John is currently part of two groups. One group is John which is
+John's primary group and the other one is developers which is a
+supplementary group. Okay? Now of course we can add John to more supplementary
+groups.
+-------------------code---------------------
+root@8a65a7f2dd58:/# groups john
+john : john developers
+-------------------code---------------------
+
