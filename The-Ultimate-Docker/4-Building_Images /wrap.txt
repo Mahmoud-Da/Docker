@@ -662,3 +662,54 @@ Beautiful. So, we're done with this step.
 Dockerfile         node_modules       package.json       src
 README.md          package-lock.json  public             yarn.lock
 -------------------code----------------------
+
+*** 9- Setting Environment Variables ***
+
+- Sometimes we need to set environment variables. For example, let's say
+this frontend application needs to talk to a backend or an API.
+
+- Quite often we set the URL of the API using an environment variable.
+This is where we use the end instruction, so we can set API URL to, let's say, http, api
+my-app.com, whatever, doesn't really matter.
+-------------------code----------------------
+ENV API_URL=http://api.myapp.com/
+-------------------code----------------------
+
+- We also have an older syntax without an equal sign that also works.
+-------------------code----------------------
+ENV API_URL http://api.myapp.com/
+-------------------code----------------------
+
+- personally prefer to have an equal sign so we can clearly see the value
+of environment variables, but that's just my personal preference.
+
+- Now, let's rebuild the image and inspect this environment variable in our
+container. So, we're going to rebuild the image.
+-------------------code----------------------
+FROM node:14.16.0-alpine3.13
+WORKDIR /app
+COPY . . 
+RUN npm install
+ENV API_URL=http://api.myapp.com/
+-------------------code----------------------
+
+- the image is built, so let's start a new container.
+Now, do we remember the command that we use for inspecting environment variables?
+We have a few options. One way is to use printenv to see all environment variables, so we can see
+API URL over here.
+-------------------code----------------------
+~  $ docker run -it react-app sh
+/app # printenv API_URL
+http://api.myapp.com/
+-------------------code----------------------
+
+- We can also print the value of a particular environment variable. Another option is to use
+echo, but here we have to use a dollar sign to print API
+URL.
+-------------------code----------------------
+/app # echo $API_URL
+http://api.myapp.com/
+-------------------code----------------------
+
+- so now whenever we start this container,
+this environment variable is automatically set for us.
