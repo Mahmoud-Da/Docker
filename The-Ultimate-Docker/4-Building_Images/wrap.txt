@@ -1612,3 +1612,200 @@ react-app    latest    27fa9bf420d8   45 minutes ago   482MB
 alpine       latest    8d591b0b7dea   4 weeks ago      8.17MB
 ubuntu       latest    c3d1a3432580   7 weeks ago      101MB
 -------------------code----------------------
+
+
+*** 15- Tagging Images ***
+
+- Alright, let's talk about tags.
+If we have noticed, whenever we build an image or pull it from docker-hop
+by default docker uses the latest tag. 
+
+- Now this latest tag is just a label, there is nothing special about it. So it doesn't necessarily mean
+this is the latest version of our image. If we don't tag our images
+properly, latest can point to an older image.
+-------------------code----------------------
+$ docker images
+REPOSITORY   TAG       IMAGE ID       CREATED       SIZE
+react-app    latest    27fa9bf420d8   2 hours ago   482MB
+alpine       latest    8d591b0b7dea   4 weeks ago   8.17MB
+ubuntu       latest    c3d1a3432580   7 weeks ago   101MB
+-------------------code----------------------
+
+- Also keep in mind that latest is totally fine for development, but
+we shouldn't use it in production. You don't want to put an image with the latest tag in our
+production or staging server, because if something goes wrong, we cannot
+easily troubleshoot issues. Because we don't know what version we're really
+running in production. If we want to do a rollback or an upgrade, how can
+we tell what version we're running in production, if it's always latest.
+So we should always use explicit tags to identify what version we're
+running in each environment, in our test environment, staging and production.
+
+- For development, latest is totally fine. Now, in this lesson we're going to show we
+how to tag our images properly, but before we get started, we want to do a
+clean build, so we start on a clean docker build.
+-------------------code----------------------
+$ docker build -t react-app .
+-------------------code----------------------
+
+- let's look at our images. We have three images and all of them have the latest tag.
+Now how can we tag an image? Well, there are two ways. One way is to
+tag an image while building it.
+-------------------code----------------------
+$ docker images
+REPOSITORY   TAG       IMAGE ID       CREATED       SIZE
+react-app    latest    27fa9bf420d8   2 hours ago   482MB
+alpine       latest    8d591b0b7dea   4 weeks ago   8.17MB
+ubuntu       latest    c3d1a3432580   7 weeks ago   101MB
+-------------------code----------------------
+
+-  So we type docker build dash t for tag, so far we have just typed the image name,
+but we can type a colon followed by a tag.
+-------------------code----------------------
+$ docker build -t react-app:1 .
+-------------------code----------------------
+
+- Now what tag should we use? Well, this is where different teams have different preferences.
+Some teams like code-names. Let's say we have a version called Buster, and
+everyone in our team knows what Buster version is all about. Then we can
+use it as a tag. Other teams prefer semantic versioning, like 3.1.5.
+This approach is common amongst teams that don't release that often.
+Now teams that release frequently prefer build numbers, let's say build 76 or
+77. Now quite often this is done automatically by
+continuous integration and deployment tool. So if we use a
+continuous integration or deployment tool in our organization, we can configure
+our tool to check out the latest code
+from our repository, build an image and automatically tag it with
+the current build number.
+
+
+- So let's go ahead and give this image a tag like version 1 and build it.
+
+- Alright, our build was
+blazing fast. Let's look at the images one more time.
+Alright, here we have an interesting situation.
+This react app image that we have has two tags,
+one and latest. So it's the same image with multiple tags.
+How do we know? Look at the image ID. Both these images
+have the same identifier.  So an image can have multiple tags.
+-------------------code----------------------
+$ docker images
+REPOSITORY   TAG       IMAGE ID       CREATED       SIZE
+react-app    1         27fa9bf420d8   2 hours ago   482MB
+react-app    latest    27fa9bf420d8   2 hours ago   482MB
+alpine       latest    8d591b0b7dea   4 weeks ago   8.17MB
+ubuntu       latest    c3d1a3432580   7 weeks ago   101MB
+-------------------code----------------------
+
+- Now what if we made a mistake and want to remove this tag? Well,
+we use the remove command. So docker image remove
+and here we type the image name followed by the tag.
+-------------------code----------------------
+$ docker image remove react-app:1
+Untagged: react-app:1
+-------------------code----------------------
+
+- the tag is gone. So let's look at the images.
+Perfect, we only have the latest tag. So one way to tag
+an image is while building it.
+-------------------code----------------------
+$ docker images
+REPOSITORY   TAG       IMAGE ID       CREATED       SIZE
+react-app    latest    27fa9bf420d8   2 hours ago   482MB
+alpine       latest    8d591b0b7dea   4 weeks ago   8.17MB
+ubuntu       latest    c3d1a3432580   7 weeks ago   101MB
+-------------------code----------------------
+
+- But what if we want to tag an image after?
+We use the tag command. So docker images tag
+first we identify our source image we can use the
+full image name and its tag or we can use an image
+ID. Whatever we prefer. So we're going to get this image and
+apply a new tag to it. React app version 1.
+-------------------code----------------------
+$ docker image tag react-app:latest react-app:1
+-------------------code----------------------
+
+- Now let's verify that everything is in the right shape.
+-------------------code----------------------
+$ docker images
+REPOSITORY   TAG       IMAGE ID       CREATED       SIZE
+react-app    1         27fa9bf420d8   2 hours ago   482MB
+react-app    latest    27fa9bf420d8   2 hours ago   482MB
+alpine       latest    8d591b0b7dea   4 weeks ago   8.17MB
+ubuntu       latest    c3d1a3432580   7 weeks ago   101MB
+-------------------code----------------------
+
+-  Now earlier we told we that the latest tag can get out of order. 
+Let's see that in action. So
+we're going to go back to our project and make a tiny change.
+In this readme file we're going to add a couple more pluses
+simulating a change in the application's code.
+-------------------code----------------------
+# Getting Started with Create React App++++
+-------------------code----------------------
+
+- Now we're going to build a new image. So
+let's say docker build dash t, react app.
+Let's say this is version 2.
+-------------------code----------------------
+$ docker build -t react-app:2 .
+[+] Building 1.7s (11/11) FINISHED                                                                                                 docker:desktop-linux
+ => [internal] load build definition from Dockerfile                                                                                               0.0s
+ => => transferring dockerfile: 283B                                                                                                               0.0s
+ => [internal] load metadata for docker.io/library/node:14.16.0-alpine3.13                                                                         1.6s
+ => [internal] load .dockerignore                                                                                                                  0.0s
+ => => transferring context: 89B                                                                                                                   0.0s
+ => [1/6] FROM docker.io/library/node:14.16.0-alpine3.13@sha256:2c51dc462a02f15621e7486774d36d048a27225d581374b002b8477a79a59b4b                   0.0s
+ => [internal] load build context                                                                                                                  0.0s
+ => => transferring context: 5.02kB                                                                                                                0.0s
+ => CACHED [2/6] RUN addgroup app && adduser -S -G app app                                                                                         0.0s
+ => CACHED [3/6] WORKDIR /app                                                                                                                      0.0s
+ => CACHED [4/6] COPY package*.json .                                                                                                              0.0s
+ => CACHED [5/6] RUN npm install                                                                                                                   0.0s
+ => [6/6] COPY . .                                                                                                                                 0.0s
+ => exporting to image                                                                                                                             0.0s
+ => => exporting layers                                                                                                                            0.0s
+ => => writing image sha256:0211703e719b294529c6ff5579540f917db0778d832ae1cc85925770778759d2                                                       0.0s
+ => => naming to docker.io/library/react-app:2                                                                                                     0.0s
+-------------------code----------------------
+
+- Now let's look at the images. So we have two versions
+of this image, version 2 and version 1. Now look at
+the latest tag. It's pointing to the first version. Because both these
+tags are pointing to the same image, which is older.
+we built this image at the beginning of this lesson. 
+-------------------code----------------------
+$ docker images
+REPOSITORY   TAG       IMAGE ID       CREATED          SIZE
+react-app    2         0211703e719b   33 seconds ago   482MB
+react-app    1         27fa9bf420d8   2 hours ago      482MB
+react-app    latest    27fa9bf420d8   2 hours ago      482MB
+alpine       latest    8d591b0b7dea   4 weeks ago      8.17MB
+ubuntu       latest    c3d1a3432580   7 weeks ago      101MB
+-------------------code----------------------
+
+- So here's what we need to take away. The latest tag
+doesn't necessarily reference the latest image.
+You have to explicitly apply it to the latest image. So how do we do that?
+- We're going to identify new image name. 
+-------------------code----------------------
+docker image tag react-app:2 react-app:latest
+-------------------code----------------------
+
+- or we can use the image id.
+-------------------code----------------------
+docker image tag 021 react-app:latest
+-------------------code----------------------
+
+
+- now we verify it. we can see the IMAGE ID of the image of 
+latest tag is equal to the IMAGE ID to the tag 2.
+-------------------code----------------------
+$ docker images
+REPOSITORY   TAG       IMAGE ID       CREATED              SIZE
+react-app    2         0211703e719b   About a minute ago   482MB
+react-app    latest    0211703e719b   About a minute ago   482MB
+react-app    1         27fa9bf420d8   2 hours ago          482MB
+alpine       latest    8d591b0b7dea   4 weeks ago          8.17MB
+ubuntu       latest    c3d1a3432580   7 weeks ago          101MB
+-------------------code----------------------
