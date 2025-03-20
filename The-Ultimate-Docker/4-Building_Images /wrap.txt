@@ -930,3 +930,230 @@ drwxr-xr-x    2 root     root          4096 Mar 18 06:18 src
 - In contrast, if we executed this application
 with the root user, a hacker could potentially
 rewrite something in our application.
+
+*** 12- Defining Entrypoints ***
+
+- All right, our docker file is almost ready.
+Now how do we start our application? Well, earlier we saw that. Here in the
+project directory, we can start the application by running npm start.
+-------------------code----------------------
+npm start
+-------------------code----------------------
+
+- So this is the command that we should execute when starting a container.
+So, let's start a container, docker run. Now we're not going to use the interactive mode because we don't want to interact with this container.
+We're not going to run a shell session. We just want to start the application.
+So, we type the image name. Now let's see if we execute
+this command up to this point. Our container
+started and then stopped because we didn't specify a command or
+a program to execute. 
+-------------------code----------------------
+$ docker run react-app
+-------------------code----------------------
+
+- So this is where we're going to type npm start. Take a look.
+All right, we got a permission error. Look over here. Permission denied.
+-------------------code----------------------
+$ docker run react-app npm start
+
+> react-app@0.1.0 start /app
+> react-scripts start
+
+ℹ ｢wds｣: Project is running at http://172.17.0.2/
+ℹ ｢wds｣: webpack output is served from
+ℹ ｢wds｣: Content not from webpack is served from /app/public
+ℹ ｢wds｣: 404s will fallback to /
+Starting the development server...
+
+Failed to compile.
+
+EACCES: permission denied, mkdir '/app/node_modules/.cache'
+-------------------code----------------------
+
+- why we're getting this error?
+In our docker file, we set the user at the end. So we executed
+all these previous instructions as the root user,
+but then we switched to a regular user with limited privileges.
+-------------------code----------------------
+FROM node:14.16.0-alpine3.13
+WORKDIR /app
+COPY . . 
+RUN npm install
+ENV API_URL=http://api.myapp.com/
+EXPOSE 3000
+RUN addgroup app && adduser -S -G app app
+USER app
+-------------------code----------------------
+
+- So, we should move these two lines on the top. So first,
+we set the user, then we create the working directory, copy files, and so on.
+-------------------code----------------------
+FROM node:14.16.0-alpine3.13
+RUN addgroup app && adduser -S -G app app
+USER app
+WORKDIR /app
+COPY . . 
+RUN npm install
+ENV API_URL=http://api.myapp.com/
+EXPOSE 3000
+-------------------code----------------------
+
+- Now we have to rebuild our image and start a new container.
+All right, our image is ready.
+-------------------code----------------------
+$ docker build -t react-app .
+-------------------code----------------------
+
+- So, let's start a new container.
+All right, our web server started on port 3000, but as we told before,
+this is port 3000 of the container, not local host.
+So, if we go to "3000" address, we're not going to be able to access the application.
+In the next section, we will show we how to map a port from the host
+to a port on the container.
+-------------------code----------------------
+$ docker run react-app npm start
+
+> react-app@0.1.0 start /app
+> react-scripts start
+
+ℹ ｢wds｣: Project is running at http://172.17.0.2/
+ℹ ｢wds｣: webpack output is served from
+ℹ ｢wds｣: Content not from webpack is served from /app/public
+ℹ ｢wds｣: 404s will fallback to /
+Starting the development server...
+
+Compiled successfully!
+
+You can now view react-app in the browser.
+
+  Local:            http://localhost:3000
+  On Your Network:  http://172.17.0.2:3000
+
+Note that the development build is not optimized.
+To create a production build, use yarn build.
+-------------------code----------------------
+
+- let's stop this process. Let's bring up
+the run command. Now, here's a problem.
+We don't want to have to specify this command every time we start a container.
+This is where we use the command instruction.
+-------------------code----------------------
+$ docker run react-app npm start
+-------------------code----------------------
+
+- So, back to our docker file, at the end,
+using the command instruction, we can supply a default command to be executed.
+So, npm start. Now, back to the terminal,
+once we rebuild the image, then we can start a container
+by simply running docker run react app.
+We don't have to specify the command every time.
+-------------------code----------------------
+CMD npm start
+-------------------code----------------------
+
+- Just remember, because the command instruction is for supplying the default command,
+it doesn't make sense to have multiple command instructions
+in a docker file. If we have multiple command instructions,
+only the last one will take effect. Be aware of that.
+
+- Now, we might be wondering, what is the difference between
+the command instruction CMD and RUN? Because with both these,
+we can execute commands. Here's the difference.
+The run instruction is a build time instruction.
+So, this is executed at the time of building the image.
+So, when building the image, we're installing npm dependencies,
+and these dependencies are stored in the image.
+In contrast, the command instruction is a runtime instruction.
+So, it's executed when starting a container.
+
+- Now, this command instruction has two forms. What we see here
+is called the shell form. We also have
+another form called execute form, which takes an array of strings. So,
+npm and start.
+-------------------code----------------------
+CMD [ "npm", "start" ]
+-------------------code----------------------
+
+- What is the difference? Well,
+if we use this syntax, docker will execute this command
+inside a separate shell. That is why it's called
+the shell form. Now, on Linux, that shell is
+slash bin slash shell, the original shell program. On Windows,
+it's cmd or command prompt.
+Now, the common best practice is to use the execute form
+because with this, we can execute this command directly
+and there's no need to spin up another shell process.
+Also, this makes it easier and faster to clean up resources when we stop containers.
+So, always use the execute form.
+-------------------code----------------------
+# Shell form
+# /bin/sh -> Linux
+# cmd -> Windows
+CMD npm start
+
+# Exec form
+CMD [ "npm", "start" ]
+-------------------code----------------------
+
+-  here's our command instruction. Now,
+we also have another instruction called entry point,
+which is very similar to command.
+So, it has two forms, the shell form or the execute form.
+So, it takes an array of strings. Now,
+-------------------code----------------------
+# Shell form
+ENTRYPOINT npm start
+
+# Exec form
+ENTRYPOINT [ "npm", "start" ]
+-------------------code----------------------
+
+- what is the difference? Well,
+we can always overwrite the default command when starting a container with CMD.
+So, back to the terminal, when we run this container,
+we can supply another command. So, we can say echo hello and this will overwrite
+this command over here.
+So, for the same reason, here we can run
+a shell session and of course, we want to use the interactive mode.
+-------------------code----------------------
+$ docker run react-app echo hello
+-------------------code----------------------
+
+- Now, in contrast, we cannot easily overwrite the entry point
+when running a container. If we want to do that,
+we have to use the entry point option.
+Now, a lot of people forget to use this. That's why it's a little bit harder
+to overwrite the entry point.
+-------------------code----------------------
+$ docker run react-app --entrypoint
+-------------------code----------------------
+
+- So, in practical terms,
+we often want to use entry point
+when we know for sure that this is the command
+or this is the program that should be executed whenever we start a container.
+There is no exception.
+
+
+- In contrast, with the command instruction "CMD", we have
+a bit more flexibility. we can always overwrite it. So,
+we want to use this instruction for executing ad hoc commands in a container.
+Now, which instruction we use is a matter of personal preference.
+With both these instructions, we can supply a default command. Some people prefer
+the command instruction, other people prefer the entry point. we personally prefer
+the former.
+
+- our docker file is in good shape, but if we have noticed,
+our builds are slow. We'll talk about
+optimizing them next.
+-------------------code----------------------
+FROM node:14.16.0-alpine3.13
+RUN addgroup app && adduser -S -G app app
+USER app
+WORKDIR /app
+COPY . . 
+RUN npm install
+ENV API_URL=http://api.myapp.com/
+EXPOSE 3000
+CMD [ "npm", "start" ]
+-------------------code----------------------
