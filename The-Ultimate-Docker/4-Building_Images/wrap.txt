@@ -1166,7 +1166,7 @@ can optimize these builds.
 
 - The first thing we need to understand here is the concept
 of layers in docker. An image is essentially a collection of layers.
-You can think of a layer as a small file system that only includes
+we can think of a layer as a small file system that only includes
 modified files. So when docker tries to build an image for us,
 it executes each of these instructions and creates a new layer.
 That layer only includes the files that were modified as a result of that
@@ -1632,7 +1632,7 @@ ubuntu       latest    c3d1a3432580   7 weeks ago   101MB
 -------------------code----------------------
 
 - Also keep in mind that latest is totally fine for development, but
-we shouldn't use it in production. You don't want to put an image with the latest tag in our
+we shouldn't use it in production. we don't want to put an image with the latest tag in our
 production or staging server, because if something goes wrong, we cannot
 easily troubleshoot issues. Because we don't know what version we're really
 running in production. If we want to do a rollback or an upgrade, how can
@@ -1786,7 +1786,7 @@ ubuntu       latest    c3d1a3432580   7 weeks ago      101MB
 
 - So here's what we need to take away. The latest tag
 doesn't necessarily reference the latest image.
-You have to explicitly apply it to the latest image. So how do we do that?
+we have to explicitly apply it to the latest image. So how do we do that?
 - We're going to identify new image name. 
 -------------------code----------------------
 docker image tag react-app:2 react-app:latest
@@ -1954,3 +1954,126 @@ refresh. Now in this repository we have
 two tags, beautiful. Alright, now that our image is on docker hub,
 we can pull it on any machine that runs docker.
 Just like pulling any other images from docker hub.
+
+*** 17- Saving and Loading Images ***
+
+- Alright, the last thing we're going to talk about in this section is saving and loading images.
+Let's say we have an image on this machine and we want to put it on another machine
+but without going through docker hub. In this case we can save that image
+as a compressed file and load it on the other machine. 
+
+- So let's run docker image save. Now
+for any of these commands, if we want to learn more about them, we can always add
+double hyphen help at the end. So here's the syntax
+docker image save, we have to use one of these options
+like o which is the short form or output which is the long form. Here we specify
+the file to write to and then we identify the image.
+-------------------code----------------------
+$ docker image save --help
+
+Usage:  docker image save [OPTIONS] IMAGE [IMAGE...]
+
+Save one or more images to a tar archive (streamed to STDOUT by default)
+
+Aliases:
+  docker image save, docker save
+
+Options:
+  -o, --output string   Write to a file, instead of STDOUT
+-------------------code----------------------
+
+- So we're going to say docker image save
+dash o, so we're going to save this to a file in the current directory called
+react app dot tar. A tar file on Linux is like a zip file on Windows. It's a compressed file.
+And then we specify our image. Let's say react app version 3.
+-------------------code----------------------
+$ docker image save -o react-app.tar react-app:3
+-------------------code----------------------
+
+- Alright, our image is saved, so here we have a tar file.
+We can double click it to uncompress it.
+Now let's see what we have here. Each of these folders represents a layer.
+Now if we're adventurous, we can go inside each of these layers
+and see what is really inside that layer. So each layer contains a JSON file
+and a tar file which contains all the files in that layer.
+So let's open this up. Here we have an app folder, so that means
+this is the layer that represents our application code.
+
+- we can go look at other layers, we will find
+a layer for Linux, we will find a layer for node and so on.
+So we have the save command for saving an image into a file.
+
+- We also have the load command. Let's look at that real quick.
+So we type docker image load and then use
+one of those options. We can use y or input to specify
+the file name. And optionally we can use the quiet option to
+suppress the load output.
+-------------------code----------------------
+$ docker image load --help
+
+Usage:  docker image load [OPTIONS]
+
+Load an image from a tar archive or STDIN
+
+Aliases:
+  docker image load, docker load
+
+Options:
+  -i, --input string   Read from tar archive file, instead of STDIN
+  -q, --quiet          Suppress the load output
+-------------------code----------------------
+
+- So to demonstrate this, first we're going to delete the image from this machine
+and then load it using our image file.
+So, we will remove docker image.
+-------------------code----------------------
+$ docker image remove react-app:3
+Untagged: react-app:3
+-------------------code----------------------
+
+- It's gone. Let's look at the images.
+Good. Now technically we still have
+this image, because there is another tag pointing to this image.
+So, let's remove that tag as well.
+-------------------code----------------------
+$ docker image remove moody/react-app:3
+Untagged: moody/react-app:3
+-------------------code----------------------
+
+- Now let's look at the images one more time.
+Alright, perfect. That image is gone from this machine.
+-------------------code----------------------
+$ docker images
+REPOSITORY        TAG       IMAGE ID       CREATED          SIZE
+moody/react-app   latest    ae37a5ac6ae3   20 minutes ago   482MB
+react-app         2         0211703e719b   49 minutes ago   482MB
+react-app         latest    0211703e719b   49 minutes ago   482MB
+moody/react-app   2         0211703e719b   49 minutes ago   482MB
+react-app         1         27fa9bf420d8   3 hours ago      482MB
+alpine            latest    8d591b0b7dea   4 weeks ago      8.17MB
+ubuntu            latest    c3d1a3432580   7 weeks ago      101MB
+-------------------code----------------------
+
+- Now we're going to load it using our image file. So, we type
+docker image load dash i react app dot tar
+Alright, we can see this image is loaded.
+-------------------code----------------------
+$ docker image load -i react-app.tar
+Loaded image: react-app:3
+-------------------code----------------------
+
+
+- So, let's verify it. And here we have react app
+with tag 3. And this is the same image ID that we had earlier.
+-------------------code----------------------
+$ docker images
+REPOSITORY        TAG       IMAGE ID       CREATED          SIZE
+react-app         3         ae37a5ac6ae3   23 minutes ago   482MB
+moody/react-app   latest    ae37a5ac6ae3   23 minutes ago   482MB
+react-app         2         0211703e719b   52 minutes ago   482MB
+react-app         latest    0211703e719b   52 minutes ago   482MB
+moody/react-app   2         0211703e719b   52 minutes ago   482MB
+react-app         1         27fa9bf420d8   3 hours ago      482MB
+alpine            latest    8d591b0b7dea   4 weeks ago      8.17MB
+ubuntu            latest    c3d1a3432580   7 weeks ago      101MB
+-------------------code----------------------
