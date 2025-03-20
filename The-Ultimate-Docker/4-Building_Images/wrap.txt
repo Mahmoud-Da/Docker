@@ -1809,3 +1809,148 @@ react-app    1         27fa9bf420d8   2 hours ago          482MB
 alpine       latest    8d591b0b7dea   4 weeks ago          8.17MB
 ubuntu       latest    c3d1a3432580   7 weeks ago          101MB
 -------------------code----------------------
+
+*** 16- Sharing Images ***
+
+- Let's see how we can share our images with others. So head over to
+hub.docker.com and create a new account. It's absolutely free and it's going to take
+only a few seconds. Now let us log in with our account.
+
+- So on our home page of docker account we can create a new repository.
+And this is similar to creating a github repository. So we can have a repository, and in this repository
+we can have multiple images with different tags. So let's create a new one.
+We're going to give it a name. we're going to use the same name that we used for our image.
+Now we can give it a description. We can make it public or private.
+If we have a free account, we only get one private repository. But we can always upgrade
+to get additional private repositories. Now optionally, we can connect our account
+to our github account. So every time we do a push, docker hub automatically pulls the
+latest code and builds a new image. Now we're not going to do that in this lesson
+so let's go ahead and create.
+
+- So here we have a repository and this is the name of our repository.
+So our user name slash our image name.
+Now to push our image to this repository, we have to give it this tag.
+moody or whatever our user name is slash react app.
+
+- So back to the terminal, let's look at our images.
+-------------------code----------------------
+$ docker images
+REPOSITORY   TAG       IMAGE ID       CREATED              SIZE
+react-app    2         0211703e719b   About a minute ago   482MB
+react-app    latest    0211703e719b   About a minute ago   482MB
+react-app    1         27fa9bf420d8   2 hours ago          482MB
+alpine       latest    8d591b0b7dea   4 weeks ago          8.17MB
+ubuntu       latest    c3d1a3432580   7 weeks ago          101MB
+-------------------code----------------------
+
+- Let's say we want to publish the latest version of this image. So
+docker image tag we're going to tag this image we're going to use the image ID so
+021 we're going to give it a new tag moody slash react app.
+-------------------code----------------------
+docker image tag 021 moody/react-app
+-------------------code----------------------
+
+- Now if we don't specify a tag docker will automatically use latest
+we don't want to do that, we want to use an explicit tag.
+
+- Now, let's look at our images one more time. So now, this image
+with this ID has three tags. Here's the first tag, tag 2.
+We also have the latest tag, but we also
+have moody slash react app with tag 2.
+All these tags are pointing to the same image on our machine.
+-------------------code----------------------
+$ docker images
+REPOSITORY        TAG       IMAGE ID       CREATED          SIZE
+react-app         2         0211703e719b   24 minutes ago   482MB
+react-app         latest    0211703e719b   24 minutes ago   482MB
+moody/react-app   2         0211703e719b   24 minutes ago   482MB
+react-app         1         27fa9bf420d8   2 hours ago      482MB
+alpine            latest    8d591b0b7dea   4 weeks ago      8.17MB
+ubuntu            latest    c3d1a3432580   7 weeks ago      101MB
+-------------------code----------------------
+
+- So now we're ready to push this image. First we have to
+login. So docker login we use our credentials.
+-------------------code----------------------
+docker login
+-------------------code----------------------
+
+- Now we type docker push and here we specify our image.
+So moody slash react app version 2.
+Alright, now docker is pushing each of the layers
+in our image. So the first time we push
+this image, this is going to take a little while
+because one of our layers, the layer that includes all npm dependencies
+is fairly large. So once we push this image, our future pushes will
+be faster. Assuming that we have not changed our application dependencies.
+So our image is pushed.
+-------------------code----------------------
+$ docker push moody/react-app:2
+The push refers to repository [docker.io/moody/react-app]
+3ff22e1554cc: Pushed
+240fdbca2c7f: Pushing
+169. 9MB/177. 8MB
+1d5961f2bb06: Pushed
+4882914c8ed8: Pushed
+216002df1993: Pushed
+5e51c4be24db: Mounted from library/node
+-------------------code----------------------
+
+- Now, let's refresh this page. So in this
+repository, we have one tag, that is tag 2 which is built for Linux.
+
+- Now back to our project, let's make a
+small change to this readme file and do another push.
+-------------------code----------------------
+# Getting Started with Create React App++++!
+-------------------code----------------------
+
+- Back to the terminal, first we need to build this image, so
+build dash t, react app, let's say version 3.
+That was super fast.
+-------------------code----------------------
+$ docker build -t react-app:3 .
+-------------------code----------------------
+
+-  Now, let's look at the images. This is our version 3.
+-------------------code----------------------
+$ docker images
+REPOSITORY        TAG       IMAGE ID       CREATED          SIZE
+react-app         3         ae37a5ac6ae3   3 seconds ago    482MB
+react-app         2         0211703e719b   29 minutes ago   482MB
+react-app         latest    0211703e719b   29 minutes ago   482MB
+moody/react-app   2         0211703e719b   29 minutes ago   482MB
+react-app         1         27fa9bf420d8   2 hours ago      482MB
+alpine            latest    8d591b0b7dea   4 weeks ago      8.17MB
+ubuntu            latest    c3d1a3432580   7 weeks ago      101MB
+-------------------code----------------------
+
+- Now we want to give this image an extra tag that starts with
+moody, or our username. So, docker image tag, we're going to tag react app version 3
+with moody slash react app version 3.
+-------------------code----------------------
+$ docker image tag ae3 moody/react-app:3
+-------------------code----------------------
+
+- So, let's say docker push, moody
+react app version 3. Alright,
+now look, some of these layers
+already exist, so this push is a lot faster than
+the previous push.
+-------------------code----------------------
+$ docker push moody/react-app:3
+The push refers to repository [docker.io/moody/react-app]
+3ff22e1554cc: Pushed
+240fdbca2c7f: Pushing
+169. 9MB/177. 8MB
+1d5961f2bb06: Pushed
+4882914c8ed8: Pushed
+216002df1993: Pushed
+5e51c4be24db: Mounted from library/node
+-------------------code----------------------
+
+- Now back on docker hub, let's
+refresh. Now in this repository we have
+two tags, beautiful. Alright, now that our image is on docker hub,
+we can pull it on any machine that runs docker.
+Just like pulling any other images from docker hub.
