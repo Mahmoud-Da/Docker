@@ -713,3 +713,44 @@ http://api.myapp.com/
 
 - so now whenever we start this container,
 this environment variable is automatically set for us.
+
+*** 10- Exposing Ports ***
+
+Alright, let's take a quick break from our
+docker file and start this application outside of docker. The way we have
+always started it. So, from the project directory we run npm
+start. 
+-------------------code----------------------
+npm start
+> react-app@o.1.0 start 
+> react-scripts start
+-------------------code----------------------
+
+-  Now this starts at development server
+on port 3000, so if we go to local host port 3000, we can access this application. Now in the future
+when we run this application inside a docker container, this port
+3000 will be open on the container, not on the host.
+-------------------code----------------------
+localhost:3000
+-------------------code----------------------
+
+- This is something important we need to understand. So on the same machine
+we can have multiple containers running the same image. All these containers
+will be listening to port 3000, but the port 3000 on the host
+is not going to be automatically mapped to these containers. So later,
+in the next section we will see how to map a port on the host
+to a port on these containers.
+-------------------code----------------------
+EXPOSE 3000
+-------------------code----------------------
+
+-  But for now we're going to go back to our docker
+file and use the expose command to tell what port this container
+will be listening on. That is port 3000.
+
+- So, the expose command doesn't automatically publish the port on the host, it's just a form
+of documentation to tell us this container
+will eventually listen on port 3000. So later
+when we properly run this application inside a docker container
+we know that we should map a port on the host
+to port 3000 on the container. We'll do that in the next section.
