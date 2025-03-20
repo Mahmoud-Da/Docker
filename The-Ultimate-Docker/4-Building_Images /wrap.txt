@@ -754,3 +754,179 @@ will eventually listen on port 3000. So later
 when we properly run this application inside a docker container
 we know that we should map a port on the host
 to port 3000 on the container. We'll do that in the next section.
+
+*** 11- Setting the User ***
+
+- Alright, now let's talk about users.
+So by default, docker runs our application with the root user
+that has the highest privileges. 
+
+- So that can open up security holes in our
+system. So to run this application, we should create a regular user
+with limited privileges. 
+
+- But before doing that in the docker file,
+let's open up a shell session on Alpine Linux and play with a few commands.
+Now, , we're going to run docker run in the interactive mode
+Alpine. So here we have a shell session.
+-------------------code----------------------
+$ docker run -it alpine
+-------------------code----------------------
+
+-  Now, in this image, we don't have the user add command.
+-------------------code----------------------
+/ # useradd
+/bin/sh: useradd: not found
+-------------------code----------------------
+
+- Instead we have add user, So,
+look at these options. There are two options we're going to use.
+One of them is dash g for setting the primary group of the user
+and the other is dash s for creating a system user.
+-------------------code----------------------
+/ # adduser
+BusyBox v1.37.0 (2025-01-17 18:12:01 UTC) multi-call binary.
+
+Usage: adduser [OPTIONS] USER [GROUP]
+
+Create new user, or add USER to GROUP
+
+	-h DIR		Home directory
+	-g GECOS	GECOS field
+	-s SHELL	Login shell
+	-G GRP		Group
+	-S		Create a system user
+	-D		Don't assign a password
+	-H		Don't create home directory
+	-u UID		User id
+	-k SKEL		Skeleton directory (/etc/skel)
+-------------------code----------------------
+
+- We're going to use a system user because this user is not a real user,
+it's just for running an application.
+
+- Now, before using this command, we have to create a group
+so we can add this user to that group So to do that, we're going to use add group.
+We're going to give this group a name, let's say app.
+-------------------code----------------------
+/ # addgroup app
+-------------------code----------------------
+
+- Now we can run add user, dash s for creating a system user,
+dash g for setting the primary group, which is app,
+and finally we specify the name of the user.
+We're going to use the same name. This is a common best practice in Linux.
+So whenever we create a new user, we create a primary group for that user with the same name, okay?
+-------------------code----------------------
+/ # adduser -S -G app app
+-------------------code----------------------
+
+- Now we have a new user, let's verify that this user is in the right group.
+So we type groups, app. This shows the groups for the app user.
+-------------------code----------------------
+/ # groups app
+app
+-------------------code----------------------
+
+- Now we're going to combine these two commands
+into a single command. So let's create another group and a user.
+We type add group, we can say moody or whatever,
+we use double ampersand to combine two commands,
+So we used a single command to perform two tasks.
+-------------------code----------------------
+addgroup moody && adduser -S -G moody moody
+-------------------code----------------------
+
+- Now, let's verify the groups for moody. So this is the command
+that we're going to run in our docker file.
+-------------------code----------------------
+/ # groups moody
+moody
+-------------------code----------------------
+
+- So let's copy this, now, back to our docker file,
+we're going to run a command. How do we do this?
+We use the run instruction. Then we paste our command,
+and instead of moody, we're going to use app.
+So we're going to create a group and a user called app,
+Once we do that, then we can set the user using the user command.
+So all the following commands will be executed using this user.
+-------------------code----------------------
+RUN addgroup app && adduser -S -G app app
+USER app
+-------------------code----------------------
+
+- Let's rebuild our image. So, here's the build command,
+let's go ahead. Alright, our image is ready.
+Now look at the fifth step. That is our run command
+for creating a new group and a new user.
+-------------------code----------------------
+$ docker build -t react-app .
+[+] Building 30.9s (10/10) FINISHED                                                                                                docker:desktop-linux
+ => [internal] load build definition from Dockerfile                                                                                               0.0s
+ => => transferring dockerfile: 241B                                                                                                               0.0s
+ => [internal] load metadata for docker.io/library/node:14.16.0-alpine3.13                                                                         1.7s
+ => [internal] load .dockerignore                                                                                                                  0.0s
+ => => transferring context: 89B                                                                                                                   0.0s
+ => [1/5] FROM docker.io/library/node:14.16.0-alpine3.13@sha256:2c51dc462a02f15621e7486774d36d048a27225d581374b002b8477a79a59b4b                   0.0s
+ => [internal] load build context                                                                                                                  0.0s
+ => => transferring context: 1.31MB                                                                                                                0.0s
+ => CACHED [2/5] WORKDIR /app                                                                                                                      0.0s
+ => [3/5] COPY . .                                                                                                                                 0.0s
+ => [4/5] RUN npm install                                                                                                                         26.9s
+ => [5/5] RUN addgroup app && adduser -S -G app app                                                                                                0.1s
+ => exporting to image                                                                                                                             2.1s
+ => => exporting layers                                                                                                                            2.1s
+ => => writing image sha256:7072f2f889bc06c712fdd966582f8c8c97b0727b02c26926021af2ecf05c3856                                                       0.0s
+ => => naming to docker.io/library/react-app
+-------------------code----------------------
+
+- Now, we might have noticed that building this image
+took probably a long time.
+That was because of the step. Installing the dependencies.
+Now, we might argue that earlier, we excluded the node modules directory
+so our builds would be faster. But our builds are still slow
+because every time we build this image, all these dependencies
+have to be installed. Don't worry about that. We're going to optimize
+this later in this section.
+
+- Now, let's start a new container
+and make sure the current user is the app user,
+not the root user, So, docker run in the interactive mode,
+we're going to run react app and start a shell session.
+-------------------code----------------------
+$ docker run -it react-app sh
+-------------------code----------------------
+
+- we check the current user So, it's the app user.
+-------------------code----------------------
+/app $ whoami
+app
+-------------------code----------------------
+
+- Now, let's look at something interesting.
+we're going to get a long listing.
+These are the files in our application.
+Now, all these files, as we can see, are owned by the root user.
+And in this column, we can see the permissions
+of the root user. So, the root user
+can write to any of these files or directories,
+but the current user running this session is the app user.
+So, this user falls into the others group.
+That means the app user is not able to write to any of these files.
+-------------------code----------------------
+/app $ ls -l
+total 1272
+-rw-r--r--    1 root     root           165 Mar 20 02:24 Dockerfile
+-rw-r--r--    1 root     root          3362 Mar 18 06:18 README.md
+drwxr-xr-x 1115 root     root         36864 Mar 20 02:25 node_modules
+-rw-r--r--    1 root     root        757495 Mar 20 02:25 package-lock.json
+-rw-r--r--    1 root     root           813 Mar 18 06:18 package.json
+drwxr-xr-x    2 root     root          4096 Mar 18 06:18 public
+drwxr-xr-x    2 root     root          4096 Mar 18 06:18 src
+-rw-r--r--    1 root     root        485703 Mar 20 02:16 yarn.lock
+-------------------code----------------------
+
+- In contrast, if we executed this application
+with the root user, a hacker could potentially
+rewrite something in our application.
