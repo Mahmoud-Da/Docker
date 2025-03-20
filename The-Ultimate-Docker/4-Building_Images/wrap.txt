@@ -670,7 +670,7 @@ this frontend application needs to talk to a backend or an API.
 
 - Quite often we set the URL of the API using an environment variable.
 This is where we use the end instruction, so we can set API URL to, let's say, http, api
-my-app.com, whatever, doesn't really matter.
+myapp.com, whatever, doesn't really matter.
 -------------------code----------------------
 ENV API_URL=http://api.myapp.com/
 -------------------code----------------------
@@ -681,7 +681,7 @@ ENV API_URL http://api.myapp.com/
 -------------------code----------------------
 
 - personally prefer to have an equal sign so we can clearly see the value
-of environment variables, but that's just my personal preference.
+of environment variables, but that's just our personal preference.
 
 - Now, let's rebuild the image and inspect this environment variable in our
 container. So, we're going to rebuild the image.
@@ -1404,4 +1404,211 @@ should be down to bottom.
          |
          |
   changing instructions
+-------------------code----------------------
+
+*** 14- Removing Images ***
+
+- Let's talk about removing images.
+So first we run docker images. Now in this list we have a bunch of images
+that have no name and no tag. These are what we call dangling images,
+meaning loose images. These are essentially layers that have no relationship
+with a tagged image. So as we were changing our docker file and rebuilding
+our image, docker was creating these layers and at some point these layers
+lost the relationship with our react app image. So as we work with docker,
+we see these dangling images popping up all the time.
+-------------------code----------------------
+$ docker images
+REPOSITORY     TAG       IMAGE ID       CREATED          SIZE
+react-app      latest    27fa9bf420d8   38 minutes ago   482MB
+<none>         <none>    e24dbe1387e1   40 minutes ago   482MB
+<none>         <none>    8b2a2f4a760e   2 hours ago      481MB
+<none>         <none>    7072f2f889bc   2 hours ago      481MB
+<none>         <none>    e7798d53f6dc   46 hours ago     481MB
+<none>         <none>    4813ee97e523   46 hours ago     481MB
+<none>         <none>    8816b1815607   46 hours ago     116MB
+hello-docker   latest    817ba4c523a5   3 days ago       160MB
+<none>         <none>    8af7922e7fd1   3 days ago       160MB
+alpine         latest    8d591b0b7dea   4 weeks ago      8.17MB
+ubuntu         latest    c3d1a3432580   7 weeks ago      101MB
+<none>         <none>    322425dfa4aa   3 years ago      116MB
+-------------------code----------------------
+
+- To get rid of them we have to use the prune command. So we type docker image
+prune. It's asking for confirmation. Yes.
+Alright. Nothing was deleted in this case because we still have containers
+running an older react app image.
+-------------------code----------------------
+$ docker image prune
+WARNING! This will remove all dangling images.
+Are we sure we want to continue? [y/N] y
+Deleted Images:
+Total reclaimed space: 0B
+-------------------code----------------------
+
+- Let's verify it. So, we run docker ps. Currently we have no running containers.
+But we probably have a bunch of containers in the stopped state.
+-------------------code----------------------
+$ docker ps
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+-------------------code----------------------
+
+- So, we run docker ps dash a, that is short for all. So look, we have tons of containers
+that are currently stopped. 
+-------------------code----------------------
+$ docker ps -a
+CONTAINER ID   IMAGE          COMMAND                   CREATED        STATUS                      PORTS     NAMES
+049537cb6ce1   8b2a2f4a760e   "docker-entrypoint.s…"   2 hours ago    Exited (0) 50 minutes ago             adoring_villani
+99abff021260   7072f2f889bc   "docker-entrypoint.s…"   2 hours ago    Exited (0) 2 hours ago                reverent_benz
+9b35adaaeddd   7072f2f889bc   "docker-entrypoint.s…"   2 hours ago    Exited (0) 2 hours ago                zealous_driscoll
+f74413e58fb8   7072f2f889bc   "docker-entrypoint.s…"   2 hours ago    Exited (130) 2 hours ago              flamboyant_pascal
+e91757161e5e   alpine         "/bin/sh"                 3 hours ago    Exited (130) 2 hours ago              sleepy_chebyshev
+7d682d60854e   e7798d53f6dc   "docker-entrypoint.s…"   46 hours ago   Exited (255) 3 hours ago              vibrant_saha
+1a1dd3327d20   4813ee97e523   "docker-entrypoint.s…"   46 hours ago   Exited (130) 46 hours ago             thirsty_shaw
+cc5b5a086f5d   8816b1815607   "docker-entrypoint.s…"   46 hours ago   Exited (130) 46 hours ago             strange_hermann
+35f1dcc85d59   8816b1815607   "docker-entrypoint.s…"   46 hours ago   Exited (130) 46 hours ago             relaxed_albattani
+773c8e44c24f   322425dfa4aa   "docker-entrypoint.s…"   47 hours ago   Exited (0) 46 hours ago               modest_brown
+934145a0b3b5   322425dfa4aa   "docker-entrypoint.s…"   47 hours ago   Exited (1) 47 hours ago               laughing_faraday
+c30f57516ae3   322425dfa4aa   "docker-entrypoint.s…"   47 hours ago   Exited (0) 47 hours ago               nostalgic_chebyshev
+c315081d7859   ubuntu         "/bin/bash"               47 hours ago   Exited (0) 47 hours ago               charming_mccarthy
+17e332c0bbd7   ubuntu         "/bin/bash"               47 hours ago   Exited (0) 46 hours ago               blissful_albattani
+8a65a7f2dd58   ubuntu         "/bin/bash"               2 days ago     Exited (130) 47 hours ago             eloquent_lichterman
+ee871cc6ca5f   ubuntu         "/bin/bash"               3 days ago     Exited (129) 2 days ago               naughty_mclean
+cc3ce42ddbf2   ubuntu         "/bin/bash"               3 days ago     Exited (0) 3 days ago                 fervent_golick
+8ee68b73826f   hello-docker   "docker-entrypoint.s…"   3 days ago     Exited (0) 3 days ago                 busy_brown
+-------------------code----------------------
+
+- So we can get rid of these containers as well.
+using docker container prune. So it's asking if we want to remove all
+stopped containers.So all these
+stopped containers are deleted and this freed up on this machine 150 megabytes of space.
+-------------------code----------------------
+$ docker container prune
+WARNING! This will remove all stopped containers.
+Are we sure we want to continue? [y/N] y
+Deleted Containers:
+049537cb6ce1c73b3b979372479459a2c0263055968f87a8d0070fd572aa8a9c
+99abff0212602685f06783b15e732ef0f72dda5cb74c28d6c3995a1ea9d96161
+9b35adaaeddda3a325485ee4c8556d139bd262168a53ec67a21ee1e4f6b11695
+f74413e58fb8c794ddd45171a7d727368e27ba2ab78f73e6b82738dfe3261741
+e91757161e5e7665ff45864eeebd667a6426443834b2bcf5c03fd808af475942
+7d682d60854e6fe2b68242a96f85a630526ed900d2dfa511e2a9902b80bc6439
+1a1dd3327d207dea3db1c8fce88f61253a244a9ac49a72225a3014fb6becedd8
+cc5b5a086f5d719ada06f8175334a3b9a1e33d119cc3db23b450fe2c0e0e6916
+35f1dcc85d5904b50f64fcb37906c5c189d8d9cb069578c3eb857445ddcd900b
+773c8e44c24f3efa4a6ebf2932d68b8d754596a8c87dae2b44e747b7e907d3a3
+934145a0b3b5d9e2d0c7cad3798248eae964039e952d26a8f9fcbb9e2732969d
+c30f57516ae360ab32c363df6ec69eb30c551bd51717898294a79e0b484c134d
+c315081d7859160ae749eba1b5170edd1d4f183061b1353874173d61747ae233
+17e332c0bbd762f8c4be847c75c0e961c58791fa70d78476c7064764aeb740ed
+8a65a7f2dd58c27e212586079cb02dc73c9203debdfcbcb3da50f387c183ecc0
+ee871cc6ca5f1cc8e07a34d5bd23a1f942c20209f0c3e7ed23d24055d1d53e15
+cc3ce42ddbf23626a38a6320d76e507d32fd5cf49e9e9a3ad351f0334b7216d1
+8ee68b73826f38bb5b90a55b0e46fc30f898cb3012d286dbb8c797fd869be2a2
+
+Total reclaimed space: 150.3MB
+-------------------code----------------------
+
+- Now, let's run docker image prune one more time. Yes.
+Great. So all these dangling images are removed.
+-------------------code----------------------
+$ docker image prune
+WARNING! This will remove all dangling images.
+Are we sure we want to continue? [y/N] y
+Deleted Images:
+deleted: sha256:8816b1815607d3d204cd7f33a3fc141a29e6f96809a6a9a932af2bc578a20463
+deleted: sha256:4813ee97e523048ca4718fad986644d6289f2d930591f77e4f05bf7b263d716d
+deleted: sha256:322425dfa4aa806cd14b7952ee48efebb79d0b05fbed2c49649791c511fa16c4
+deleted: sha256:7072f2f889bc06c712fdd966582f8c8c97b0727b02c26926021af2ecf05c3856
+deleted: sha256:8b2a2f4a760ea543b4992e7728c54b4328d938e51983d50543fb4366e6464a67
+deleted: sha256:e7798d53f6dc0966f9ec44b4ea2a20c1a1153d4cd89564219df8a646dfda1432
+
+Total reclaimed space: 0B
+-------------------code----------------------
+
+- Now, if we run docker images, we only see
+the proper images we have created or pulled from docker hop.
+-------------------code----------------------
+$ docker images
+REPOSITORY     TAG       IMAGE ID       CREATED          SIZE
+react-app      latest    27fa9bf420d8   42 minutes ago   482MB
+hello-docker   latest    817ba4c523a5   3 days ago       160MB
+alpine         latest    8d591b0b7dea   4 weeks ago      8.17MB
+ubuntu         latest    c3d1a3432580   7 weeks ago      101MB
+-------------------code----------------------
+
+- Now, how do we remove one of those images?
+We run docker image. So all image management operations
+start with docker image. If we simply press enter here,
+we can see all these subcommands.
+-------------------code----------------------
+$ docker image
+
+Usage:  docker image COMMAND
+
+Manage images
+
+Commands:
+  build       Build an image from a Dockerfile
+  history     Show the history of an image
+  import      Import the contents from a tarball to create a filesystem image
+  inspect     Display detailed information on one or more images
+  load        Load an image from a tar archive or STDIN
+  ls          List images
+  prune       Remove unused images
+  pull        Download an image from a registry
+  push        Upload an image to a registry
+  rm          Remove one or more images
+  save        Save one or more images to a tar archive (streamed to STDOUT by default)
+  tag         Create a tag TARGET_IMAGE that refers to SOURCE_IMAGE
+
+Run 'docker image COMMAND --help' for more information on a command.
+-------------------code----------------------
+
+- So we can build an image, this is equivalent
+to running docker build. we can also see the history of an image,
+we can load an image, we can prune images
+and so on. 
+
+- Now, in this list we also have remove, for removing
+one or more images. So, let's bring up the list of images
+one more time, because here we need the name or the id of an image.
+-------------------code----------------------
+$ docker images
+REPOSITORY     TAG       IMAGE ID       CREATED          SIZE
+react-app      latest    27fa9bf420d8   42 minutes ago   482MB
+hello-docker   latest    817ba4c523a5   3 days ago       160MB
+alpine         latest    8d591b0b7dea   4 weeks ago      8.17MB
+ubuntu         latest    c3d1a3432580   7 weeks ago      101MB
+-------------------code----------------------
+
+- So, we can run docker image remove, we can either reference an image by its name,
+for example we can remove react app.
+-------------------code----------------------
+$ docker image rm react-app
+-------------------code----------------------
+
+-  or we can reference using its image id, df3.
+-------------------code----------------------
+$ docker image rm 27f
+-------------------code----------------------
+
+- And if we want to remove multiple images we type them all here, separated
+by a space.
+-------------------code----------------------
+$ docker image rm 27f 817
+-------------------code----------------------
+
+- Now in this demo we want to delete hello docker image. 
+-------------------code----------------------
+$ docker image rm hello-docker
+Untagged: hello-docker:latest
+Deleted: sha256:817ba4c523a5f02b3f85d33324a901e432cf33219df45953bc906e87cedf41bd
+-------------------code----------------------
+-let's verify it's gone, docker images.
+-------------------code----------------------
+$ docker images
+REPOSITORY   TAG       IMAGE ID       CREATED          SIZE
+react-app    latest    27fa9bf420d8   45 minutes ago   482MB
+alpine       latest    8d591b0b7dea   4 weeks ago      8.17MB
+ubuntu       latest    c3d1a3432580   7 weeks ago      101MB
 -------------------code----------------------
