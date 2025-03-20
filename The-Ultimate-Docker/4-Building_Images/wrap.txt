@@ -1157,3 +1157,251 @@ ENV API_URL=http://api.myapp.com/
 EXPOSE 3000
 CMD [ "npm", "start" ]
 -------------------code----------------------
+
+*** 13- Speeding Up Builds ***
+
+- we've probably noticed that our builds are fairly slow. Every time we make a
+small change, we have to rebuild and wait almost half a minute. So let's see how we
+can optimize these builds.
+
+- The first thing we need to understand here is the concept
+of layers in docker. An image is essentially a collection of layers.
+You can think of a layer as a small file system that only includes
+modified files. So when docker tries to build an image for us,
+it executes each of these instructions and creates a new layer.
+That layer only includes the files that were modified as a result of that
+instruction.
+-------------------code---------------------- 
+FROM node:14.16.0-alpine3.13
+RUN addgroup app && adduser -S -G app app
+USER app
+WORKDIR /app
+COPY . .
+RUN npm install
+ENV API_URL=http://api.myapp.com/
+EXPOSE 3000
+CMD [ "npm", "start" ]
+-------------------code----------------------
+
+- So for our first instruction, docker is going to take the node image
+and put it in a layer. Now more accurately, the node image itself
+is several layers. But let's not worry about that for now. Let's just imagine
+we have a single layer and this layer includes all the linux and node files.
+
+- Then docker is going to execute the second instruction to add a group
+and a user. Once again, it's going to create a new layer because
+as we saw in the previous section, when we add a user or a group, something is
+written to the file system. So a couple of files are modified. So this layer
+will only include the modified files.
+
+- Similarly, docker will execute all these other instructions and create several layers.
+Let's have a quick look at these layers. So here in the terminal we type
+docker history and the name of our image, react app.
+-------------------code----------------------
+$ docker history react-app
+IMAGE          CREATED             CREATED BY                                       SIZE      COMMENT
+8b2a2f4a760e   About an hour ago   EXPOSE map[3000/tcp:{}]                          0B        buildkit.dockerfile.v0
+<missing>      About an hour ago   ENV API_URL=http://api.myapp.com/                0B        buildkit.dockerfile.v0
+<missing>      About an hour ago   RUN /bin/sh -c npm install # buildkit            365MB     buildkit.dockerfile.v0
+<missing>      About an hour ago   COPY . . # buildkit                              1.34MB    buildkit.dockerfile.v0
+<missing>      About an hour ago   WORKDIR /app                                     0B        buildkit.dockerfile.v0
+<missing>      About an hour ago   USER app                                         0B        buildkit.dockerfile.v0
+<missing>      About an hour ago   RUN /bin/sh -c addgroup app && adduser -S -G…   4.84kB    buildkit.dockerfile.v0
+<missing>      3 years ago         /bin/sh -c #(nop)  CMD ["node"]                  0B
+<missing>      3 years ago         /bin/sh -c #(nop)  ENTRYPOINT ["docker-entry…   0B
+<missing>      3 years ago         /bin/sh -c #(nop) COPY file:238737301d473041…   116B
+<missing>      3 years ago         /bin/sh -c apk add --no-cache --virtual .bui…   7.91MB
+<missing>      3 years ago         /bin/sh -c #(nop)  ENV YARN_VERSION=1.22.5       0B
+<missing>      3 years ago         /bin/sh -c addgroup -g 1000 node     && addu…   102MB
+<missing>      3 years ago         /bin/sh -c #(nop)  ENV NODE_VERSION=14.16.0      0B
+<missing>      3 years ago         /bin/sh -c #(nop)  CMD ["/bin/sh"]               0B
+<missing>      3 years ago         /bin/sh -c #(nop) ADD file:3b16ffee2b26d8af5…   5.35MB
+-------------------code----------------------
+
+- we're only going to look at these two columns created by and size. In this column we can see
+the instruction that created a new layer and in the size column we can
+see the size of that layer. Now we have to read this list from bottom to top. So
+look over here. First we have this group of layers that come
+from node and Linux. So earlier we told we that when we use the from instruction
+that instruction is going to bring in several layers that belong to Linux
+and node and then we're going to build on top of those layers.
+
+
+- Now look at our run instruction for adding a new user.
+That's the command that we typed earlier,
+Now look at the size of this layer. It's 4 kilobytes because only a couple of files are
+modified as a result of this command.
+-------------------code----------------------
+<missing>      About an hour ago   RUN /bin/sh -c addgroup app && adduser -S -G…   4.84kB    buildkit.dockerfile.v0
+-------------------code----------------------
+
+- Now look at how this instruction is executed.
+It's executed inside slash bin slash shell because we use this instruction
+in the shell form. In contrast
+if we use the execute form this command would be executed
+directly. 
+
+- Next we set the current user. The size of this layer is 0. No files
+are changed. Then we set the working directory
+then we copy all the application files and
+over here we can see the size of this layer is 1.6 megabytes.
+Then we run npm install and once all these dependencies are installed
+they are stored in this layer and the size of this layer is
+365MB megabytes. So an image is
+essentially a collection of these layers.
+So we understand what layers are.
+-------------------code----------------------
+<missing>      About an hour ago   RUN /bin/sh -c npm install # buildkit            365MB     buildkit.dockerfile.v0
+-------------------code----------------------
+
+- Now Docker has an optimization mechanism built into it.
+So next time we ask Docker to build this image it's going to look at the first instruction
+and see if the instruction is changed or not. If it's not changed
+it's not going to rebuild this layer. It's going to reuse it from its cache.
+That's the optimization we was talking about.
+Then Docker is going to look at the second instruction.
+Once again, nothing is changed here so Docker is going to reuse
+this layer from its cache. In contrast if we made a tiny change here
+let's say if we changed app to app 2 then Docker had to rebuild this layer.
+-------------------code----------------------
+RUN addgroup app2 && adduser -S -G app2 app2
+-------------------code----------------------
+
+- Now, look at this line. Copy all these files.
+This is a special instruction because with this instruction Docker cannot tell
+if anything has changed or not. So it has to look at the content of files as well.
+And that means if we make a tiny change in our application
+if we write one extra line of code Docker cannot reuse this layer from its cache
+it has to rebuild it.
+
+- And this is where the problem happens.
+Once the layer is rebuilt all the following layers have to be rebuilt as well.
+So Docker cannot reuse this layer from its cache.
+It has to install all NPM dependencies. And this is exactly where
+we have a bottleneck. We have to wait half a minute
+for all these dependencies to be installed. It doesn't make sense.
+
+- So to optimize our build we have to separate the installation
+of third party dependencies from copying our application files.
+How do we do that?
+Very easy. Instead of copying all the files in one go
+first we want to copy the files needed for installing third party dependencies.
+other words in our case the package files files.
+-------------------code----------------------
+Package-lock.json
+and package.json
+-------------------code----------------------
+
+
+- These are the only files that we need for running NPM install.
+Okay? So we're going to copy package *.json then we run NPM install
+and finally we copy all the application files.
+Now with this new setup if we haven't changed any of our application dependencies
+Docker is going to reuse this layer from its cache. Because package.json
+is not modified.
+-------------------code----------------------
+COPY package*.json .
+RUN npm install
+COPY . .
+-------------------code----------------------
+
+- Similarly, Docker is not going to reinstall
+all NPM dependencies because this instruction is not changed.
+If it changes to NPM update then yes Docker had to rebuild this layer.
+-------------------code----------------------
+RUN npm update
+-------------------code----------------------
+
+- when using install nothing has changed here so Docker can reuse its cache.
+Then we're copying our application files and of course this layer should always be rebuilt.
+And that's totally fine. and now this is our docker file.
+-------------------code----------------------
+FROM node:14.16.0-alpine3.13
+RUN addgroup app && adduser -S -G app app
+USER app
+WORKDIR /app
+COPY package*.json .
+RUN npm install
+COPY . .
+ENV API_URL=http://api.myapp.com/
+EXPOSE 3000
+CMD [ "npm", "start" ]
+-------------------code----------------------
+
+- So let's run a quick test. Back to the terminal
+let's rebuild this image. Alright, now look over here.
+On this line we can see cached because Docker is reusing
+the layer cache for this instruction. The same is true
+for setting the working directory. Now this is the first time
+we're building this Docker file that's why this is a new layer that we have
+this layer has to be built and of course dependencies have to be installed as well.
+-------------------code----------------------
+app +[master] $ docker build -t react-app .
+[+] Building 34.0s (11/11) FINISHED                                                                                                docker:desktop-linux
+ => [internal] load build definition from Dockerfile                                                                                               0.0s
+ => => transferring dockerfile: 283B                                                                                                               0.0s
+ => [internal] load metadata for docker.io/library/node:14.16.0-alpine3.13                                                                         3.7s
+ => [internal] load .dockerignore                                                                                                                  0.0s
+ => => transferring context: 89B                                                                                                                   0.0s
+ => [1/6] FROM docker.io/library/node:14.16.0-alpine3.13@sha256:2c51dc462a02f15621e7486774d36d048a27225d581374b002b8477a79a59b4b                   0.0s
+ => [internal] load build context                                                                                                                  0.0s
+ => => transferring context: 1.34MB                                                                                                                0.0s
+ => CACHED [2/6] RUN addgroup app && adduser -S -G app app                                                                                         0.0s
+ => CACHED [3/6] WORKDIR /app                                                                                                                      0.0s
+ => [4/6] COPY package*.json .                                                                                                                     0.0s
+ => [5/6] RUN npm install                                                                                                                         28.1s
+ => [6/6] COPY . .                                                                                                                                 0.0s
+ => exporting to image                                                                                                                             2.1s
+ => => exporting layers                                                                                                                            2.1s
+ => => writing image sha256:e24dbe1387e137459a2c8633d898c003f9649d3a3d903c2c52a6ebc03ec2b938                                                       0.0s
+ => => naming to docker.io/library/react-app                                                                                                       0.0s
+-------------------code----------------------
+
+- So let's wait until this is done. after the image is built.
+Now let's go modify our application code and do another build.
+So we're going to go to this file readme.md and add a plus here.
+Very simple.
+-------------------code----------------------
+# Getting Started with Create React App+
+-------------------code----------------------
+
+- Now, let's do another build. Alright, our build was super fast
+because we didn't have to wait for the installation of
+third party dependencies.
+Look at this line. Once again we are using layer caching.
+-------------------code----------------------
+app +[master] $ docker build -t react-app .
+[+] Building 0.9s (11/11) FINISHED                                                                                                 docker:desktop-linux
+ => [internal] load build definition from Dockerfile                                                                                               0.0s
+ => => transferring dockerfile: 283B                                                                                                               0.0s
+ => [internal] load metadata for docker.io/library/node:14.16.0-alpine3.13                                                                         0.8s
+ => [internal] load .dockerignore                                                                                                                  0.0s
+ => => transferring context: 89B                                                                                                                   0.0s
+ => [1/6] FROM docker.io/library/node:14.16.0-alpine3.13@sha256:2c51dc462a02f15621e7486774d36d048a27225d581374b002b8477a79a59b4b                   0.0s
+ => [internal] load build context                                                                                                                  0.0s
+ => => transferring context: 5.02kB                                                                                                                0.0s
+ => CACHED [2/6] RUN addgroup app && adduser -S -G app app                                                                                         0.0s
+ => CACHED [3/6] WORKDIR /app                                                                                                                      0.0s
+ => CACHED [4/6] COPY package*.json .                                                                                                              0.0s
+ => CACHED [5/6] RUN npm install                                                                                                                   0.0s
+ => [6/6] COPY . .                                                                                                                                 0.0s
+ => exporting to image                                                                                                                             0.0s
+ => => exporting layers                                                                                                                            0.0s
+ => => writing image sha256:27fa9bf420d8a22f104ff636a87b49967cff753c3971f2b4f934abc4602e5334                                                       0.0s
+ => => naming to docker.io/library/react-app                                                                                                       0.0s
+-------------------code----------------------
+
+- So here's what we need to take away from this lesson.
+To optimize our build we should organize our Docker file
+such that the instructions that don't change frequently
+should be on the top and the instructions or files that change frequently
+should be down to bottom.
+-------------------code----------------------
+  Stable instructions
+         |
+         |
+         |
+         |
+         |
+  changing instructions
+-------------------code----------------------
