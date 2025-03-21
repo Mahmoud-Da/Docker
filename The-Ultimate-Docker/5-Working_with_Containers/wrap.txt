@@ -562,3 +562,261 @@ README.md          package-lock.json  public             yarn.lock
 - And that means if we delete this container, its file system will also go with it
 and we'll lose our data. So we should never store our data in a container's file system.
 That's what volumes are for.
+
+
+*** 9- Persisting Data using Volumes *** 
+
+
+- Let's talk about volumes. A volume is a storage outside of containers.
+It can be a directory on the host or somewhere in the cloud.
+
+- So let's see how we can work with volumes. We have this command
+docker volume that has a bunch of subcommands. So we can create volumes,
+we can inspect them, we can list them, we can also prune and remove them. 
+-------------------code----------------------
+$ docker volume
+
+Usage:  docker volume COMMAND
+
+Manage volumes
+
+Commands:
+  create      Create a volume
+  inspect     Display detailed information on one or more volumes
+  ls          List volumes
+  prune       Remove unused local volumes
+  rm          Remove one or more volumes
+
+Run 'docker volume COMMAND --help' for more information on a command.
+-------------------code----------------------
+
+- So let's create a new volume
+called app data. And of course we can call it anything, it doesn't really matter.
+Now let's inspect this volume. So docker volume inspect app data. Here we have
+a bunch of properties, we can see when this volume was created,
+we can see the driver which is local by default, that means this is a
+directory on the host. 
+-------------------code----------------------
+$ docker volume create app-data
+app-data
+-------------------code----------------------
+
+- we also have drivers for creating volumes in the
+cloud. So if we use a cloud platform, we need to do our own research and
+find a driver for creating a volume in that cloud platform.
+-------------------code----------------------
+$ docker volume inspect app-data
+[
+    {
+        "CreatedAt": "2025-03-21T06:24:19Z",
+        "Driver": "local",
+        "Labels": null,
+        "Mountpoint": "/var/lib/docker/volumes/app-data/_data",
+        "Name": "app-data",
+        "Options": null,
+        "Scope": "local"
+    }
+]
+-------------------code----------------------
+
+Now look at mount point. This is where that
+directory is created on the host. So this is a Linux path.
+If we're on Windows, we would probably see something like C drive backslash
+program files, whatever. Now a note for my Mac users,
+earlier in the course we told hat docker on Mac runs inside a lightweight
+Linux virtual machine. So this path that we see here is a path inside that virtual machine.
+It doesn't exist on our Mac. So if we try to go to this directory, we're not
+going to find anything.
+-------------------code----------------------
+"/var/lib/docker/volumes/app-data/_data"
+-------------------code----------------------
+
+- So now we have a volume. Let's see how we can
+start a container and give it this volume for persisting data. So
+docker run, we're going to run it in detached mode. we're going to map, let's say port
+4000 of the host to port 3000 of the container. Now we're going to use a new option,
+dash v for volume. We're going to map app data to a directory
+in the file system of the container. So here we type a colon
+followed by an absolute path in the file system of the container.
+So we can go to slash app slash data.
+-------------------code----------------------
+$ docker run -d -p 4000:3000 -v app-data:/app/data
+-------------------code----------------------
+
+- Now we don't have to explicitly create this volume
+before running this command. So if we type
+a new volume here, docker will automatically create it.
+-------------------code----------------------
+docker run -d -p 4000:3000 -v app-data2:/app/data
+-------------------code----------------------
+
+- The same is true for this directory. Currently we don't have a data directory
+inside our app directory. So docker will automatically create this.
+But there is a problem with this, we'll talk about it in a second.
+So we give it a volume and then the image, react app.
+-------------------code----------------------
+$ docker run -d -p 4000:3000 -v app-data:/app/data react-app
+e138b68920de354756867ac2c4be2a9e79edbbff663329bb93c0e1040f2ad364
+-------------------code----------------------
+
+- So here's our container ID. Let's start a shell session.
+So docker exec interactive, e13 shell.Now, let's go to the data directory and write
+something to a file. So data to data.txt. We get a permission error.
+-------------------code----------------------
+$ docker exec -it e13 sh
+/app $ cd data/
+/app/data $ echo data > data.txt
+sh: can't create data.txt: Permission denied
+-------------------code----------------------
+
+- why this is happening? 
+Let's go out of this directory and get a long listing.
+So, here's our data directory. Now look at the owner
+of this directory. It's the root user. And over here,
+as we can see, the owner is the only user that has
+write permission. So the app user, which is the user that
+runs our app, belongs to the others group, and in this group we don't
+have a write permission.
+-------------------code----------------------
+/app/data $ cd ..
+/app $ ls -l
+total 1304
+-rw-r--r--    1 root     root           207 Mar 20 04:31 Dockerfile
+-rw-r--r--    1 root     root          3366 Mar 20 05:56 README.md
+drwxr-xr-x    2 root     root          4096 Mar 21 06:24 data
+drwxr-xr-x    1 app      app           4096 Mar 21 06:27 node_modules
+-rw-r--r--    1 root     root        819126 Mar 20 04:07 package-lock.json
+-rw-r--r--    1 root     root           813 Mar 20 04:07 package.json
+drwxr-xr-x    2 root     root          4096 Mar 20 04:12 public
+drwxr-xr-x    2 root     root          4096 Mar 20 04:12 src
+-rw-r--r--    1 root     root        485703 Mar 20 04:07 yarn.lock
+-------------------code----------------------
+
+- The reason we're facing this issue is because we let
+docker automatically create this directory
+for us. So to prevent this from happening, we have to go to our
+docker file. So back to our docker file, after
+we create the app directory, we're going to run, make their
+data. We're going to create this directory using the
+app user that we said earlier in this file. With this,
+this directory will be owned by this user and it will automatically have
+the right permission.
+-------------------code----------------------
+USER app
+WORKDIR /app
+RUN mkdir data
+-------------------code----------------------
+
+- But now we have
+to rebuild our image because we have modified our docker file.
+-------------------code----------------------
+app +[master] $ docker build -t react-app .
+[+] Building 33.6s (12/12) FINISHED                                                                                                docker:desktop-linux
+ => [internal] load build definition from Dockerfile                                                                                               0.0s
+ => => transferring dockerfile: 299B                                                                                                               0.0s
+ => [internal] load metadata for docker.io/library/node:14.16.0-alpine3.13                                                                         0.8s
+ => [internal] load .dockerignore                                                                                                                  0.0s
+ => => transferring context: 89B                                                                                                                   0.0s
+ => [1/7] FROM docker.io/library/node:14.16.0-alpine3.13@sha256:2c51dc462a02f15621e7486774d36d048a27225d581374b002b8477a79a59b4b                   0.0s
+ => [internal] load build context                                                                                                                  0.0s
+ => => transferring context: 1.79kB                                                                                                                0.0s
+ => CACHED [2/7] RUN addgroup app && adduser -S -G app app                                                                                         0.0s
+ => CACHED [3/7] WORKDIR /app                                                                                                                      0.0s
+ => [4/7] RUN mkdir data                                                                                                                           0.1s
+ => [5/7] COPY package*.json .                                                                                                                     0.0s
+ => [6/7] RUN npm install                                                                                                                         28.2s
+ => [7/7] COPY . .                                                                                                                                 0.0s
+ => exporting to image                                                                                                                             4.4s
+ => => exporting layers                                                                                                                            4.4s
+ => => writing image sha256:d63e19272668b1d5fe42f33e1bef69b77f1ee11d565f5d324cf4ce4b33c2468e                                                       0.0s
+ => => naming to docker.io/library/react-app                                                                                                       0.0s
+-------------------code----------------------
+
+- now let's start a new container. docker run dash t,
+this time we're going to use a different port mapping, let's say port
+5000 of the host to 3000 of the container. And for volume,
+we're going to map app data to slash app slash data.
+But this time, the data directory already exists
+inside the file system of this container and the app user owns
+this directory.
+-------------------code----------------------
+$ docker run -d -p 5000:3000 -v app-data:/app/data react-app
+e1c9962056ab49f47218f03e26d4c321efa6fcc3b17a33d816da739c5f994613
+docker: Error response from daemon: Ports are not available: 
+exposing port TCP 0.0.0.0:5000 -> 127.0.0.1:0: listen tcp 0.0.0.0:5000: bind: 
+address already in use.
+-------------------code----------------------
+
+- we have error cause other application using the 5000 port 
+to check of ports is busy
+-------------------code----------------------
+$ lsof -i :5000
+-------------------code----------------------
+
+- so we another port in this case 5001 
+-------------------code----------------------
+$ docker run -d -p 5001:3000 -v app-data:/app/data react-app
+3bf2e3622fb5a9fbd330ec4499b83402fc9c44d7e74be4cb9715ede89a48fade
+-------------------code----------------------
+
+- Now let's run a shell session inside this container. So
+docker exec interactive 3bf shell. and we check the permission of the data directory 
+-------------------code----------------------
+$ docker exec -it 3bf sh
+/app $ cd data
+/app/data $ cd ..
+/app $ ls -l
+total 1244
+-rw-r--r--    1 root     root           223 Mar 21 06:43 Dockerfile
+-rw-r--r--    1 root     root          3367 Mar 21 03:28 README.md
+drwxr-xr-x    2 app      app           4096 Mar 21 06:43 data
+drwxr-xr-x    1 app      app           4096 Mar 21 06:44 node_modules
+-rw-r--r--    1 root     root        778804 Mar 21 03:44 package-lock.json
+-rw-r--r--    1 root     root           813 Mar 21 03:28 package.json
+drwxr-xr-x    2 root     root          4096 Mar 21 06:31 public
+drwxr-xr-x    2 root     root          4096 Mar 21 06:31 src
+-rw-r--r--    1 root     root        462014 Mar 21 03:44 yarn.lock
+-------------------code----------------------
+
+- Now let's go to the data directory and write something using echo.
+-------------------code----------------------
+/app/data $ echo data > data.txt
+/app/data $ cat data.txt
+data
+-------------------code----------------------
+
+-  Now here's the beauty of volumes.
+If we delete this container, this file will still exist.
+Because this directory is stored outside of this container. It's actually
+a directory on the host.
+
+- Let's see that in action. So,
+we're going to exit and remove this container. So remove
+dash force, we have to force it because this container is still running.
+-------------------code----------------------
+$ docker rm -f 3bf
+3bf
+-------------------code----------------------
+
+- Now let's start a new container with the same
+volume mapping. So this is a brand new container.
+-------------------code----------------------
+$ docker run -d -p 5001:3000 -v app-data:/app/data react-app
+1f0feff2e67310995bcfccf7e8693bb2a1a77165284cb9d9c000a3f845076077
+-------------------code----------------------
+
+Now we're going to run a shell session here. So docker exec interactive
+1f0 shell. Let's go to the data directory
+and list. Look, our data file is here.
+-------------------code----------------------
+$ docker exec -it 1f0 sh
+/app $ cd data
+/app/data $ ls
+data.txt
+-------------------code----------------------
+
+- So volumes are the right way to persist data in dockerize applications
+because they have different life cycles from containers. If we delete a container
+the associated volume is not deleted. It still exists.
+Also, we can share a volume amongst multiple containers.
+
