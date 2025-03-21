@@ -1,0 +1,17 @@
+*** 1- Introduction ***
+- In this section we're going to explore containers in more detail. 
+
+-We'll talk about starting and stopping containers,
+publishing ports, viewing container logs, executing commands in running containers,
+removing containers, persisting data using volumes, and sharing source code with containers
+so we don't have to rebuild our image every time we make a change in our code.
+-------------------code----------------------
+• Starting & stopping containers
+• Publishing ports
+• Viewing logs
+• Executing commands in containers
+• Removing containers
+• Persisting data using volumes
+• Sharing source code
+-------------------code----------------------
+
