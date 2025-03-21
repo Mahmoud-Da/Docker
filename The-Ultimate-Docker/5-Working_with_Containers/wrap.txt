@@ -418,3 +418,96 @@ whereas with docker start, we start a stopped container.
 docker start -->  start an stopped container
 docker run   -->  start a new container
 -------------------code----------------------
+
+*** 7- Removing Containers ***
+
+- There are two ways to remove a container. We can type docker container remove
+and then specify the name.
+-------------------code----------------------
+$ docker container rm c1
+-------------------code----------------------
+
+- or we can use the shortcut docker remove.
+-------------------code----------------------
+$ docker rm c1
+-------------------code----------------------
+
+- So, let's go with that. We get an error saying you cannot remove a
+running container.
+-------------------code----------------------
+$ docker rm c1
+Error response from daemon: cannot remove container "/c1": container is running: stop the container before removing or force remove
+-------------------code----------------------
+
+- So here we have two options. One option is to stop the
+container and then remove it. The other option is to use the force option.
+So, if you want to force the removal, we bring up the last command
+and add dash f.
+-------------------code----------------------
+$ docker rm -f c1
+c1
+-------------------code----------------------
+
+- Now that container is gone. So, let's look at the running containers. It's
+definitely not here. 
+-------------------code----------------------
+$ docker ps
+CONTAINER ID   IMAGE       COMMAND                   CREATED       STATUS       PORTS      NAMES
+300b6cd7fa2d   react-app   "docker-entrypoint.s…"   2 hours ago   Up 2 hours   3000/tcp   blue-sky
+912a9f10ea96   react-app   "docker-entrypoint.s…"   2 hours ago   Up 2 hours   3000/tcp   jolly_dewdney
+-------------------code----------------------
+
+- Now, how can we see the stop containers? docker ps dash all.
+Now, even though we have a bunch of containers here, that container, c1
+is not in this list. 
+-------------------code----------------------
+$ docker ps -a
+CONTAINER ID   IMAGE       COMMAND                   CREATED       STATUS                   PORTS      NAMES
+300b6cd7fa2d   react-app   "docker-entrypoint.s…"   2 hours ago   Up 2 hours               3000/tcp   blue-sky
+912a9f10ea96   react-app   "docker-entrypoint.s…"   2 hours ago   Up 2 hours               3000/tcp   jolly_dewdney
+7d0af46635b3   react-app   "docker-entrypoint.s…"   2 hours ago   Exited (0) 2 hours ago              cranky_bardeen
+-------------------code----------------------
+
+- Now, let see cool trick. Let's say you have so many containers here and you only want to look at c1. Here we can use piping.
+We talked about piping Linux commands
+earlier in the course. So, we can say docker ps dash a
+here we type a pipe and then use grep to filter by c1.
+Of course, this only works on Linux.
+So, let's go with that. Look, we don't have a stop container
+called c1.
+-------------------code----------------------
+$ docker ps -a | grep c1
+-------------------code----------------------
+
+
+
+- Now, here we also have the prune command. So, docker
+container prune and with this we can get rid of all the stop containers
+in one go. Take a look.
+-------------------code----------------------
+$ docker container prune
+WARNING! This will remove all stopped containers.
+Are You sure You want to continue? [y/N] y
+Deleted Containers:
+7d0af46635b34a19cea76ec2b638527e50e931db7cbefed4a0693293dbeddb04
+
+Total reclaimed space: 4.558MB
+-------------------code----------------------
+
+- So, let's look at the running containers
+one more time.
+Two containers here 
+-------------------code----------------------
+$ docker ps
+CONTAINER ID   IMAGE       COMMAND                   CREATED       STATUS       PORTS      NAMES
+300b6cd7fa2d   react-app   "docker-entrypoint.s…"   2 hours ago   Up 2 hours   3000/tcp   blue-sky
+912a9f10ea96   react-app   "docker-entrypoint.s…"   2 hours ago   Up 2 hours   3000/tcp   jolly_dewdney
+-------------------code----------------------
+
+- and all containers, two containers.
+-------------------code----------------------
+$ docker ps -a
+CONTAINER ID   IMAGE       COMMAND                   CREATED       STATUS       PORTS      NAMES
+300b6cd7fa2d   react-app   "docker-entrypoint.s…"   2 hours ago   Up 2 hours   3000/tcp   blue-sky
+912a9f10ea96   react-app   "docker-entrypoint.s…"   2 hours ago   Up 2 hours   3000/tcp   jolly_dewdney
+-------------------code----------------------
