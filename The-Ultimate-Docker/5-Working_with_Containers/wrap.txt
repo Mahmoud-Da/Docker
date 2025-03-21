@@ -378,3 +378,43 @@ ae66a7d9157e   react-app   "docker-entrypoint.s…"   11 minutes ago   Up 11 min
 -------------------code----------------------
 
 - So using the exec command, we can execute any commands in a running container.
+
+
+*** 6- Stopping and Starting Containers ***
+
+- Earlier in the course we told we that a container is like a lightweight
+virtual machine. So it can be stopped and then restarted.
+
+- Let's see this in action. So we're going to stop our C1 container.
+-------------------code----------------------
+$ docker stop c1
+c1
+-------------------code----------------------
+
+- Now let's verify that it's not running. It's not running anymore. 
+-------------------code----------------------
+$ docker ps
+CONTAINER ID   IMAGE       COMMAND                   CREATED          STATUS          PORTS      NAMES
+300b6cd7fa2d   react-app   "docker-entrypoint.s…"   37 minutes ago   Up 37 minutes   3000/tcp   blue-sky
+912a9f10ea96   react-app   "docker-entrypoint.s…"   38 minutes ago   Up 38 minutes   3000/tcp   jolly_dewdney
+-------------------code----------------------
+
+- So now if we go back to our browser and refresh this page, look, our application is not available.
+Because that container that was serving this application is no longer running.
+It's stopped.
+
+
+- So we need to bring it back up. And that is very easy.
+We just type docker start C1. 
+-------------------code----------------------
+$ docker start c1
+c1
+-------------------code----------------------
+
+- Now what is the difference between docker start
+and docker run? With docker run we start a new container
+whereas with docker start, we start a stopped container.
+-------------------code----------------------
+docker start -->  start an stopped container
+docker run   -->  start a new container
+-------------------code----------------------
