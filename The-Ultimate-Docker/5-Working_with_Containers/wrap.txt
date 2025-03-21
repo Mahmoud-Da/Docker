@@ -898,3 +898,101 @@ $ docker exec -it 1f0 sh
 /app $ ls | grep secret.txt
 secret.txt
 -------------------code----------------------
+
+*** 11- Sharing the Source Code with a Container ***
+
+- So we have this react application available at local host port
+5000. Now let's see how we can publish our application changes.
+So, back to VS code, we're going to go to the public directory
+and open index.html. Here we're going to update the title
+of this app to dockerized react app.
+- /app/public/index.html
+-------------------code----------------------
+<title>Dockerized React App</title>
+-------------------code----------------------
+
+- This title is what we see in the browser window. So let's save the changes.
+Now back in the browser, if we refresh, we don't see anything. We still
+see the old title.
+
+- So what should we do here? Well, for production machines, we should always build a new image, tag it properly
+and then deploy it. We'll talk about that later when we get to the deployment section.
+But what about development machines? We don't want to rebuild the image every time
+we make a tiny change in our code. That's just too time consuming. Now we might
+say, what about copying? Well, that's a pain in the butt as well. We don't
+want to manually copy files from our development machine into a container
+every time we change our code. 
+-------------------code----------------------
+• For production: build a new image
+• For development
+    Build a new image -> not good practice
+    Copy files X      -> not good practice
+-------------------code----------------------
+
+- So there is a cool trick. We can create
+a mapping or a binding between a directory on the host and a directory
+inside the container. So this way, any changes we make to any files
+in this directory are immediately visible inside the container.
+
+- So back to the terminal, we're going to start a new container.
+docker run dash d this time we're going to use a different port so we can distinguish it.
+We're going to map this port to port 3000. Now earlier we used
+a volume mapping, so we mapped the app data volume to slash app slash data directory inside
+the container.
+-------------------code----------------------
+docker run -d -p 5002:3000 -v app-data:/app/data
+-------------------code----------------------
+
+- Now using the same syntax, we can map a directory on the host to a directory inside the container. So
+instead of using a named volume which is a directory that docker manages
+we're going to use the current directory, the directory that
+holds our application. So we don't want to type the full path here
+this is where we use the pwd command, print working directory.
+Now if we execute this command as is, docker thinks
+this is a named volume. We don't want that, we want a full path.
+-------------------code----------------------
+docker run -d -p 5002:3000 -v pwd:/app/data
+-------------------code----------------------
+
+- So we're going to wrap this with a dollar sign and put it in parenthesis.
+-------------------code----------------------
+docker run -d -p 5002:3000 -v $(pwd):/app
+-------------------code----------------------
+
+- Now when we execute this command, this
+part of the command will be evaluated first and the result will be a full path
+to the current working directory. Then we're going to map this to, not the data
+directory, we're going to map it to the app directory inside the container.
+
+
+- Now what about a named volume? Well we can still add
+another option and use a named volume here if we want to, but this react
+application doesn't really store anything on the
+disk, it doesn't have a database, it's just a basic frontend application. So
+we don't need a named volume here.
+
+- So, our web server is ready, so let's go to localhost
+port 5002. Alright. We can certainly see the updated title.
+Now, let's make one more change to the application's code.
+So we're going to add an exclamation mark at the end. Save the changes.
+-------------------code----------------------
+<title>Dockerized App!</title>
+-------------------code----------------------
+
+- Now back in the browser, we didn't even
+have to refresh. Look, we've got the exclamation mark here. Because in
+React we have this feature called hot reloading, so whenever we change any of our files,
+our application gets automatically
+reloaded in the browser.
+
+- So, to share our source code with the container, once again we use the
+volume option to map the project directory to a directory in the
+containers file system. 
+
+- Now we might say, running applications
+with docker is a pain in the ass. We have to remember all these options
+and type them every time we want to run an application. No, we don't.
+In the next section, we're going to talk about docker compose and we will see how
+easy it is to bring up an application with multiple components.
+we had to cover all these commands and options so when we get to the next section,
+we know exactly how docker compose works under the hood. 
