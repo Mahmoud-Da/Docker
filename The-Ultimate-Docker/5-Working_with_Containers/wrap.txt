@@ -820,3 +820,81 @@ because they have different life cycles from containers. If we delete a containe
 the associated volume is not deleted. It still exists.
 Also, we can share a volume amongst multiple containers.
 
+**** 10- Copying Files between the Host and Containers ***
+
+- Sometimes we need to copy files between the host and a container.
+For example, let's say we have this log file in our container and we want to bring it
+to the host and analyze it.
+
+- So, let's look at the running containers. Alright, we're going to go to this first container and create a
+log file in the application directory. Then we're going to copy that file
+from the container to the host. 
+-------------------code----------------------
+$ docker ps
+CONTAINER ID   IMAGE          COMMAND                   CREATED          STATUS          PORTS                    NAMES
+1f0feff2e673   react-app      "docker-entrypoint.s…"   21 minutes ago   Up 21 minutes   0.0.0.0:5001->3000/tcp   goofy_turing
+300b6cd7fa2d   0211703e719b   "docker-entrypoint.s…"   4 hours ago      Up 4 hours      3000/tcp                 blue-sky
+912a9f10ea96   0211703e719b   "docker-entrypoint.s…"   4 hours ago      Up 4 hours      3000/tcp                 jolly_dewdney
+-------------------code----------------------
+
+- So, let's run docker exec interactive shell.
+Now here in the app directory, we're going to echo hello to log.txt.
+-------------------code----------------------
+$ docker exec -it 1f0 sh
+/app $ echo hello > log.txt
+/app $ ls
+Dockerfile         data               node_modules       package.json       src
+README.md          log.txt            package-lock.json  public             yarn.lock
+-------------------code----------------------
+
+- So we have this log file inside the app directory, inside the container, and we want to copy it to the host. Let me show we how
+to do this. First, let's get out of here. Now docker
+has a copy command for this. Here we need to specify a source
+and a destination. In this case, our source is the container.
+Now here we add a colon and then type the full path to a file or directory. So, we're going to go to our
+app directory and copy log.txt to where we use a period to reference the current directory in the
+host, which is our project directory.
+-------------------code----------------------
+$ docker cp 1f0:app/log.txt .
+Successfully copied 2.05kB to Docker/The-Ultimate-Docker/5-Working_with_Containers/app/.
+-------------------code----------------------
+
+- now, let's list the files. So, here's our log file.
+-------------------code----------------------
+$ ls
+Dockerfile		log.txt			package-lock.json	public			yarn.lock
+README.md		node_modules		package.json		src
+-------------------code----------------------
+
+-  Now we can also copy a file from the host to a container.
+So, let's create a secret file here and copy it to the container.
+And of course, this only works on Linux to the best of my knowledge.
+If we're on Windows, we can just create a file using our favorite text editor.
+Now we have a file in our project directory in the host,
+and this file is not part of our version control system. It's not part of our
+Git repository.
+-------------------code----------------------
+$ echo hello > secret.txt
+$ ls
+Dockerfile		log.txt			package-lock.json	public			src
+README.md		node_modules		package.json		secret.txt		yarn.lock
+-------------------code----------------------
+
+- So we want to manually copy this file into the container.
+So, we're going to copy the container name one more time.
+So one more time, docker copy. Now this time the source
+is secret.txt and the destination is the container followed by a colon and the path, slash
+app.
+-------------------code----------------------
+$ docker cp secret.txt 1f0:app/
+Successfully copied 2.05kB to 1f0:app/
+-------------------code----------------------
+
+- Now, let's run a shell session
+and list all the files. So, here's our secret
+file inside the container's file system.
+-------------------code----------------------
+$ docker exec -it 1f0 sh
+/app $ ls | grep secret.txt
+secret.txt
+-------------------code----------------------
