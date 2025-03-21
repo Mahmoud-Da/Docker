@@ -115,3 +115,127 @@ CONTAINER ID   IMAGE       COMMAND                   CREATED              STATUS
 300b6cd7fa2d   react-app   "docker-entrypoint.s…"   1 second ago         Up 1 second         3000/tcp   blue-sky
 912a9f10ea96   react-app   "docker-entrypoint.s…"   About a minute ago   Up About a minute   3000/tcp   jolly_dewdney
 -------------------code----------------------
+
+
+*** 3- Viewing the Logs ***
+
+- So now we have two containers running in the background, but there's a problem.
+We don't know what is going on inside these containers. What if something goes wrong?
+What if our server generates an error? That's where we need to use the log command.
+
+- But first, let's bring up our running containers. 
+-------------------code----------------------
+$ docker ps
+CONTAINER ID   IMAGE       COMMAND                   CREATED              STATUS              PORTS      NAMES
+300b6cd7fa2d   react-app   "docker-entrypoint.s…"   1 second ago         Up 1 second         3000/tcp   blue-sky
+912a9f10ea96   react-app   "docker-entrypoint.s…"   About a minute ago   Up About a minute   3000/tcp   jolly_dewdney
+-------------------code----------------------
+
+- So now we're going to look at the logs for this container. We type docker
+logs and then the container id. Of course on our machine
+the container id is different. So whatever it is, just type the first few letters.
+Okay, so here we can see the output of our web server.
+This is exactly the same output that we saw when we started this container in the foreground.
+-------------------code----------------------
+$ docker logs 300
+
+> react-app@0.1.0 start /app
+> react-scripts start
+
+ℹ ｢wds｣: Project is running at http://172.17.0.3/
+ℹ ｢wds｣: webpack output is served from
+ℹ ｢wds｣: Content not from webpack is served from /app/public
+ℹ ｢wds｣: 404s will fallback to /
+Starting the development server...
+
+Compiled successfully!
+
+You can now view react-app in the browser.
+
+  Local:            http://localhost:3000
+  On Your Network:  http://172.17.0.3:3000
+
+Note that the development build is not optimized.
+To create a production build, use yarn build.
+-------------------code----------------------
+
+- Now, this logs command has some additional
+options. So as we told before, whenever we want to play with the docker command
+always use dash dash help to learn about various options.
+So one of the options here that is useful is dash dash f or follow. This is useful if our container is
+continuously producing output. 
+-------------------code----------------------
+$ docker logs --help
+
+Usage:  docker logs [OPTIONS] CONTAINER
+
+Fetch the logs of a container
+
+Aliases:
+  docker container logs, docker logs
+
+Options:
+      --details        Show extra details provided to logs
+  -f, --follow         Follow log output
+      --since string   Show logs since timestamp (e.g. "2013-01-02T13:23:37Z") or relative (e.g. "42m" for 42 minutes)
+  -n, --tail string    Number of lines to show from the end of the logs (default "all")
+  -t, --timestamps     Show timestamps
+      --until string   Show logs before a timestamp (e.g. "2013-01-02T13:23:37Z") or relative (e.g. "42m" for 42 minutes)
+-------------------code----------------------
+
+- So instead of running
+docker logs, some container id multiple times, we can just
+use dash f to follow the log. Then, whatever it is
+written to the log, we can see it in real time on the terminal. Of course, we have to
+press control and c to get out of that. 
+-------------------code----------------------
+$ docker logs -f 300
+
+> react-app@0.1.0 start /app
+> react-scripts start
+
+ℹ ｢wds｣: Project is running at http://172.17.0.3/
+ℹ ｢wds｣: webpack output is served from
+ℹ ｢wds｣: Content not from webpack is served from /app/public
+ℹ ｢wds｣: 404s will fallback to /
+Starting the development server...
+
+Compiled successfully!
+
+You can now view react-app in the browser.
+
+  Local:            http://localhost:3000
+  On Your Network:  http://172.17.0.3:3000
+
+Note that the development build is not optimized.
+To create a production build, use yarn build.
+-------------------code----------------------
+
+- Let's look at the other options. Another option
+is dash n or tail and with this we can specify
+the number of lines to show. This is useful
+if we have a really long log. so we're going to use dash n
+5 to look at the last 5 lines.
+-------------------code----------------------
+$ docker logs -n 5 300
+  On Your Network:  http://172.17.0.3:3000
+
+Note that the development build is not optimized.
+To create a production build, use yarn build.
+-------------------code----------------------
+
+- Now, what if we want to see time stamps? We can
+use dash t. So, dash t
+and now we see the time stamp in front of each message. 
+-------------------code----------------------
+$ docker logs -n 5 -t 300
+2025-03-21T03:36:58.554288887Z   On Your Network:  http://172.17.0.3:3000
+2025-03-21T03:36:58.554335720Z
+2025-03-21T03:36:58.554337512Z Note that the development build is not optimized.
+2025-03-21T03:36:58.554417887Z To create a production build, use yarn build.
+2025-03-21T03:36:58.554419262Z
+-------------------code----------------------
+
+- So, if we encounter any issues when running our
+applications inside docker, the first thing we want to look at is the logs.
+
