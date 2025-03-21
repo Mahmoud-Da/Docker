@@ -1,7 +1,7 @@
 *** 1- Introduction ***
 - In this section we're going to explore containers in more detail. 
 
--We'll talk about starting and stopping containers,
+- We'll talk about starting and stopping containers,
 publishing ports, viewing container logs, executing commands in running containers,
 removing containers, persisting data using volumes, and sharing source code with containers
 so we don't have to rebuild our image every time we make a change in our code.
@@ -15,3 +15,103 @@ so we don't have to rebuild our image every time we make a change in our code.
 • Sharing source code
 -------------------code----------------------
 
+*** 2- Starting Containers ***
+
+- Alright, we briefly talked about container commands throughout the course, so we're
+already familiar with many of them.  
+
+- In this section we're going to review them one more time,
+but we're also going to give us some extra tips along the way. For starters, let's look at our images.
+So we've cleaned up some of the images that we created in the previous section,
+now we only have react app with the latest tag.
+We also have ubuntu and alpine which we're not going to use in this section.
+-------------------code----------------------
+$ docker images
+REPOSITORY   TAG       IMAGE ID       CREATED        SIZE
+react-app    latest    0211703e719b   22 hours ago   482MB
+alpine       latest    8d591b0b7dea   5 weeks ago    8.17MB
+ubuntu       latest    c3d1a3432580   7 weeks ago    101MB
+-------------------code----------------------
+
+- how can we see the running containers? Using docker what?
+Docker ps, short for processes. Because a container is just a process,
+but it's a special kind of process, because it has its own file system
+which is provided by the image. Okay, currently there are no running
+containers here.
+-------------------code----------------------
+$ docker ps
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+-------------------code----------------------
+
+-so we want to run a new container using the react
+app image. This is going to start a development web server.
+our web server is ready.
+-------------------code----------------------
+$ docker run react-app
+
+> react-app@0.1.0 start /app
+> react-scripts start
+
+ℹ ｢wds｣: Project is running at http://172.17.0.2/
+ℹ ｢wds｣: webpack output is served from
+ℹ ｢wds｣: Content not from webpack is served from /app/public
+ℹ ｢wds｣: 404s will fallback to /
+Starting the development server...
+
+Compiled successfully!
+
+You can now view react-app in the browser.
+
+  Local:            http://localhost:3000
+  On Your Network:  http://172.17.0.2:3000
+
+Note that the development build is not optimized.
+To create a production build, use yarn build.
+-------------------code----------------------
+
+- Now there's a problem. we cannot type in additional commands
+on the terminal window. If we press control and c to get out of this, our container stops.
+Let's verify that. So docker ps, look, no container is running.there is a cool technique.
+Let's bring up the run command one more time. Now this time we're going to use an option,
+dash d, that is short for detached. With this, we can run this container in the detached mode,
+which means in the background. 
+-------------------code----------------------
+$ docker run -d react-app
+912a9f10ea9610b8ba341e5b434be9441f24b7cb571b8149f6d6f32ac6160d0a
+-------------------code----------------------
+
+- Now the terminal window is free, and we can do whatever we want. Of course,
+the container is going to take a few seconds to start,
+because that's the time we need for the web server to start.
+
+- So that's one option. Now, let's look at the running processes.
+So, here we have one container.
+Here's my container ID. Now, if we look
+on the far right column,  In the last column, we can see the names column.
+So docker automatically associates each container with a random name.
+-------------------code----------------------
+$ docker ps
+CONTAINER ID   IMAGE       COMMAND                   CREATED          STATUS          PORTS      NAMES
+912a9f10ea96   react-app   "docker-entrypoint.s…"   22 seconds ago   Up 22 seconds   3000/tcp   jolly_dewdney
+-------------------code----------------------
+
+- So in the future, when we want to reference a container,
+we can either use its ID or its name. But we can also give our container a name when starting them.
+So, let's start another container in detached mode.
+This time we're going to use dash dash name to give it a name.
+we're going to call this blue dash sky.
+It's easier to work with than a randomly generated name by docker.
+And we're going to use the react app image.
+-------------------code----------------------
+$ docker run -d --name blue-sky react-app
+300b6cd7fa2d8a7ac2dbd4c9034b786a5dc19054df097e0875d05f78c138f59e
+-------------------code----------------------
+
+- So, let's look at the running containers.
+Now we have two containers, and one of them is called blue sky.
+-------------------code----------------------
+$ docker ps
+CONTAINER ID   IMAGE       COMMAND                   CREATED              STATUS              PORTS      NAMES
+300b6cd7fa2d   react-app   "docker-entrypoint.s…"   1 second ago         Up 1 second         3000/tcp   blue-sky
+912a9f10ea96   react-app   "docker-entrypoint.s…"   About a minute ago   Up About a minute   3000/tcp   jolly_dewdney
+-------------------code----------------------
