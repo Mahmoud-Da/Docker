@@ -303,3 +303,78 @@ ae66a7d9157e   react-app   "docker-entrypoint.s…"   About a minute ago   Up Ab
 300b6cd7fa2d   react-app   "docker-entrypoint.s…"   20 minutes ago       Up 20 minutes       3000/tcp               blue-sky
 912a9f10ea96   react-app   "docker-entrypoint.s…"   22 minutes ago       Up 22 minutes       3000/tcp               jolly_dewdney
 -------------------code----------------------
+
+
+*** 5- Executing Commands in Running Containers ***
+
+- So we'll learn that when we start a container, it executes the
+default command that we specified in our docker file. Now what if we want to
+execute a command in a running container later on. Let's say we want to troubleshoot
+something and we want to look at the file system of that container.
+
+- how to do that. So, we have docker exec or
+execute and with this we can execute a command in a running container.
+-------------------code----------------------
+docker exec
+-------------------code----------------------
+
+- Now some people say, what is the difference between docker exec and
+docker run. With docker run we start a new container
+and run a command, whereas with docker exec we execute a command
+in a running container.
+-------------------code----------------------
+docker exec -->  execute a command in a running container
+docker run  --> start a new container
+-------------------code----------------------
+
+- Now for this we're going to use my C1 container, this is the benefit of using friendly names.
+Now what do we want to execute here? We can type any commands, any operating system
+commands. So this can be Linux commands or Windows commands. Let's
+run ls here. Now we can see the content of our app directory.
+But why the app directory? Here's the answer. Because
+earlier in our docker file we set the working directory to the app directory. So
+when we run ls, we see the content of this directory.
+-------------------code----------------------
+$ docker exec c1 ls
+Dockerfile
+README.md
+node_modules
+package-lock.json
+package.json
+public
+src
+yarn.lock
+-------------------code----------------------
+
+- Now using the same command, we can open up a shell session. So we can
+say docker exec. We want to do this in the interactive mode
+so we can interact with it. Our container
+is C1 and the shell we want to run is sh.
+-------------------code----------------------
+$ docker exec -it c1 sh
+/app $
+-------------------code----------------------
+- So now we have a shell session inside this container. We can
+run ls, we can run print working directory. We can do anything
+we want. Now when we are done, we type exit and this doesn't
+impact the state of our container.
+-------------------code----------------------
+/app $ ls
+Dockerfile         node_modules       package.json       src
+README.md          package-lock.json  public             yarn.lock
+/app $ pwd
+/app
+/app $ exit
+-------------------code----------------------
+
+- Our container is still running. Let's verify it.
+Docker ps. So, our C1 container is the first item we see here.
+-------------------code----------------------
+$ docker ps
+CONTAINER ID   IMAGE       COMMAND                   CREATED          STATUS          PORTS                  NAMES
+ae66a7d9157e   react-app   "docker-entrypoint.s…"   11 minutes ago   Up 11 minutes   0.0.0.0:80->3000/tcp   c1
+300b6cd7fa2d   react-app   "docker-entrypoint.s…"   30 minutes ago   Up 30 minutes   3000/tcp               blue-sky
+912a9f10ea96   react-app   "docker-entrypoint.s…"   31 minutes ago   Up 31 minutes   3000/tcp               jolly_dewdney
+-------------------code----------------------
+
+- So using the exec command, we can execute any commands in a running container.
