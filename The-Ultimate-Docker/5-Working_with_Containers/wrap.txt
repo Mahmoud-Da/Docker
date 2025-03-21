@@ -239,3 +239,67 @@ $ docker logs -n 5 -t 300
 - So, if we encounter any issues when running our
 applications inside docker, the first thing we want to look at is the logs.
 
+*** 4- Publishing Ports ***
+
+- So currently we have two containers running our react application. But if we go to local host, port
+3000, we cannot access this application. why?
+Because as we told earlier, port 3000 is published on the container,
+not on the host. So on the same machine we have multiple containers,
+each of these containers is listening on port 3000, but the host itself
+is not listening on this port. So this port is currently closed.
+There is no way to send traffic into local host at this port.
+This is where we need to publish a port. 
+-------------------code----------------------
+localhost:3000
+-------------------code----------------------
+
+- So first of all, let's look at our running containers. Now here we have a column called
+ports. Here's the ports column. In this column, we can see the ports and their mapping.
+As we can see, both these containers are listening to port
+3000. 
+-------------------code----------------------
+$ docker ps
+CONTAINER ID   IMAGE       COMMAND                   CREATED          STATUS          PORTS      NAMES
+300b6cd7fa2d   react-app   "docker-entrypoint.s…"   18 minutes ago   Up 18 minutes   3000/tcp   blue-sky
+912a9f10ea96   react-app   "docker-entrypoint.s…"   19 minutes ago   Up 19 minutes   3000/tcp   jolly_dewdney
+-------------------code----------------------
+
+- Now we're going to start a new container and publish a port
+at the same time. So just like before, we run docker run dash d for detached.
+Here we're going to use another option called
+p that is for port. We're going to publish a port
+on the host. Let's say port 3000 to port 3000 of the container.
+-------------------code----------------------
+$ docker run -d -p 3000:3000
+-------------------code----------------------
+
+- And of course, these numbers don't have to be the same.
+So we can publish port 80 of the host to port 3000 of this container.
+-------------------code----------------------
+$ docker run -d -p 80:3000
+-------------------code----------------------
+
+- Now we can give this container a name so we can identify it. we're going to call this
+C1. Now,  react-app, So this is going to take a few seconds
+until our web server is ready.
+-------------------code----------------------
+$ docker run -d -p 80:3000 --name c1 react-app
+ae66a7d9157e0b8fcc49aa02d30981a74ac585df544cffc85cc80a20a228372c
+-------------------code----------------------
+
+- Now if we go to local host, port 80, we can see our react application.
+-------------------code----------------------
+localhost:80
+-------------------code----------------------
+
+- Now, let's look at the running containers one more time.
+Now look at the port mapping for our C1 container.
+You can see port 80 of the host is mapped to port 3000
+of the container. We do not have this notation for other containers.
+-------------------code----------------------
+$ docker ps
+CONTAINER ID   IMAGE       COMMAND                   CREATED              STATUS              PORTS                  NAMES
+ae66a7d9157e   react-app   "docker-entrypoint.s…"   About a minute ago   Up About a minute   0.0.0.0:80->3000/tcp   c1
+300b6cd7fa2d   react-app   "docker-entrypoint.s…"   20 minutes ago       Up 20 minutes       3000/tcp               blue-sky
+912a9f10ea96   react-app   "docker-entrypoint.s…"   22 minutes ago       Up 22 minutes       3000/tcp               jolly_dewdney
+-------------------code----------------------
