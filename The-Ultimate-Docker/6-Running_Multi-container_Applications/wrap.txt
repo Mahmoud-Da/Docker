@@ -50,3 +50,130 @@ If we're using windows server or linux, there are specific instructions
 we have to follow to install docker compose. 
 
 
+*** 3- Cleaning Up our Workspace ***
+
+- Before we get started, we want to show we a couple of techniques for cleaning up our workspace.
+So on this machine we have a bunch of images and
+some running containers. They're getting in the way. we want to get rid of them all.
+-------------------code----------------------
+$ docker images
+REPOSITORY   TAG       IMAGE ID       CREATED        SIZE
+react-app    latest    d63e19272668   22 hours ago   482MB
+<none>       <none>    ce326f24856a   23 hours ago   482MB
+<none>       <none>    0211703e719b   47 hours ago   482MB
+alpine       latest    8d591b0b7dea   5 weeks ago    8.17MB
+ubuntu       latest    c3d1a3432580   7 weeks ago    101MB
+-------------------code----------------------
+
+- How do we do this? Well, we know that we can remove images using
+docker image remove command. And here we can type one or more
+image IDs.
+-------------------code----------------------
+docker image rm 123 123
+-------------------code----------------------
+
+- Now how can we get all image IDs and pass them here?
+as a cool trick. So we can run docker image ls we see all the images.
+-------------------code----------------------
+$ docker image ls
+REPOSITORY   TAG       IMAGE ID       CREATED        SIZE
+react-app    latest    d63e19272668   22 hours ago   482MB
+<none>       <none>    ce326f24856a   23 hours ago   482MB
+<none>       <none>    0211703e719b   47 hours ago   482MB
+alpine       latest    8d591b0b7dea   5 weeks ago    8.17MB
+ubuntu       latest    c3d1a3432580   7 weeks ago    101MB
+-------------------code----------------------
+
+- But if we pass dash q at the end, we only get image IDs. 
+
+- Now we can pass this as an argument to docker image remove. So,
+docker image remove. Now here we add a dollar sign,
+and in parenthesis, we type that other command. So docker
+image ls dash q. 
+-------------------code----------------------
+$ docker image ls -q
+d63e19272668
+ce326f24856a
+0211703e719b
+8d591b0b7dea
+c3d1a3432580
+-------------------code----------------------
+
+- Now if we run this we're going to get an error
+because some of these images are already in running containers, or
+stopped containers. So we should always
+remove containers first.
+-------------------code----------------------
+$ docker image rm $(docker image ls -q)
+Deleted: sha256:ce326f24856a64a01179135c2b35fd7bd17e2efd71e61ecec7bb30c74364b9be
+Untagged: alpine:latest
+Untagged: alpine@sha256:a8560b36e8b8210634f77d9f7f9efd7ffa463e380b75e2e74aff4511df3ef88c
+Deleted: sha256:8d591b0b7dea080ea3be9e12ae563eebf9869168ffced1cb25b2470a3d9fe15e
+Untagged: ubuntu:latest
+Untagged: ubuntu@sha256:72297848456d5d37d1262630108ab308d3e9ec7ed1c3286a32fe09856619a782
+Deleted: sha256:c3d1a34325805c22bf44a5157224bcff58dc6a8868558c7746d6a2ea64eb191c
+Deleted: sha256:375990b2a90a8d8f332d9b9422d948f7068a3313bf5a1c9fbb91ff2d29046130
+Error response from daemon: conflict: unable to delete d63e19272668 (must be forced) - image is being used by stopped container e1c9962056ab
+Error response from daemon: conflict: unable to delete 0211703e719b (must be forced) - image is being used by stopped container 912a9f10ea96
+-------------------code----------------------
+
+- We're going to do that using the same technique. So we're going to replace
+image with container, so we get all container IDs, and then
+we're going to remove them all in one go. Also,
+we would like to add dash a here as well,
+this will bring stopped containers as well. Okay? We can also combine
+switches, that's another technique. Let's go ahead. Alright, we get an error saying
+we cannot remove a running container, because we forgot to pass the
+force option.
+-------------------code----------------------
+$ docker container rm $(docker container ls -aq)
+Error response from daemon: You cannot remove a running container
+-------------------code----------------------
+
+- So, let's bring this up one more time. When removing, we're going to use dash f.
+So all these containers are removed.
+-------------------code----------------------
+$ docker container rm -f $(docker container ls -aq)
+4c042c40552d
+bcdb2cf69efd
+e1c9962056ab
+1f0feff2e673
+300b6cd7fa2d
+912a9f10ea96
+-------------------code----------------------
+
+- Now let's remove the images. So, docker image ls, and docker image remove.
+-------------------code----------------------
+$ docker image rm $(docker image ls -q)
+Untagged: react-app:latest
+Deleted: sha256:d63e19272668b1d5fe42f33e1bef69b77f1ee11d565f5d324cf4ce4b33c2468e
+Deleted: sha256:0211703e719b294529c6ff5579540f917db0778d832ae1cc85925770778759d2
+-------------------code----------------------
+
+- Now, take a look. We don't have any images.
+-------------------code----------------------
+$ docker images
+REPOSITORY   TAG       IMAGE ID   CREATED   SIZE
+-------------------code----------------------
+
+- and no containers, including stopped containers.
+So we have a clean workspace.
+-------------------code----------------------
+$ docker ps -a
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+-------------------code----------------------
+
+- That's one way. There is a shortcut for this as well. If we're on Mac, we can find the docker icon
+on the top status bar. If we're on Windows, we will find it in your notification tray.
+Let's click on this, and then go to preferences.
+
+- Now, on this page, let's click on the troubleshoot icon. On this page, we have a bunch of useful
+utilities. For example, we can restart docker desktop.
+We can also clean and purge data. This will essentially remove everything
+in docker. Your images, your containers, your volumes, and so on.
+
+- Now, be aware that if we click on this, this is going to restart docker engine.
+So on the top, look, we can see this animation showing that the docker engine is not started yet.
+So at this point, if we go to the terminal window and execute any of docker commands,
+we're going to get an error. So we'll have to wait about half a minute
+for the docker engine to start. That's another way. 
