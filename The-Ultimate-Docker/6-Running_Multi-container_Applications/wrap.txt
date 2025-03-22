@@ -1093,3 +1093,156 @@ WARN[0000] /Users/mahmouddabbbagh/moody/Docker/The-Ultimate-Docker/6-Running_Mul
  ✔ Container vidly-web-1  Removed                                                                                                                  0.4s
  ✔ Network vidly_default  Removed
 -------------------code----------------------
+
+*** 9- Docker Networking ***
+
+- Let's talk about networking in docker.
+Let me run our application with docker compose, docker compose will automatically
+create a network and add our containers on that network. 
+So these containers can talk to each other. 
+
+- Let's see this in action. So, we're going to
+bring up the application one more time, in the detach mode.
+
+- Now look at the first line. Creating network with the default.
+-------------------code----------------------
+$ docker compose up -d
+[+] Running 2/3
+ ✔ api                    Built                                                                                                                    0.0s
+[+] Running 6/6           Built                                                                                                                    0.0s
+ ✔ api                    Built                                                                                                                    0.0s
+ ✔ web                    Built
+ ✔ Network vidly_default  Created                                                                                                                    0.0s  ✔ Network vidly_default  Created                                                                                                                  0.0s
+ ✔ Container vidly-db-1   Started                                                                                                                  0.2s
+ ✔ Container vidly-web-1  Started                                                                                                                  0.2s
+ ✔ Container vidly-api-1  Started
+-------------------code----------------------
+
+- So, we can run we can run docker network ls.
+Here we can see all the networks on this machine. every docker
+installation has three networks, bridge, host, and none.
+Honestly, we're not sure what these networks are for, but what matters here is
+that we have a network called vidly default. The driver for this
+network is bridge on Linux or NAT on Windows.
+-------------------code----------------------
+$ docker network ls
+NETWORK ID     NAME            DRIVER    SCOPE
+e76d9a0aa96a   bridge          bridge    local
+057102070b84   host            host      local
+31c759c4dfd4   none            null      local
+e6721f786f9d   vidly_default   bridge    local
+-------------------code----------------------
+
+- Now, this network contains three hosts or three containers.
+web, api, and db. So, these hosts or these containers
+can talk to each other using their name.
+
+- Let's see this in action. So, back to the terminal.
+Let's look at the running containers. So we have mongo, web, and api.
+Now we're going to start a shell session on the web container and ping the api container. Take a look.
+So, we're going to execute in the interactive mode.
+-------------------code----------------------
+$ $ docker ps
+CONTAINER ID   IMAGE              COMMAND                   CREATED         STATUS         PORTS                      NAMES
+2892f53872a0   mongo:4.0-xenial   "docker-entrypoint.s…"   3 minutes ago   Up 3 minutes   0.0.0.0:27017->27017/tcp   vidly-db-1
+c0e0ef1c9e85   vidly-web          "docker-entrypoint.s…"   3 minutes ago   Up 3 minutes   0.0.0.0:3000->3000/tcp     vidly-web-1
+8003c7121fb2   vidly-api          "docker-entrypoint.s…"   3 minutes ago   Up 3 minutes   0.0.0.0:3001->3001/tcp     vidly-api-1
+-------------------code----------------------
+
+- The container ID is c0e and we're going to run shell. So, let's ping api. We get a permission error.
+Because we have logged in with the app user.
+-------------------code----------------------
+$ docker exec -it c0e sh
+/app $ ping api
+PING api (172.21.0.3): 56 data bytes ping: permission denied (are You root?)
+-------------------code----------------------
+
+- That comes from our docker file. So, we have logged in with the app user
+and this user doesn't have ping permission.
+-------------------code----------------------
+
+- we're going to bring up the last command.
+Now here we have to use an extra option for setting the user.
+We're going to log in as the root user.
+Good. Now look at the shell prompt. We have a pound sign which means
+we have the highest privileges. So, here we can ping api. Now look, we're getting responses
+from a machine with this ip address.
+Now on our machine, this ip might be different. Now, let's press ctrl and c
+to get out of this. So, this is what happens under the hood.
+Docker comes with an embedded DNS server that contains the name and
+IP of these containers.
+-------------------code----------------------
+$ docker exec -it -u root c0e sh
+/app # ping api
+PING api (172.18.0.2): 56 data bytes
+64 bytes from 172.18.0.2: seq=0 ttl=64 time=0.086 ms
+64 bytes from 172.18.0.2: seq=1 ttl=64 time=0.134 ms
+64 bytes from 172.18.0.2: seq=2 ttl=64 time=0.148 ms
+64 bytes from 172.18.0.2: seq=3 ttl=64 time=0.180 ms
+64 bytes from 172.18.0.2: seq=4 ttl=64 time=0.265 ms
+64 bytes from 172.18.0.2: seq=5 ttl=64 time=0.186 ms
+64 bytes from 172.18.0.2: seq=6 ttl=64 time=0.233 ms
+64 bytes from 172.18.0.2: seq=7 ttl=64 time=0.158 ms
+64 bytes from 172.18.0.2: seq=8 ttl=64 time=0.161 ms
+-------------------code----------------------
+
+- Now inside each container, we have a component
+called the DNS resolver. This DNS resolver talks to
+the DNS server to find the IP address of the target container.
+So, when we ping the api container this DNS resolver
+asks the server, what is the IP address of the api machine
+or api container. The DNS server returns the IP address
+and then the web container can directly talk to the api container
+using its IP address. So, each container has an IP address and is part of a network.
+
+- Let see one more thing. So, back to the terminal, here we can run
+ifconfig to see the IP address of this container.
+Take a look. So, this container has two network adapters.
+One of them is ethernet 0
+and over here, we can see the IP address of this container.
+So, 172.18.0.3 is the IP address of the web container.
+-------------------code----------------------
+/app # ifconfig
+eth0      Link encap:Ethernet  HWaddr C6:40:98:0C:5B:4E
+          inet addr:172.18.0.3  Bcast:172.18.255.255  Mask:255.255.0.0
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:50 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:27 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0
+          RX bytes:4216 (4.1 KiB)  TX bytes:2254 (2.2 KiB)
+
+lo        Link encap:Local Loopback
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:8 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:8 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:430 (430.0 B)  TX bytes:430 (430.0 B)
+-------------------code----------------------
+
+- Now, back to our compose file, earlier when we defined the api
+service, we added an environment variable that contains a database connection string.
+In this connection string, we have db which is the name of a host.
+That is the db host or the db container. You saw that. Our api container
+can talk to this container because both these containers or all
+containers in this application are part of the same network.
+-------------------code----------------------
+environment:
+  DB_URL: mongodb://db/vidly
+-------------------code----------------------
+
+- Now, one thing we want we to understand here is that
+this host is only available inside the docker environment.
+So, if we open up my browser and go to localhost
+slash db, we're not going to get anything. So, the api container
+can directly talk to the db container, but if we
+want to access this container, we need port mappings. And, that is
+why we have this port mapping over here. So, this port on the host
+is mapped to this port on the container. So, if we open up mongodb compass, which is
+a popular mongodb client, we can establish a connection
+to localhost port 27017. Because this port is mapped to our container.
+-------------------code----------------------
+ports:
+  - 27017:27017
+-------------------code----------------------
