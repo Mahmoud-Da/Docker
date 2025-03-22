@@ -453,11 +453,11 @@ _docker-compose.yml
 
 - So, here we have a new file, called docker-compose, all in lower case,
 make sure to spell it properly, otherwise docker compose is not going to find this file.
-Because this is the default name that docker-compose assumes.
+Because this is the default name that docker compose assumes.
 
 - So, yaml, now the first thing that we need to set
 here is the version property. What version should we use?
-Well, let's search for docker-compose file.
+Well, let's search for docker compose file.
 -------------------code----------------------
 docs.docker.com/compose/compose-file/
 -------------------code----------------------
@@ -468,7 +468,7 @@ We are using the latest version of docker engine, so we want to use the latest c
 format, so we have access to the latest features. So,
 we're going to set this to 3.8. Now, here we need to wrap this number
 with double quotes, otherwise it will be evaluated as a number.
-But docker-compose expects this value to be a string. Why?
+But docker compose expects this value to be a string. Why?
 we have no clue. So, here's the version. 
 -------------------code----------------------
 version: "3.8" 
@@ -795,7 +795,7 @@ Options:
       --pull                    Always attempt to pull a newer version of the image
       --push                    Push service images
   -q, --quiet                   Don't print anything to STDOUT
-      --ssh string              Set SSH authentications used when building service images. (use 'default' for using your default SSH Agent)
+      --ssh string              Set SSH authentications used when building service images. (use 'default' for using our default SSH Agent)
       --with-dependencies       Also build dependencies (transitively)
 -------------------code----------------------
 
@@ -943,3 +943,153 @@ vidly-backend    latest       bf304fa22d9a   About an hour ago    183MB
 mongo            4.0-xenial   001f0278293f   2 years ago          401MB
 -------------------code----------------------
 
+*** 8- Starting and Stopping the Application ***
+
+- we briefly saw how we can start an application with docker compose.
+We just type docker compose up. Now if the images are
+ready, docker compose will run them inside containers, otherwise it's
+going to build the images automatically. 
+
+- Now, before executing this, let's look at the available options. So here we have a ton
+of options, a couple of them that are useful are build.
+-------------------code----------------------
+$ docker compose up --help
+Usage:  docker compose up [OPTIONS] [SERVICE...]
+
+Create and start containers
+
+Options:
+      --abort-on-container-exit      Stops all containers if any container was stopped. Incompatible with -d
+      --abort-on-container-failure   Stops all containers if any container exited with failure. Incompatible with -d
+      --always-recreate-deps         Recreate dependent containers. Incompatible with --no-recreate.
+      --attach stringArray           Restrict attaching to the specified services. Incompatible with --attach-dependencies.
+      --attach-dependencies          Automatically attach to log output of dependent services
+      --build                        Build images before starting containers
+  -d, --detach                       Detached mode: Run containers in the background
+      --dry-run                      Execute command in dry run mode
+      --exit-code-from string        Return the exit code of the selected service container. Implies --abort-on-container-exit
+      --force-recreate               Recreate containers even if their configuration and image haven't changed
+      --menu                         Enable interactive shortcuts when running attached. Incompatible with --detach. Can also be enable/disable
+                                     by setting COMPOSE_MENU environment var.
+      --no-attach stringArray        Do not attach (stream logs) to the specified services
+      --no-build                     Don't build an image, even if it's policy
+      --no-color                     Produce monochrome output
+      --no-deps                      Don't start linked services
+      --no-log-prefix                Don't print prefix in logs
+      --no-recreate                  If containers already exist, don't recreate them. Incompatible with --force-recreate.
+      --no-start                     Don't start the services after creating them
+      --pull string                  Pull image before running ("always"|"missing"|"never") (default "policy")
+      --quiet-pull                   Pull without printing progress information
+      --remove-orphans               Remove containers for services not defined in the Compose file
+  -V, --renew-anon-volumes           Recreate anonymous volumes instead of retrieving data from the previous containers
+      --scale scale                  Scale SERVICE to NUM instances. Overrides the scale setting in the Compose file if present.
+  -t, --timeout int                  Use this timeout in seconds for container shutdown when attached or when containers are already running
+      --timestamps                   Show timestamps
+      --wait                         Wait for services to be running|healthy. Implies detached mode.
+      --wait-timeout int             Maximum duration in seconds to wait for the project to be running|healthy
+  -w, --watch                        Watch source code and rebuild/refresh containers when files are updated.
+  -y, --y                            Assume "yes" as answer to all prompts and run non-interactively
+-------------------code----------------------
+
+- with this
+we can force a rebuild every time we want to start our application. So we
+don't have to explicitly run docker compose build and then up. We can combine the two
+using the build option. 
+-------------------code----------------------
+docker compose up --build
+-------------------code----------------------
+
+- The other useful option is dash d for detached mode. So we will start these containers in the background. 
+-------------------code----------------------
+$ docker compose up -d
+WARN[0000] /Users/mahmouddabbbagh/moody/Docker/The-Ultimate-Docker/6-Running_Multi-container_Applications/vidly/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion
+[+] Running 1/1
+ ✔ db Pulled                                                                                                                                       7.3s
+Compose now can delegate build to bake for better performances
+Just set COMPOSE_BAKE=true
+[+] Building 1.7s (20/20) FINISHED                                                                                                 docker:desktop-linux
+ => [api internal] load build definition from Dockerfile                                                                                           0.0s
+ => => transferring dockerfile: 266B                                                                                                               0.0s
+ => [web internal] load build definition from Dockerfile                                                                                           0.0s
+ => => transferring dockerfile: 265B                                                                                                               0.0s
+ => [api internal] load metadata for docker.io/library/node:14.16.0-alpine3.13                                                                     1.6s
+ => [web internal] load .dockerignore                                                                                                              0.0s
+ => => transferring context: 102B                                                                                                                  0.0s
+ => [api internal] load .dockerignore                                                                                                              0.0s
+ => => transferring context: 102B                                                                                                                  0.0s
+ => [api 1/6] FROM docker.io/library/node:14.16.0-alpine3.13@sha256:2c51dc462a02f15621e7486774d36d048a27225d581374b002b8477a79a59b4b               0.0s
+ => [api internal] load build context                                                                                                              0.0s
+ => => transferring context: 1.74kB                                                                                                                0.0s
+ => [web internal] load build context                                                                                                              0.0s
+ => => transferring context: 2.62kB                                                                                                                0.0s
+ => CACHED [api 2/6] RUN addgroup app && adduser -S -G app app                                                                                     0.0s
+ => CACHED [api 3/6] WORKDIR /app                                                                                                                  0.0s
+ => CACHED [web 4/6] COPY package*.json ./                                                                                                         0.0s
+ => CACHED [web 5/6] RUN npm install                                                                                                               0.0s
+ => CACHED [web 6/6] COPY . .                                                                                                                      0.0s
+ => [web] exporting to image                                                                                                                       0.0s
+ => => exporting layers                                                                                                                            0.0s
+ => => writing image sha256:6f5c46c0500547e73a1141d6527aaff2139cb966050291e529395e18635fd9d4                                                       0.0s
+ => => naming to docker.io/library/vidly-web                                                                                                       0.0s
+ => CACHED [api 4/6] COPY package*.json ./                                                                                                         0.0s
+ => CACHED [api 5/6] RUN npm install                                                                                                               0.0s
+ => CACHED [api 6/6] COPY . .                                                                                                                      0.0s
+ => [api] exporting to image                                                                                                                       0.0s
+ => => exporting layers                                                                                                                            0.0s
+ => => writing image sha256:51904ca74d70d8b4a19c96e6689c176fac22bfe00ec7e68ef272ce447e38b6a7                                                       0.0s
+ => => naming to docker.io/library/vidly-api                                                                                                       0.0s
+ => [web] resolving provenance for metadata file                                                                                                   0.0s
+ => [api] resolving provenance for metadata file                                                                                                   0.0s
+WARN[0009] Found orphan containers ([vidly-frontend-1 vidly-backend-1]) for this project. If we removed or renamed this service in our compose file, we can run this command with the --remove-orphans flag to clean it up.
+[+] Running 5/5
+ ✔ api                    Built                                                                                                                    0.0s
+ ✔ web                    Built                                                                                                                    0.0s
+ ✔ Container vidly-web-1  Started                                                                                                                  0.3s
+ ✔ Container vidly-api-1  Started                                                                                                                  0.3s
+ ✔ Container vidly-db-1   Started
+-------------------code----------------------
+
+- So, now if we run docker compose ps, we can see
+all the containers relevant to this application. In contrast,
+if we type docker ps, we can see all the running containers across
+all applications.
+-------------------code----------------------
+$ docker compose ps
+WARN[0000] /Users/mahmouddabbbagh/moody/Docker/The-Ultimate-Docker/6-Running_Multi-container_Applications/vidly/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion
+NAME          IMAGE              COMMAND                   SERVICE   CREATED              STATUS              PORTS
+vidly-api-1   vidly-api          "docker-entrypoint.s…"   api       About a minute ago   Up About a minute   0.0.0.0:3001->3001/tcp
+vidly-db-1    mongo:4.0-xenial   "docker-entrypoint.s…"   db        About an hour ago    Up About a minute   0.0.0.0:27017->27017/tcp
+vidly-web-1   vidly-web          "docker-entrypoint.s…"   web       About a minute ago   Up About a minute   0.0.0.0:3000->3000/tcp
+-------------------code----------------------
+
+- So, here we have three containers, vidly, api1, bitly db1, and web1.
+Now what is this one? Well, we can start multiple containers
+from the same image. And this is used for high availability and scalability. It's
+something we'll look at in the future. So here we can see the container. You can see what command
+started that container. So, for our api, that was npm start.
+For our database, that was mongod, or mongodamon
+process. And for our web front end, that was npm start as well. You can see all these
+containers are up and running. And over here, we can see port mappings.
+So now if we go to localhost port 3000,
+we can see our application.
+-------------------code----------------------
+docker ps
+-------------------code----------------------
+
+- Now, how do we take this down? Let's say
+we're done with this application, and we
+want to free up resources.
+Back to the terminal, we type docker compose down.
+This will stop and remove these containers. But the images are still
+there. So next time we want to start
+the application, our application will start
+pretty quickly.
+-------------------code----------------------
+ $ docker compose down
+WARN[0000] /Users/mahmouddabbbagh/moody/Docker/The-Ultimate-Docker/6-Running_Multi-container_Applications/vidly/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion
+[+] Running 4/4
+ ✔ Container vidly-api-1  Removed                                                                                                                  0.4s
+ ✔ Container vidly-db-1   Removed                                                                                                                  0.5s
+ ✔ Container vidly-web-1  Removed                                                                                                                  0.4s
+ ✔ Network vidly_default  Removed
+-------------------code----------------------
