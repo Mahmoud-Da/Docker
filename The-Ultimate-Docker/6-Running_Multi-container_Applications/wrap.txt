@@ -440,3 +440,265 @@ and more specifically double quotes. So the parser knows that. This is a string
 and it shouldn't evaluate it. So, quite often we use YAML files
 for configuration files and JSON for exchanging data between multiple
 computers, like a client and a server.
+
+
+*** 6- Creating a Compose File ***
+
+- Alright, let's see how we can create a compose file from scratch. So, for this lesson,
+we're going to rename this file to underline docker compose. We want to set it aside and
+create a new compose file from scratch.
+-------------------code----------------------
+_docker-compose.yml
+-------------------code----------------------
+
+- So, here we have a new file, called docker-compose, all in lower case,
+make sure to spell it properly, otherwise docker compose is not going to find this file.
+Because this is the default name that docker-compose assumes.
+
+- So, yaml, now the first thing that we need to set
+here is the version property. What version should we use?
+Well, let's search for docker-compose file.
+-------------------code----------------------
+docs.docker.com/compose/compose-file/
+-------------------code----------------------
+
+- On this page, we can see various compose file
+formats and their compatibility with docker engine.
+We are using the latest version of docker engine, so we want to use the latest compose file
+format, so we have access to the latest features. So,
+we're going to set this to 3.8. Now, here we need to wrap this number
+with double quotes, otherwise it will be evaluated as a number.
+But docker-compose expects this value to be a string. Why?
+we have no clue. So, here's the version. 
+-------------------code----------------------
+version: "3.8" 
+-------------------code----------------------
+
+- Now, in this file we define various building blocks
+or services of our application. So, we have a property called services.
+Now, what services do we need here? Well, our application has a front end,
+a back end, and a database. Now, our application might have other moving parts.
+So we can define them here.
+-------------------code----------------------
+services:
+ frontend:
+ backend:
+ database:
+-------------------code----------------------
+
+- Now, these names are arbitrary, so we can call them anything.
+We can change this to db, we can change the back end to api,
+and the front end to web. The idea here is that
+we're defining various services and telling docker how to build images for each service
+and how to run these images.
+-------------------code----------------------
+services:
+ web:
+ api:
+ db:
+-------------------code----------------------
+
+- So, here we're going to have properties and the value of these properties
+will eventually be used when running our containers. So, in the
+previous section, we had to manually run our containers using docker run,
+and here we used parameters like dash p for port mapping
+-------------------code----------------------
+docker run -p
+-------------------code----------------------
+
+- or dash v for volume mapping.
+-------------------code----------------------
+docker run -v
+-------------------code----------------------
+
+- We also had to specify an image like react app.
+-------------------code----------------------
+docker run react app
+-------------------code----------------------
+
+- All these values can be defined in our compose file. So we don't have to manually
+start our containers. Docker compose will take care of starting our
+containers under the hood.
+
+- So, for each service, we need to tell docker how to build an image
+for that service. So here we can use the build property and tell docker
+compose where it can find a docker file. So,
+if we look at this project, we can see that in our backend and
+frontend folders, we have a docker file. This docker file is almost identical
+to the one we created in the previous section.
+
+- We have a similar docker file in our frontend project.
+Let's have a quick look. So that was the backend, here's the frontend,
+and here we have a docker file. Almost identical, but the
+frontend application or the frontend server starts on a different port.
+
+- That is the only difference. So each service should have its own
+docker file. Now, back to our compose file, for our web or frontend,
+we're going to set the build property to period, meaning current folder,
+slash frontend. This is where we have a docker file.
+For our API, we're going to set build to backend.
+Now for our database, we're not going to build an image,
+we're going to pull an image from docker hub. So instead of the build property,
+we're going to use the image property.
+Now for this application,
+we're going to use mongo .So that is mongo version 4,
+built on top of Xenio, which is Ubuntu version 16. If we look at docker hub,
+we can see that mongo also has images built on top of windows,
+but windows images are very large, over 2 gigabytes.
+So that's why we prefer to use Linux images.
+So for any of these services, we can either build an image or pull it down.
+-------------------code----------------------
+services:
+ web:
+   build: ./frontend
+ api:
+   build: ./backend
+ db:
+   image: mongo:4.0-xenial
+-------------------code----------------------
+
+- Now here we also have port mappings, so we set ports to.
+Now because we can have multiple port mappings,
+here we need to use the array or list syntax.
+So we use a hyphen and then define a port mapping.
+So our frontend application starts on port 3000.
+So we want to map port 3000 of the host
+to port 3000 of the container running this image.
+Now similarly for our API, we're going to define a port mapping.
+This one is going to be 3001 to 3001. Now, MongoDB by default listens on port
+27017. So we want to map the same port so we can access MongoDB using a MongoDB client like
+MongoDB compass. Now if we don't use MongoDB, we have the same concept
+with other database engines. All these database engines
+listen on a default port. You want to map that port
+so we can connect to our database engine using our favorite database client.
+-------------------code----------------------
+services:
+  web:
+    build: ./frontend
+    ports:
+      - 3000:3000
+  api:
+    build: ./backend
+    ports:
+      - 3001:3001
+    
+  db:
+    image: mongo:4.0-xenial
+    ports:
+      - 27017:27017
+-------------------code----------------------
+
+- Back to this page for compose file. If we look at version 3,
+on the right, we can see all valid properties. Now a lot of these are for really special cases,
+so we don't need to use them all the time, but the ones that we use most of the time are
+build or image. 
+
+- we also use ports, volumes, environment, and so on. So our API project
+needs an environment variable that tells where our database is.
+So, here we set environment. Now here we can use the list syntax
+because we can have multiple environment variables.
+So we set db underline url to here we need to type a MongoDB connection string.
+These connection strings always start with MongoDB colon two forward slashes.
+Here we need to type the name of a host.
+
+
+- when we start an application with docker compose,
+under the hood a network is created.
+On this network we're going to have three hosts. The name of these hosts
+are equal to the names we have defined here.
+So we're going to have a host called db. So that is the connection string
+to our MongoDB server.
+-------------------code----------------------
+api:
+    build: ./backend
+    ports:
+      - 3001:3001
+    environment:
+      - DB_URL=mongodb://db/vidly
+-------------------code----------------------
+
+
+- Now, on this server we can have multiple databases.
+So we're going to specify the database name and the connection string as well.
+So this is one way to set an environment variable.
+But instead of using the list syntax we can also use the object
+or property value syntax. So, we get rid of the hyphen, we say db url
+is a property and this is the value of that property.
+we find the syntax more readable
+because we get color coding and it's just cleaner.
+-------------------code----------------------
+api:
+    build: ./backend
+    ports:
+      - 3001:3001
+    environment:
+      DB_URL: mongodb://db/vidly
+-------------------code----------------------
+
+- the last thing we want to add here is a volume.
+because we don't want MongoDB to write data
+to the temporary file system of the container.
+So, here we set volumes
+and again, we can have one or more volume mappings.
+So, we add hyphen, we're going to map a volume called vidly,
+and of course we can call it anything, vidly is the name of this application.
+So, we're going to map this volume to a directory inside the container.
+
+
+- Now, if we look at the documentation of MongoDB on Docker Hub
+or just a typical MongoDB documentation, we know that by default, MongoDB stores this data
+in slash data slash db. So, we want to map this volume to this directory,
+so whatever that is written inside this directory
+is actually outside of this container.
+-------------------code----------------------
+db:
+    image: mongo:4.0-xenial
+    ports:
+      - 27017:27017
+    volumes:
+      - vidly:/data/db
+-------------------code----------------------
+
+- it's somewhere else in our volume.
+Now, because we have used this volume here, we have to define it in our compose file.
+so now we are at the same level as
+services. Here we're going to define
+another property called volumes, and here we're going to add another property called vidly
+with no value.
+we know this looks a little bit weird, but this is the syntax we have to follow.
+We just have to define the volume first before we can use it.
+So, this is our compose file.
+-------------------code----------------------
+volumes:
+  - vidly
+-------------------code----------------------
+
+- Now, we can make this more readable by adding line breaks in between
+these properties. We can also order these services any way we want.
+So currently we're ordering them from front to back.
+We can also order them from back to front, so we will put database first,
+then API, and then web. So we're done with our compose file.
+-------------------code----------------------
+version: "3.8"
+services:
+  web:
+    build: ./frontend
+    ports:
+      - 3000:3000
+  api:
+    build: ./backend
+    ports:
+      - 3001:3001
+    environment:
+      DB_URL: mongodb://db/vidly
+    
+  db:
+    image: mongo:4.0-xenial
+    ports:
+      - 27017:27017
+    volumes:
+      - vidly:/data/db
+
+volumes:
+  - vidly
+-------------------code----------------------
