@@ -1,0 +1,34 @@
+# first we must set the version (search in google docker compose file)(we can see it inside the documentation)
+# must set version in string
+version: "3.8"
+
+# define multi services of our application
+# we can rename our services the way we want
+services:
+  frontend:
+    depends_on: 
+      - backend
+    build: ./frontend
+    ports:
+      - 3000:3000
+
+  backend: 
+    depends_on: 
+      - db
+    build: ./backend
+    ports: 
+      - 3001:3001
+    environment: 
+      DB_URL: mongodb://db/vidly
+      # migrate the data base and we use wait-for to make sure the db engine is ready before we migrate our data
+    command: ./docker-entrypoint.sh
+
+  db:
+    image: mongo:4.0-xenial
+    ports:
+      - 27017:27017
+    volumes:
+      - vidly:/data/db # define volumns first before we can use it 
+
+volumes:
+  vidly:
