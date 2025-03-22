@@ -164,16 +164,194 @@ CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 -------------------code----------------------
 
 - That's one way. There is a shortcut for this as well. If we're on Mac, we can find the docker icon
-on the top status bar. If we're on Windows, we will find it in your notification tray.
+on the top status bar. If we're on Windows, we will find it in our notification tray.
 Let's click on this, and then go to preferences.
 
 - Now, on this page, let's click on the troubleshoot icon. On this page, we have a bunch of useful
 utilities. For example, we can restart docker desktop.
 We can also clean and purge data. This will essentially remove everything
-in docker. Your images, your containers, your volumes, and so on.
+in docker. our images, our containers, our volumes, and so on.
 
 - Now, be aware that if we click on this, this is going to restart docker engine.
 So on the top, look, we can see this animation showing that the docker engine is not started yet.
 So at this point, if we go to the terminal window and execute any of docker commands,
 we're going to get an error. So we'll have to wait about half a minute
 for the docker engine to start. That's another way. 
+
+
+*** 4- The Sample Web Application ***
+
+So in this section we're going to look at a real world application with multiple building blocks. A frontend, a backend
+and a database. We have this backend folder which is our node project.
+This is a basic node project that starts a web server on port 3001. Once again, we don't need to know node
+to go through this section. Then we have the frontend project which is a react application that talks to the backend.
+
+- Now, if we want to run this application outside
+of docker, there are a number of steps we have to follow. Let's say
+we just check this out from a github repository. First we have to go to our backend project,
+install all dependencies, and then start the web server. Now at the same time, we have to open up
+another terminal window and do the same steps with our frontend project. So we have to go
+to the frontend project, install all the dependencies, and then start the web server.
+And of course, we need two more terminal windows for running our frontend and backend tests.
+And not to mention that, we should also download and install MongoDB on this machine. So there are so
+many steps we have to follow the moment we check out the source code from our github repository. 
+-------------------code----------------------
+cd backend
+npm i
+cd ../frontend
+npm i
+-------------------code----------------------
+
+- Now with docker, we don't have to do any of these things. All we have to do
+is run a single command.
+So, Now we are in the root of this project. If we look, here we have a file called docker compose
+which is used for composing a multi-container application.
+We're going to talk about that in detail soon.
+-------------------code----------------------
+$ ls
+backend			docker-compose.yml	frontend
+-------------------code----------------------
+
+- Now, once we have this file in our project,
+we can simply run docker compose up. That's all we have to do.
+Now, docker is automatically downloading this particular version of MongoDB. So it's downloading
+all these layers. Then at the same time, it's going to install all the dependencies for our frontend
+and backend project. It will start web servers and run automated tests all in this window.
+-------------------code----------------------
+$ docker compose up
+WARN[0000] 6-Running_Multi-container_Applications/vidly/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion
+[+] Running 13/13
+ ✔ db Pulled                                                                                                                                      13.2s
+   ✔ 828b35a09f0b Pull complete                                                                                                                    3.3s
+   ✔ 66927c6d1d3d Pull complete                                                                                                                    3.4s
+   ✔ 000560be9165 Pull complete                                                                                                                    3.4s
+   ✔ 6225a0253717 Pull complete                                                                                                                    3.4s
+   ✔ 20462772c88a Pull complete                                                                                                                    3.4s
+   ✔ 8892f6e8bb20 Pull complete                                                                                                                    3.5s
+   ✔ ba880f936bf8 Pull complete                                                                                                                    3.5s
+   ✔ 62a85e868ee1 Pull complete                                                                                                                    3.5s
+   ✔ 5c2a89ead641 Pull complete                                                                                                                    3.5s
+   ✔ 5970f465dd7d Pull complete                                                                                                                    3.5s
+   ✔ ec025da43478 Pull complete                                                                                                                    6.5s
+   ✔ 91ff9a6f40b5 Pull complete                                                                                                                    6.5s
+Compose now can delegate build to bake for better performances
+Just set COMPOSE_BAKE=true
+[+] Building 24.0s (20/20) FINISHED                                                                                                docker:desktop-linux
+ => [backend internal] load build definition from Dockerfile                                                                                       0.0s
+ => => transferring dockerfile: 266B                                                                                                               0.0s
+ => [frontend internal] load metadata for docker.io/library/node:14.16.0-alpine3.13                                                                2.4s
+ => [backend internal] load .dockerignore                                                                                                          0.0s
+ => => transferring context: 102B                                                                                                                  0.0s
+ => [frontend 1/6] FROM docker.io/library/node:14.16.0-alpine3.13@sha256:2c51dc462a02f15621e7486774d36d048a27225d581374b002b8477a79a59b4b          0.0s
+ => [backend internal] load build context                                                                                                          0.0s
+ => => transferring context: 277.43kB                                                                                                              0.0s
+ => CACHED [frontend 2/6] RUN addgroup app && adduser -S -G app app                                                                                0.0s
+ => CACHED [frontend 3/6] WORKDIR /app                                                                                                             0.0s
+ => [backend 4/6] COPY package*.json ./                                                                                                            0.1s
+ => [backend 5/6] RUN npm install                                                                                                                  6.1s
+ => [backend 6/6] COPY . .                                                                                                                         0.0s
+ => [backend] exporting to image                                                                                                                   0.7s
+ => => exporting layers                                                                                                                            0.6s
+ => => writing image sha256:bf304fa22d9a611c49cbbf9c2ce76ab47ca7ee08fd6fb4298632a72093e9cfdf                                                       0.0s
+ => => naming to docker.io/library/vidly-backend                                                                                                   0.0s
+ => [backend] resolving provenance for metadata file                                                                                               0.0s
+ => [frontend internal] load build definition from Dockerfile                                                                                      0.0s
+ => => transferring dockerfile: 265B                                                                                                               0.0s
+ => [frontend internal] load .dockerignore                                                                                                         0.0s
+ => => transferring context: 102B                                                                                                                  0.0s
+ => [frontend internal] load build context                                                                                                         0.0s
+ => => transferring context: 673.53kB                                                                                                              0.0s
+ => [frontend 4/6] COPY package*.json ./                                                                                                           0.0s
+ => [frontend 5/6] RUN npm install                                                                                                                13.0s
+ => [frontend 6/6] COPY . .                                                                                                                        0.0s
+ => [frontend] exporting to image                                                                                                                  1.5s
+ => => exporting layers                                                                                                                            1.5s
+ => => writing image sha256:8352bb4950d270f2a86b71c5a5298a2fd753457a567fb7976c97a1664eccda0a                                                       0.0s
+ => => naming to docker.io/library/vidly-frontend                                                                                                  0.0s
+ => [frontend] resolving provenance for metadata file                                                                                              0.0s
+[+] Running 7/7
+ ✔ backend                     Built                                                                                                               0.0s
+ ✔ frontend                    Built                                                                                                               0.0s
+ ✔ Network vidly_default       Created                                                                                                             0.0s
+ ✔ Volume "vidly_vidly"        Created                                                                                                             0.0s
+ ✔ Container vidly-db-1        Created                                                                                                             0.0s
+ ✔ Container vidly-backend-1   Created                                                                                                             0.0s
+ ✔ Container vidly-frontend-1  Created                                                                                                             0.0s
+Attaching to backend-1, db-1, frontend-1
+db-1        | 2025-03-22T05:33:38.415+0000  CONTROL  [main] Automatically disabling TLS 1.0, to force-enable TLS 1.0 specify --sslDisabledProtocols 'none'
+db-1        | 2025-03-22T05:33:38.416+0000  CONTROL  [initandlisten] MongoDB starting : pid=1 port=27017 dbpath=/data/db 64-bit host=0e8272cc3a01
+db-1        | 2025-03-22T05:33:38.416+0000  CONTROL  [initandlisten] db version v4.0.28
+db-1        | 2025-03-22T05:33:38.416+0000  CONTROL  [initandlisten] git version: af1a9dc12adcfa83cc19571cb3faba26eeddac92
+db-1        | 2025-03-22T05:33:38.416+0000  CONTROL  [initandlisten] OpenSSL version: OpenSSL 1.0.2g  1 Mar 2016
+db-1        | 2025-03-22T05:33:38.416+0000  CONTROL  [initandlisten] allocator: tcmalloc
+db-1        | 2025-03-22T05:33:38.416+0000  CONTROL  [initandlisten] modules: none
+db-1        | 2025-03-22T05:33:38.416+0000  CONTROL  [initandlisten] build environment:
+db-1        | 2025-03-22T05:33:38.416+0000  CONTROL  [initandlisten]     distmod: ubuntu1604
+db-1        | 2025-03-22T05:33:38.416+0000  CONTROL  [initandlisten]     distarch: aarch64
+db-1        | 2025-03-22T05:33:38.416+0000  CONTROL  [initandlisten]     target_arch: aarch64
+db-1        | 2025-03-22T05:33:38.416+0000  CONTROL  [initandlisten] options: { net: { bindIpAll: true } }
+db-1        | 2025-03-22T05:33:38.417+0000  STORAGE  [initandlisten]
+db-1        | 2025-03-22T05:33:38.417+0000  STORAGE  [initandlisten] ** WARNING: Using the XFS filesystem is strongly recommended with the WiredTiger storage engine
+db-1        | 2025-03-22T05:33:38.417+0000  STORAGE  [initandlisten] **          See http://dochub.mongodb.org/core/prodnotes-filesystem
+db-1        | 2025-03-22T05:33:38.417+0000  STORAGE  [initandlisten] wiredtiger_open config: create,cache_size=474M,cache_overflow=(file_max=0M),session_max=20000,eviction=(threads_min=4,threads_max=4),config_base=false,statistics=(fast),log=(enabled=true,archive=true,path=journal,compressor=snappy),file_manager=(close_idle_time=100000),statistics_log=(wait=0),verbose=(recovery_progress),
+db-1        | 2025-03-22T05:33:38.426+0000  STORAGE  [initandlisten] WiredTiger message [1742621618:426854][1:0xffffaefcd000], txn-recover: Set global recovery timestamp: 0
+db-1        | 2025-03-22T05:33:38.430+0000  RECOVERY [initandlisten] WiredTiger recoveryTimestamp. Ts: Timestamp(0, 0)
+db-1        | 2025-03-22T05:33:38.435+0000  STORAGE  [initandlisten] Starting to check the table logging settings for existing WiredTiger tables
+db-1        | 2025-03-22T05:33:38.437+0000  CONTROL  [initandlisten]
+db-1        | 2025-03-22T05:33:38.437+0000  CONTROL  [initandlisten] ** WARNING: Access control is not enabled for the database.
+db-1        | 2025-03-22T05:33:38.437+0000  CONTROL  [initandlisten] **          Read and write access to data and configuration is unrestricted.
+db-1        | 2025-03-22T05:33:38.437+0000  CONTROL  [initandlisten]
+db-1        | 2025-03-22T05:33:38.437+0000  CONTROL  [initandlisten]
+db-1        | 2025-03-22T05:33:38.437+0000  CONTROL  [initandlisten] ** WARNING: /sys/kernel/mm/transparent_hugepage/enabled is 'always'.
+db-1        | 2025-03-22T05:33:38.437+0000  CONTROL  [initandlisten] **        We suggest setting it to 'never'
+db-1        | 2025-03-22T05:33:38.437+0000  CONTROL  [initandlisten]
+db-1        | 2025-03-22T05:33:38.437+0000  STORAGE  [initandlisten] createCollection: admin.system.version with provided UUID: 70df6218-248d-4e23-9a1a-6421c6199541
+db-1        | 2025-03-22T05:33:38.443+0000  COMMAND  [initandlisten] setting featureCompatibilityVersion to 4.0
+db-1        | 2025-03-22T05:33:38.443+0000  STORAGE  [initandlisten] Finished adjusting the table logging settings for existing WiredTiger tables
+db-1        | 2025-03-22T05:33:38.443+0000  STORAGE  [initandlisten] createCollection: local.startup_log with generated UUID: 3d84ad6f-d067-4853-b803-bf8d54b2a3d8
+backend-1   | /usr/local/bin/docker-entrypoint.sh: exec: line 8: ./docker-entrypoint.sh: Permission denied
+db-1        | 2025-03-22T05:33:38.448+0000  FTDC     [initandlisten] Initializing full-time diagnostic data capture with directory '/data/db/diagnostic.data'
+db-1        | 2025-03-22T05:33:38.451+0000  STORAGE  [LogicalSessionCacheRefresh] createCollection: config.system.sessions with generated UUID: 789443b1-56c1-45b7-a38d-0bdc942c1848
+db-1        | 2025-03-22T05:33:38.451+0000  NETWORK  [initandlisten] waiting for connections on port 27017
+db-1        | 2025-03-22T05:33:38.461+0000  INDEX    [LogicalSessionCacheRefresh] build index on: config.system.sessions properties: { v: 2, key: { lastUse: 1 }, name: "lsidTTLIndex", ns: "config.system.sessions", expireAfterSeconds: 1800 }
+db-1        | 2025-03-22T05:33:38.461+0000  INDEX    [LogicalSessionCacheRefresh] 	 building index using bulk method; build may temporarily use up to 500 megabytes of RAM
+db-1        | 2025-03-22T05:33:38.461+0000  INDEX    [LogicalSessionCacheRefresh] build index done.  scanned 0 total records. 0 secs
+backend-1 exited with code 126
+frontend-1  |
+frontend-1  | > vidly-frontend@0.1.0 start /app
+frontend-1  | > react-scripts start
+frontend-1  |
+frontend-1  | ℹ ｢wds｣: Project is running at http://172.18.0.4/
+frontend-1  | ℹ ｢wds｣: webpack output is served from
+frontend-1  | ℹ ｢wds｣: Content not from webpack is served from /app/public
+frontend-1  | ℹ ｢wds｣: 404s will fallback to /
+frontend-1  | Starting the development server...
+frontend-1  |
+frontend-1  | Browserslist: caniuse-lite is outdated. Please run:
+frontend-1  | npx browserslist@latest --update-db
+frontend-1  |
+frontend-1  | Why should do it regularly:
+frontend-1  | https://github.com/browserslist/browserslist#browsers-data-updating
+frontend-1  | Compiled successfully!
+frontend-1  |
+frontend-1  | You can now view vidly-frontend in the browser.
+frontend-1  |
+frontend-1  |   Local:            http://localhost:3000
+frontend-1  |   On Your Network:  http://172.18.0.4:3000
+frontend-1  |
+frontend-1  | Note that the development build is not optimized.
+frontend-1  | To create a production build, use npm run build.
+frontend-1  |
+-------------------code----------------------
+
+- our application is up and running and we can access it at localhost
+port 3000. So, here's what we get. We have a mini application for managing a list of movies.
+Now we know what's the beauty here? The beauty is that our database
+is populated with these movies as part of bringing up our application.
+we didn't have to manually insert these movies in our database.
+So we have a migration script for populating our database
+and docker automatically executed our migration script as part of bringing up this application.
+This is a very common real world scenario. Now here we can add new movies, movie one, movie two, whatever.
+And we can also delete these movies.
+So we brought up this application using a single command.
+
