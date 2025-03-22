@@ -355,3 +355,88 @@ This is a very common real world scenario. Now here we can add new movies, movie
 And we can also delete these movies.
 So we brought up this application using a single command.
 
+*** 5- JSON and YAML Formats ***
+
+- Let's talk about JSON and YAML formats. If we know these formats
+in the root of this project we're going to add a new file called data.json.
+
+- Now JSON, as we probably know, is a language, it's a human readable language
+for representing data. So in this JSON file we can have an object
+or an array. Let's say we want to represent a course. A course can
+have properties like name, price, and so on. So in this object
+we can add one or more key value pairs. Our keys should always be
+surrounded in double quotes. So we can add a key called name and set its value
+to, we can use a string, the ultimate docker course,
+then we add a comma to define the next key value pair.
+So we can say price, we can set this to a number,
+now the value can also be a boolean, so we can define
+another key value pair, and set the value to true or false.
+We can define another key value pair and set the value to an array.
+So, we define an array using square brackets. Now in this array
+we can have any valid objects, so we can have strings, numbers,
+booleans, or other objects. So we're going to add a couple of strings,
+let's say software and devops.
+one last key value pair. Author, we're going to make this an object,
+so once again we use curly braces to define an object. In this object
+we add a couple key value pairs, first name and last name so here we have a JSON file.
+data.json
+-------------------code----------------------
+{
+ "name": "The Ultimate Docker Course",
+ "price": 149,
+ "is_published": true,
+ "tags": ["software", "devops"],
+ "author": {
+   "first_name": "hoge",
+   "last_name": "hoge"
+  }
+}
+-------------------code----------------------
+
+- now let's see how we can convert this to YAML. YAML is another language
+for presenting data, but it has less clutter than JSON, it's easier to read.
+So, we're going to copy all this code. Here in the project, we're going to add a new file
+called data.yaml. The extension can be yaml
+or yml. Now, on the top we add three hyphens to indicate the beginning of a YAML file.
+Then we paste our code. Now, in YAML, we don't use curly braces to indicate hierarchy.
+This idea has come from Python. If we have programmed in Python, we know
+that in Python, we use indentation to represent hierarchy. So we don't
+have curly braces. So, let's get rid of these braces
+and remove the indentation. Now, the next thing we need to know about YAML is that we
+don't have to use quotes. So we can bring up the replace dialog and
+replace all these double quotes with nothing.
+That immediately takes a lot of clutter away. Also,
+we're not going to use commas to separate key value pairs.
+So on the top we have name, price, is published. Now, how do we represent a list
+or an array? We use hyphens. then add a tab
+on a new line, we type hyphen to define the
+first item in the list. Software. Then, at the same indentation
+we add the next item. DevOps. Now, author is an object, but as we told that we don't use curly braces, we use indentation.
+So because these two properties are indented, they belong
+to the author property.
+So, this is our YAML file.
+data.yml
+-------------------code----------------------
+name: The Ultimate Docker Course
+price: 149
+is_published: true
+tags:
+  - software
+  - devops
+author:
+  first_name: hoge
+  last_name: hoge
+-------------------code----------------------
+
+- Let's compare this with JSON. As we can see, YAML
+is easier to read and understand.
+
+- Now, why don't we use YAML all the time?
+Well, because parsing YAML files is a little bit slower
+than parsing JSON files. Because the parser doesn't know
+if this is a string or a number. So it has to read everything as a string
+and then try to evaluate it. In contrast, in JSON, strings are represented using quotes
+and more specifically double quotes. So the parser knows that. This is a string
+and it shouldn't evaluate it. So, quite often we use YAML files
+for configuration files and JSON for exchanging data between multiple
+computers, like a client and a server.
