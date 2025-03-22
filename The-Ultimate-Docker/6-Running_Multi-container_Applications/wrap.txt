@@ -18,3 +18,35 @@ migration, and running automated tests.
 • Database migration
 • Running automated tests
 -------------------code----------------------
+
+*** 2- Installing Docker Compose ***
+
+- In this section we're going to use a tool called
+docker compose which is built on top of docker engine. It makes it incredibly easy
+to start applications with multiple containers. 
+
+- So google docker compose install, On this page we can see the installation instructions.
+-------------------code----------------------
+docs.docker.com/compose/install/
+-------------------code----------------------
+
+- Now at the time of recording this, docker compose is shipped with
+docker desktop for mac and windows. So if we're on mac or
+windows, we don't have to do anything extra. we already have docker compose.
+To verify it, just go to the terminal window and type docker compose version.
+-------------------code----------------------
+$ docker compose version
+Docker Compose version v2.33.1-desktop.1
+-------------------code----------------------
+
+- So we're running docker compose version 2.33.1. Make sure
+the version is the same or newer. 
+
+- Now if we're using an older version, again google upgrade docker compose. Or we might just install
+the latest version of docker. 
+
+- Now, back to the installation page.
+If we're using windows server or linux, there are specific instructions
+we have to follow to install docker compose. 
+
+
