@@ -670,7 +670,7 @@ We just have to define the volume first before we can use it.
 So, this is our compose file.
 -------------------code----------------------
 volumes:
-  - vidly
+  vidly:
 -------------------code----------------------
 
 - Now, we can make this more readable by adding line breaks in between
@@ -700,5 +700,246 @@ services:
       - vidly:/data/db
 
 volumes:
-  - vidly
+  vidly:
 -------------------code----------------------
+
+*** 7- Building Images ***
+
+- Earlier told we that docker compose is built on top of docker engine. So everything we have done with docker engine like building
+images, listing them, starting containers and so on, all of these operations
+are also available using docker compose.
+
+- So, we type docker compose without any arguments, enter,
+look, we have all these subcommands like we have rm
+for removing stopped containers, we have run, we have push,
+pull and so on. The difference is that any of these commands will apply
+to our application as a whole. So most of these commands will impact
+multiple services or multiple containers in our application.
+-------------------code----------------------
+$ docker compose
+Usage:  docker compose [OPTIONS] COMMAND
+
+Define and run multi-container applications with Docker
+
+Options:
+      --all-resources              Include all resources, even those not used by services
+      --ansi string                Control when to print ANSI control characters ("never"|"always"|"auto") (default "auto")
+      --compatibility              Run compose in backward compatibility mode
+      --dry-run                    Execute command in dry run mode
+      --env-file stringArray       Specify an alternate environment file
+  -f, --file stringArray           Compose configuration files
+      --parallel int               Control max parallelism, -1 for unlimited (default -1)
+      --profile stringArray        Specify a profile to enable
+      --progress string            Set type of progress output (auto, tty, plain, json, quiet) (default "auto")
+      --project-directory string   Specify an alternate working directory
+                                   (default: the path of the, first specified, Compose file)
+  -p, --project-name string        Project name
+
+Commands:
+  attach      Attach local standard input, output, and error streams to a service's running container
+  build       Build or rebuild services
+  commit      Create a new image from a service container's changes
+  config      Parse, resolve and render compose file in canonical format
+  cp          Copy files/folders between a service container and the local filesystem
+  create      Creates containers for a service
+  down        Stop and remove containers, networks
+  events      Receive real time events from containers
+  exec        Execute a command in a running container
+  export      Export a service container's filesystem as a tar archive
+  images      List images used by the created containers
+  kill        Force stop service containers
+  logs        View output from containers
+  ls          List running compose projects
+  pause       Pause services
+  port        Print the public port for a port binding
+  ps          List containers
+  pull        Pull service images
+  push        Push service images
+  restart     Restart service containers
+  rm          Removes stopped service containers
+  run         Run a one-off command on a service
+  scale       Scale services
+  start       Start services
+  stats       Display a live stream of container(s) resource usage statistics
+  stop        Stop services
+  top         Display the running processes
+  unpause     Unpause services
+  up          Create and start containers
+  version     Show the Docker Compose version information
+  wait        Block until containers of all (or specified) services stop.
+  watch       Watch build context for service and rebuild/refresh containers when files are updated
+
+Run 'docker compose COMMAND --help' for more information on a command.
+-------------------code----------------------
+
+- So, let's look at docker compose build
+and also use the help option. So we have a bunch of options
+here. A couple of them we want to point out that are useful to know is
+no cache. With this we can prevent caching when building the image.
+Sometimes we encounter weird issues and we want to make sure that cache is not
+used. In that case we use this option. Another useful option is
+dash dash pull. With this we can always pull
+a newer version of the image. That is also good to know.
+-------------------code----------------------
+$ docker compose build --help
+Usage:  docker compose build [OPTIONS] [SERVICE...]
+
+Build or rebuild services
+
+Options:
+      --build-arg stringArray   Set build-time variables for services
+      --builder string          Set builder to use
+      --dry-run                 Execute command in dry run mode
+  -m, --memory bytes            Set memory limit for the build container. Not supported by BuildKit.
+      --no-cache                Do not use cache when building the image
+      --pull                    Always attempt to pull a newer version of the image
+      --push                    Push service images
+  -q, --quiet                   Don't print anything to STDOUT
+      --ssh string              Set SSH authentications used when building service images. (use 'default' for using your default SSH Agent)
+      --with-dependencies       Also build dependencies (transitively)
+-------------------code----------------------
+
+- So, in this lesson we're not going to use any of this. We're just going to run docker compose
+build. This build our web and api services.
+-------------------code----------------------
+$ docker compose build
+WARN[0000] /Users/mahmouddabbbagh/moody/Docker/The-Ultimate-Docker/6-Running_Multi-container_Applications/vidly/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion
+Compose now can delegate build to bake for better performances
+Just set COMPOSE_BAKE=true
+[+] Building 1.8s (20/20) FINISHED                                                                                                 docker:desktop-linux
+ => [web internal] load build definition from Dockerfile                                                                                           0.0s
+ => => transferring dockerfile: 265B                                                                                                               0.0s
+ => [api internal] load build definition from Dockerfile                                                                                           0.0s
+ => => transferring dockerfile: 266B                                                                                                               0.0s
+ => [web internal] load metadata for docker.io/library/node:14.16.0-alpine3.13                                                                     1.7s
+ => [api internal] load .dockerignore                                                                                                              0.0s
+ => => transferring context: 102B                                                                                                                  0.0s
+ => [web internal] load .dockerignore                                                                                                              0.0s
+ => => transferring context: 102B                                                                                                                  0.0s
+ => [api 1/6] FROM docker.io/library/node:14.16.0-alpine3.13@sha256:2c51dc462a02f15621e7486774d36d048a27225d581374b002b8477a79a59b4b               0.0s
+ => [web internal] load build context                                                                                                              0.0s
+ => => transferring context: 2.62kB                                                                                                                0.0s
+ => [api internal] load build context                                                                                                              0.0s
+ => => transferring context: 1.74kB                                                                                                                0.0s
+ => CACHED [api 2/6] RUN addgroup app && adduser -S -G app app                                                                                     0.0s
+ => CACHED [api 3/6] WORKDIR /app                                                                                                                  0.0s
+ => CACHED [web 4/6] COPY package*.json ./                                                                                                         0.0s
+ => CACHED [web 5/6] RUN npm install                                                                                                               0.0s
+ => CACHED [web 6/6] COPY . .                                                                                                                      0.0s
+ => [web] exporting to image                                                                                                                       0.0s
+ => => exporting layers                                                                                                                            0.0s
+ => => writing image sha256:903657fa0a130f05f26c5a3d4f5c75107abfd1e5782c7aabcf313844e3c678bd                                                       0.0s
+ => => naming to docker.io/library/vidly-web                                                                                                       0.0s
+ => CACHED [api 4/6] COPY package*.json ./                                                                                                         0.0s
+ => CACHED [api 5/6] RUN npm install                                                                                                               0.0s
+ => CACHED [api 6/6] COPY . .                                                                                                                      0.0s
+ => [api] exporting to image                                                                                                                       0.0s
+ => => exporting layers                                                                                                                            0.0s
+ => => writing image sha256:e067d8a1ca102469fdafb674b184460dc59780758df425f2f83f0825202f5aaa                                                       0.0s
+ => => naming to docker.io/library/vidly-api                                                                                                       0.0s
+ => [web] resolving provenance for metadata file                                                                                                   0.0s
+ => [api] resolving provenance for metadata file                                                                                                   0.0s
+[+] Building 2/2
+ ✔ api  Built                                                                                                                                      0.0s
+ ✔ web  Built
+-------------------code----------------------
+
+- And as we noticed, our build was super fast because
+pretty much everything came from the cache. So, let's run
+docker images. So we have five images on this machine.
+vidly frontend, vidly web, vidly api, vidly backend
+and mongo. Mongo obviously came from docker hub.
+Now as part of this build process in this lesson, we built vidly web and vidly api.
+These two other images with the frontend and backend were built when we started this application earlier.
+So, back to our project, in this original compose file that we included
+in this project, look, we call these services
+frontend and backend instead of web and api. That is why
+we have these two images vidly frontend and vidly backend.
+Also, as we have noticed, when building images with docker compose,
+our images are prefixed with the name of our application.
+Now where does this come from?
+It is the name of the directory. So currently
+we are inside a directory called vidly
+and that is why all these images
+are prefixed with vidly. 
+-------------------code----------------------
+$ docker images
+REPOSITORY       TAG          IMAGE ID       CREATED             SIZE
+vidly-frontend   latest       8352bb4950d2   About an hour ago   298MB
+vidly-web        latest       903657fa0a13   About an hour ago   298MB
+vidly-backend    latest       bf304fa22d9a   About an hour ago   183MB
+vidly-api        latest       e067d8a1ca10   About an hour ago   183MB
+mongo            4.0-xenial   001f0278293f   2 years ago         401MB
+-------------------code----------------------
+
+- Now we got a question for we. If we look at the created column,
+we can see all these images were created an hour ago.
+But didn't we just build the web and api images? Why do we think
+this happened? Here's the answer.
+Because we built these images frontend and
+backend an hour ago at the previous lesson in this section.
+Now, when building these new images, docker used everything in the
+cache because all those files were already available, all those layers were there.
+So docker didn't have to do a full rebuild. That is why
+we are still using the build from an
+hour ago.
+
+- Now, if we want to force a full rebuild,
+we can say docker compose build dash dash no cache.
+Alright, our images are built. 
+-------------------code----------------------
+$ docker compose build --no-cache
+WARN[0000] /Users/mahmouddabbbagh/moody/Docker/The-Ultimate-Docker/6-Running_Multi-container_Applications/vidly/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion
+Compose now can delegate build to bake for better performances
+Just set COMPOSE_BAKE=true
+[+] Building 22.2s (20/20) FINISHED                                                                                                docker:desktop-linux
+ => [web internal] load build definition from Dockerfile                                                                                           0.0s
+ => => transferring dockerfile: 265B                                                                                                               0.0s
+ => [api internal] load build definition from Dockerfile                                                                                           0.0s
+ => => transferring dockerfile: 266B                                                                                                               0.0s
+ => [web internal] load metadata for docker.io/library/node:14.16.0-alpine3.13                                                                     0.8s
+ => [web internal] load .dockerignore                                                                                                              0.0s
+ => => transferring context: 102B                                                                                                                  0.0s
+ => [api internal] load .dockerignore                                                                                                              0.0s
+ => => transferring context: 102B                                                                                                                  0.0s
+ => CACHED [api 1/6] FROM docker.io/library/node:14.16.0-alpine3.13@sha256:2c51dc462a02f15621e7486774d36d048a27225d581374b002b8477a79a59b4b        0.0s
+ => [web internal] load build context                                                                                                              0.0s
+ => => transferring context: 2.62kB                                                                                                                0.0s
+ => [web 2/6] RUN addgroup app && adduser -S -G app app                                                                                            0.3s
+ => [api internal] load build context                                                                                                              0.0s
+ => => transferring context: 1.74kB                                                                                                                0.0s
+ => [web 3/6] WORKDIR /app                                                                                                                         0.0s
+ => [api 4/6] COPY package*.json ./                                                                                                                0.0s
+ => [web 4/6] COPY package*.json ./                                                                                                                0.0s
+ => [api 5/6] RUN npm install                                                                                                                      9.6s
+ => [web 5/6] RUN npm install                                                                                                                     19.6s
+ => [api 6/6] COPY . .                                                                                                                             0.1s
+ => [api] exporting to image                                                                                                                       0.9s
+ => => exporting layers                                                                                                                            0.9s
+ => => writing image sha256:51904ca74d70d8b4a19c96e6689c176fac22bfe00ec7e68ef272ce447e38b6a7                                                       0.0s
+ => => naming to docker.io/library/vidly-api                                                                                                       0.0s
+ => [api] resolving provenance for metadata file                                                                                                   0.0s
+ => [web 6/6] COPY . .                                                                                                                             0.0s
+ => [web] exporting to image                                                                                                                       1.5s
+ => => exporting layers                                                                                                                            1.5s
+ => => writing image sha256:6f5c46c0500547e73a1141d6527aaff2139cb966050291e529395e18635fd9d4                                                       0.0s
+ => => naming to docker.io/library/vidly-web                                                                                                       0.0s
+ => [web] resolving provenance for metadata file                                                                                                   0.0s
+[+] Building 2/2
+ ✔ api  Built                                                                                                                                      0.0s
+ ✔ web  Built
+-------------------code----------------------
+
+- So let's run docker images. There we go.
+Look at the first two images, api and web
+were built less than a minute ago. So that's all about building images.
+-------------------code----------------------
+$ docker images
+REPOSITORY       TAG          IMAGE ID       CREATED              SIZE
+vidly-web        latest       6f5c46c05005   53 seconds ago       298MB
+vidly-api        latest       51904ca74d70   About a minute ago   183MB
+vidly-frontend   latest       8352bb4950d2   About an hour ago    298MB
+vidly-backend    latest       bf304fa22d9a   About an hour ago    183MB
+mongo            4.0-xenial   001f0278293f   2 years ago          401MB
+-------------------code----------------------
+

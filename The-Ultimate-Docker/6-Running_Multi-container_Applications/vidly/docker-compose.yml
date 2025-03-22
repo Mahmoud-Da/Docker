@@ -19,4 +19,4 @@ services:
       - vidly:/data/db
 
 volumes:
-  - vidly
+  vidly:
