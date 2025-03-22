@@ -1,15 +1,11 @@
+Multi-containers apps
+
 - Docker Compose commands
 docker-compose build
 docker-compose build --no-cache
 docker-compose up
 docker-compose up -d
 docker-compose up —build
-docker-compose down # stop and remove the container
-docker-compose ps  # to see all the container of the runing application (docker ps to see all the containers of all images)
-docker-compose logs # all logs
-docker-compose logs <ContainerID> # spicifc container
-
-- Docker network (to make multi container talk to each other)
-docker network ls (to see all the networks)
-
-
+docker-compose down
+docker-compose ps
+docker-compose logs

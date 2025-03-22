@@ -1,0 +1,20 @@
+*** 1- Introduction ***
+
+- Welcome back to another section of the ultimate Docker course. In this section, we're going to
+talk about running multi-container applications. 
+
+- So we're going to give we a real world application
+with three building blocks, a front end built with React, a back end built with Node, and a
+MongoDB database. Once again, we don't need to be familiar or use any of these tools. Our focus
+here is on Docker and not on development tools.
+
+- the most exciting part of this
+course where we can see everything coming together. We'll talk about Docker compose for
+building and running multi-container applications. We'll also talk about Docker networking, database
+migration, and running automated tests. 
+-------------------code----------------------
+• Docker Compose
+• Docker networking
+• Database migration
+• Running automated tests
+-------------------code----------------------
