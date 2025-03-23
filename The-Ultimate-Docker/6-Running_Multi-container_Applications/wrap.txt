@@ -1835,3 +1835,129 @@ port 3001 slash api, slash movies. That's our end point. So all these movies are
 -------------------code----------------------
 http://localhost:3001/api/movies
 -------------------code----------------------
+
+*** 13- Running Tests ***
+
+- Alright, the last thing we're going to talk about in this section is running automated tests.
+So, for both these projects, our frontend and backend project,
+we've written a bunch of unit and integration tests. 
+
+- So we can go to our, let's say frontend directory
+and run npm test. Alright, we have nine beautiful passing tests, so let's press Q to get out of this. Good.
+So this is one way to run these tests, and that's how we like to run our tests.
+-------------------code----------------------
+$ cd frontend
+$ npm test
+ PASS  src/components/App.test.js
+  App component
+    ✓ renders all the movies fetched from the server (39 ms)
+    ✓ displays an error if the call to the server fails (9 ms)
+    When a new movie is added
+      ✓ the input field gets cleared (16 ms)
+      ✓ it is added to the list (9 ms)
+      ✓ it is removed from the list if the call to the server fails (13 ms)
+      ✓ An error is displayed if the call to the server fails (15 ms)
+    When a movie is deleted
+      ✓ it is removed from the list (15 ms)
+      ✓ it is inserted back in the list if the call to the server fails (15 ms)
+      ✓ an error is displayed if the call to the server fails (18 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       9 passed, 9 tota
+Snapshots:   0 total
+Time:        1.274 s
+-------------------code----------------------
+
+- Now, we've seen some people run their tests inside a docker container.
+we've done this before and found it to be very slow. We want our tests
+to run quickly so we can get rapid feedback as we're writing code.
+
+- But in case we're curious, how we can run our tests
+inside a container. So, back to our compose file, here's
+the definition of our web service. we're going to duplicate
+this, and then rename the second instance to web-test.
+-------------------code----------------------
+web:
+  build: ./frontend
+  ports:
+    - 3000:3000
+  volumes:
+    - ./frontend:/app
+web-test:
+  build: ./frontend
+  ports:
+    - 3000:3000
+  volumes:
+    - ./frontend:/app
+-------------------code----------------------
+
+- Now, we're not going to build a new image.
+We want to reuse an existing image. The image that was built
+for this service. So, we're going to change the build property to image.
+Now, what is the name of the image? vidly-web.
+-------------------code----------------------
+web-test:
+  image: vidly-web
+  ports:
+    - 3000:3000
+  volumes:
+    - ./frontend:/app
+-------------------code----------------------
+
+Now, do we need ports?
+No, we don't, because we don't want to access the
+service directly, like accessing our web service. so Delete it.
+What about volumes? We want to keep this here, so any changes we make to our
+application code or our tests are immediately visible inside this
+container.
+-------------------code----------------------
+web-test:
+  image: vidly-web
+  volumes:
+    - ./frontend:/app
+-------------------code----------------------
+
+- Now, here we're going to overwrite the default
+command for this image, and run npm test.
+So, save the changes.
+-------------------code----------------------
+web-test:
+  image: vidly-web
+  volumes:
+    - ./frontend:/app
+  command: npm test
+-------------------code----------------------
+
+- Now, let's get out of the frontend directory and run
+docker compose up. Alright, our application is up,
+and over here, we can see the output of our
+web tests container. So, all of our tests are passing, but if we
+go to our application code and make it change,
+it takes a little while, until
+these tests are rerun. we find this to be a little bit slow for
+our taste. 
+-------------------code----------------------
+$ docker compose up
+..........
+..........
+Why we should do it regularly:
+web-1       | https://github.com/browserslist/browserslist#browsers-data-updating
+web-test-1  |  PASS  src/components/App.test.js
+web-test-1  |   App component
+web-test-1  |     ✓ renders all the movies fetched from the server (149 ms)
+web-test-1  |     ✓ displays an error if the call to the server fails (20 ms)
+web-test-1  |     When a new movie is added
+web-test-1  |       ✓ the input field gets cleared (24 ms)
+web-test-1  |       ✓ it is added to the list (17 ms)
+web-test-1  |       ✓ it is removed from the list if the call to the server fails (28 ms)
+web-test-1  |       ✓ An error is displayed if the call to the server fails (42 ms)
+web-test-1  |     When a movie is deleted
+web-test-1  |       ✓ it is removed from the list (37 ms)
+web-test-1  |       ✓ it is inserted back in the list if the call to the server fails (34 ms)
+web-test-1  |       ✓ an error is displayed if the call to the server fails (27 ms)
+web-test-1  |
+web-test-1  | Test Suites: 1 passed, 1 total
+web-test-1  | Tests:       9 passed, 9 total
+.........
+.........
+-------------------code----------------------
