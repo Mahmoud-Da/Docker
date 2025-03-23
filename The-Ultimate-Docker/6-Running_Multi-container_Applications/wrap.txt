@@ -1246,3 +1246,135 @@ to localhost port 27017. Because this port is mapped to our container.
 ports:
   - 27017:27017
 -------------------code----------------------
+
+*** 10- Viewing Logs ***
+
+- a few different techniques for viewing the logs. So if we type
+docker compose logs, we can view the logs across
+all containers of this application in one place.
+
+- So, here we have some messages coming from our database
+container. Above that We have some messages coming from our web container. And these are color coded,
+-------------------code----------------------
+$ docker compose logs
+WARN[0000] 6-Running_Multi-container_Applications/vidly/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion
+web-1  |
+web-1  | > vidly-frontend@0.1.0 start /app
+web-1  | > react-scripts start
+web-1  |
+web-1  | ℹ ｢wds｣: Project is running at http://172.18.0.3/
+web-1  | ℹ ｢wds｣: webpack output is served from
+web-1  | ℹ ｢wds｣: Content not from webpack is served from /app/public
+web-1  | ℹ ｢wds｣: 404s will fallback to /
+web-1  | Starting the development server...
+web-1  |
+web-1  | Browserslist: caniuse-lite is outdated. Please run:
+web-1  | npx browserslist@latest --update-db
+web-1  |
+web-1  | Why we should do it regularly:
+web-1  | https://github.com/browserslist/browserslist#browsers-data-updating
+web-1  | Compiled successfully!
+web-1  |
+web-1  | You can now view vidly-frontend in the browser.
+web-1  |
+web-1  |   Local:            http://localhost:3000
+web-1  |   On Your Network:  http://172.18.0.3:3000
+api-1  |
+api-1  | > vidly-backend@1.0.0 start /app
+api-1  | > nodemon --ignore './tests' index.js
+api-1  |
+api-1  | [nodemon] 2.0.7
+api-1  | [nodemon] to restart at any time, enter `rs`
+api-1  | [nodemon] watching path(s): *.*
+api-1  | [nodemon] watching extensions: js,mjs,json
+api-1  | [nodemon] starting `node index.js`
+api-1  | Server started on port 3001...
+api-1  | Connected to MongoDB: mongodb://db/vidly
+api-1  | Connected to MongoDB: mongodb://db/vidly
+db-1   | 2025-03-22T07:20:29.974+0000 CONTROL  [main] Automatically disabling TLS 1.0, to force-enable TLS 1.0 specify --sslDisabledProtocols 'none'
+db-1   | 2025-03-22T07:20:29.979+0000 CONTROL  [initandlisten] MongoDB starting : pid=1 port=27017 dbpath=/data/db 64-bit host=2892f53872a0
+db-1   | 2025-03-22T07:20:29.979+0000 CONTROL  [initandlisten] db version v4.0.28
+db-1   | 2025-03-22T07:20:29.979+0000 CONTROL  [initandlisten] git version: af1a9dc12adcfa83cc19571cb3faba26eeddac92
+db-1   | 2025-03-22T07:20:29.979+0000 CONTROL  [initandlisten] OpenSSL version: OpenSSL 1.0.2g  1 Mar 2016
+db-1   | 2025-03-22T07:20:29.980+0000 CONTROL  [initandlisten] allocator: tcmalloc
+-------------------code----------------------
+
+- Now, let's bring up this command and add
+dash dash help at the end to view the available options.
+Here we have the same options we talked about earlier in the course. So, using dash
+f or follow, we can follow the log output so we can
+continuously see new messages as they come out. Also, we can add a
+timestamp using dash t.
+-------------------code----------------------
+$ docker compose logs --help
+Usage:  docker compose logs [OPTIONS] [SERVICE...]
+
+View output from containers
+
+Options:
+      --dry-run         Execute command in dry run mode
+  -f, --follow          Follow log output
+      --index int       index of the container if service has multiple replicas
+      --no-color        Produce monochrome output
+      --no-log-prefix   Don't print prefix in logs
+      --since string    Show logs since timestamp (e.g. 2013-01-02T13:23:37Z) or relative (e.g. 42m for 42 minutes)
+  -n, --tail string     Number of lines to show from the end of the logs for each container (default "all")
+  -t, --timestamps      Show timestamps
+      --until string    Show logs before a timestamp (e.g. 2013-01-02T13:23:37Z) or relative (e.g. 42m for 42 minutes)
+-------------------code----------------------
+
+- Now, what if we don't want to see the logs
+for all these containers in one place? Some people have big monitors or
+multiple monitors, they prefer to have different windows for different
+container logs.
+we look at the running containers. 
+-------------------code----------------------
+$ docker ps
+CONTAINER ID   IMAGE              COMMAND                   CREATED          STATUS         PORTS                      NAMES
+c0fa488b27ed   mongo:4.0-xenial   "docker-entrypoint.s…"   14 seconds ago   Up 5 seconds   0.0.0.0:27017->27017/tcp   vidly-db-1
+51981921887f   vidly-api          "docker-entrypoint.s…"   14 seconds ago   Up 5 seconds   0.0.0.0:3001->3001/tcp     vidly-api-1
+5a5b9eeeabe1   vidly-web          "docker-entrypoint.s…"   14 seconds ago   Up 5 seconds   0.0.0.0:3000->3000/tcp     vidly-web-1
+-------------------code----------------------
+
+- Let's say we only want to look at the logs for our web container. So, we can say
+docker logs, here's the container ID,
+And of course, we can follow this log as well. So, here's the log for this container. We can put
+this on a separate window or on a separate monitor. So, that's all about logs.
+-------------------code----------------------
+$ docker logs 5a5 -f
+> vidly-frontend@0.1.0 start /app
+> react-scripts start
+
+ℹ ｢wds｣: Project is running at http://172.18.0.3/
+ℹ ｢wds｣: webpack output is served from
+ℹ ｢wds｣: Content not from webpack is served from /app/public
+ℹ ｢wds｣: 404s will fallback to /
+Starting the development server...
+
+Browserslist: caniuse-lite is outdated. Please run:
+npx browserslist@latest --update-db
+
+Why we should do it regularly:
+https://github.com/browserslist/browserslist#browsers-data-updating
+
+> vidly-frontend@0.1.0 start /app
+> react-scripts start
+
+ℹ ｢wds｣: Project is running at http://172.18.0.3/
+ℹ ｢wds｣: webpack output is served from
+ℹ ｢wds｣: Content not from webpack is served from /app/public
+ℹ ｢wds｣: 404s will fallback to /
+Starting the development server...
+
+Browserslist: caniuse-lite is outdated. Please run:
+npx browserslist@latest --update-db
+
+Why we should do it regularly:
+https://github.com/browserslist/browserslist#browsers-data-updating
+Compiled successfully!
+
+You can now view vidly-frontend in the browser.
+
+  Local:            http://localhost:3000
+  On Your Network:  http://172.18.0.3:3000
+-------------------code----------------------
