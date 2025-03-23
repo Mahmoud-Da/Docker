@@ -803,7 +803,7 @@ Options:
 build. This build our web and api services.
 -------------------code----------------------
 $ docker compose build
-WARN[0000] /Users/mahmouddabbbagh/moody/Docker/The-Ultimate-Docker/6-Running_Multi-container_Applications/vidly/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion
+WARN[0000] /6-Running_Multi-container_Applications/vidly/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion
 Compose now can delegate build to bake for better performances
 Just set COMPOSE_BAKE=true
 [+] Building 1.8s (20/20) FINISHED                                                                                                 docker:desktop-linux
@@ -889,7 +889,7 @@ we can say docker compose build dash dash no cache.
 Alright, our images are built. 
 -------------------code----------------------
 $ docker compose build --no-cache
-WARN[0000] /Users/mahmouddabbbagh/moody/Docker/The-Ultimate-Docker/6-Running_Multi-container_Applications/vidly/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion
+WARN[0000] /6-Running_Multi-container_Applications/vidly/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion
 Compose now can delegate build to bake for better performances
 Just set COMPOSE_BAKE=true
 [+] Building 22.2s (20/20) FINISHED                                                                                                docker:desktop-linux
@@ -1002,7 +1002,7 @@ docker compose up --build
 - The other useful option is dash d for detached mode. So we will start these containers in the background. 
 -------------------code----------------------
 $ docker compose up -d
-WARN[0000] /Users/mahmouddabbbagh/moody/Docker/The-Ultimate-Docker/6-Running_Multi-container_Applications/vidly/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion
+WARN[0000] /6-Running_Multi-container_Applications/vidly/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion
 [+] Running 1/1
  ✔ db Pulled                                                                                                                                       7.3s
 Compose now can delegate build to bake for better performances
@@ -1055,7 +1055,7 @@ if we type docker ps, we can see all the running containers across
 all applications.
 -------------------code----------------------
 $ docker compose ps
-WARN[0000] /Users/mahmouddabbbagh/moody/Docker/The-Ultimate-Docker/6-Running_Multi-container_Applications/vidly/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion
+WARN[0000] /6-Running_Multi-container_Applications/vidly/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion
 NAME          IMAGE              COMMAND                   SERVICE   CREATED              STATUS              PORTS
 vidly-api-1   vidly-api          "docker-entrypoint.s…"   api       About a minute ago   Up About a minute   0.0.0.0:3001->3001/tcp
 vidly-db-1    mongo:4.0-xenial   "docker-entrypoint.s…"   db        About an hour ago    Up About a minute   0.0.0.0:27017->27017/tcp
@@ -1086,7 +1086,7 @@ the application, our application will start
 pretty quickly.
 -------------------code----------------------
  $ docker compose down
-WARN[0000] /Users/mahmouddabbbagh/moody/Docker/The-Ultimate-Docker/6-Running_Multi-container_Applications/vidly/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion
+WARN[0000] /6-Running_Multi-container_Applications/vidly/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion
 [+] Running 4/4
  ✔ Container vidly-api-1  Removed                                                                                                                  0.4s
  ✔ Container vidly-db-1   Removed                                                                                                                  0.5s
@@ -1515,7 +1515,7 @@ added 771 packages, and audited 772 packages in 10s
 Over here we can see node mon is starting our node process.
 -------------------code----------------------
 $ docker compose up
-WARN[0000] /Users/mahmouddabbbagh/moody/Docker/The-Ultimate-Docker/6-Running_Multi-container_Applications/vidly/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion
+WARN[0000] /6-Running_Multi-container_Applications/vidly/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion
 [+] Running 1/1
  ✔ Container vidly-api-1  Created                                                                                                                  0.0s
 Attaching to api-1, db-1, web-1
@@ -1584,4 +1584,254 @@ npm WARN old lockfile This is a one-time fix-up, please be patient...
 -------------------code----------------------
 volumes:
   - ./frontend:/app
+-------------------code----------------------
+
+*** 12- Migrating the Database ***
+
+- Most of the time, when we release our application, we want our database
+to be in a particular shape with some data. This is called database migration.
+
+- Now in this backend project, we're using a database migration tool
+called migrate mongo. So if we look at package.json over here, under dev dependencies,
+we can see we have a dependency to this package, migrate mongo.
+-------------------code----------------------
+"devDependencies": {
+    "jest": "^26.6.3",
+    "migrate-mongo": "^8.1.4",
+    "nodemon": "^2.0.7",
+    "supertest": "^6.1.3"
+  }
+-------------------code----------------------
+
+- We have a similar tool in other development stacks, for example
+in .NET we have entity framework, in Django we also have database
+migrations and so on. So we should probably be familiar with these migration tools.
+But if not, a summary on how they work. So using these migration tools, we can create database migration scripts.
+In this project, our migration scripts are stored in this migrations folder. So currently we have one script,
+this is just a basic JavaScript file. In each file we have two functions, up for upgrading the database and
+down for downgrading it.
+So in the up function, we're going to the movies collection
+and inserting these movie objects. And obviously
+when downgrading the database, we're going to remove
+these movies. Again, don't worry about the JavaScript code,
+think about the concept. So we have one script, which is called
+populate movies, and as we can see it's timestamped.
+-------------------code----------------------
+module.exports = {
+  async up(db, client) {
+    await db
+      .collection("movies")
+      .insertMany([
+        { title: "Avatar" },
+        { title: "Star Wars" },
+        { title: "Terminator" },
+        { title: "Titanic" },
+      ]);
+  },
+
+  async down(db, client) {
+    await db.collection("movies").deleteMany({
+      title: {
+        $in: ["Avatar", "Star Wars", "Terminator", "Titanic"],
+      },
+    });
+  },
+};
+-------------------code----------------------
+
+- Now, using a tool like migrate mongo,
+we can go to the terminal and say migrate mongo
+up. This will look at our migrations folder and execute all migration scripts.
+-------------------code----------------------
+$ migrate-mongo up
+-------------------code----------------------
+
+- Now, what if we execute this command multiple times?
+Well, our scripts are not going to be executed twice. Because if
+we look at our database, look, here we have a collection called
+changelog. In this collection, we have the scripts that have been executed.
+So migrate mongo will not execute the script multiple times.
+
+- Now, back to package.json, in the script
+section, we have these commands which are aliases
+for the command in front of them. So here we have db up, which is mapped
+to migrate mongo up.
+-------------------code----------------------
+"scripts": {
+    "db:up": "migrate-mongo up",
+    "start": "nodemon --ignore './tests' index.js",
+    "test": "jest --watchAll --colors"
+  }
+-------------------code----------------------
+
+- So here in the terminal, we can say migrate mongo up,
+or we can say npm run db up. With npm run, we can run
+any of the commands in package.json.
+-------------------code----------------------
+npm run db:up
+-------------------code----------------------
+
+
+- Again, if we don't use node or npm, we have a similar concept
+in our development stack.  So that's the item migration tools.
+
+- Now, how can we execute the database
+migration as part of starting our application?
+Well, let's look at our docker
+file in the backend project. So, here's our docker
+file, we talked about this before. We simply call npm start.
+And this will start our web server.
+-------------------code----------------------
+CMD ["npm", "start"]
+-------------------code----------------------
+
+- Now, in our compose file, we can overwrite
+the command that we have here, and do something else. So,
+let's bring up our docker compose file. Here's the definition of our API service.
+We can add a new property here. Command.
+And here we can overwrite the default command in our docker file.
+So, here we can say migrate mongo up and npm start.
+-------------------code----------------------
+api:
+  build: ./backend
+  ports:
+    - 3001:3001
+  environment:
+    DB_URL: mongodb://db/vidly
+  volumes:
+    - ./backend:/app
+  command: migrate-mongo up && npm start
+-------------------code----------------------
+
+- Now, there is a problem here. It is possible that our database server
+is not ready at the time of executing this command.
+So, even though our database container might be running, the actual
+database engine, in this case mongo, may not be ready. Because starting
+a database engine often takes several seconds. This is where we use a
+waiting script.
+
+- So, if we search for docker wait for container.
+-------------------code----------------------
+docker wait for container
+-------------------code----------------------
+
+- on this page, which is part of docker documentation, we can
+find a list of tools that give we that capability. So, we have wait for it, dockerize,
+shell compatible, wait for, as well as relay and containers. And of course, there is more. we've played with
+these tools and the one that has worked for us personally is wait for it.
+-------------------code----------------------
+docs.docker.com/compose/startup-order/
+-------------------code----------------------
+
+- If we look at it, this is just a github repository and includes
+a shell script, wait for it.sh. With this script,
+we can wait for our database engine, or
+any other processes to get ready before doing some work. So,
+back to our docker file, before migrating our database, we want to use
+our wait for script.
+-------------------code----------------------
+github.com/vishnubob/wait-for-it
+-------------------code----------------------
+
+- Now, if we look at our project, we can see
+we've stored the wait for script here, inside the backend folder.
+So, here we can say wait for,
+then we specify the name of our computer or host, which is db,
+that is the name of our container, Now, we want to wait for
+port 27017 to receive traffic. That is the default mongodb
+port. Once this is ready, then we're going to migrate mongo.
+-------------------code----------------------
+command: /wait-for db:27017 && migrate-mongo up && npm start
+-------------------code----------------------
+
+- Now as we can see, this command is a little bit too
+long, so there's another way to achieve the same result. We can create
+an entry point script. So, once again, in this project
+we've supplied a file called docker dash entry point dot shell.
+-------------------code----------------------
+docker-entrypoint.sh
+-------------------code----------------------
+
+- This is a basic shell script. So, first we echo a message saying, waiting for
+mongodb to start. And this is where we're using the wait for script.
+Now that mongo is up and running, we print a message saying, we're
+migrating the database, so npm run db up, and finally we'll start
+our web server.
+-------------------code----------------------
+#!/bin/sh
+
+echo "Waiting for MongoDB to start..."
+./wait-for db:27017 
+
+echo "Migrating the databse..."
+npm run db:up 
+
+echo "Starting the server..."
+npm start 
+-------------------code----------------------
+
+
+- Now, we can go to our compose file and simplify this command. All we
+have to do is run our docker entry point script.
+Now, this is for Linux, if we're on Windows, we can write the
+PowerShell script to do the same thing.
+-------------------code----------------------
+api:
+  build: ./backend
+  ports:
+    - 3001:3001
+  environment:
+    DB_URL: mongodb://db/vidly
+  volumes:
+    - ./backend:/app
+  command: ./docker-entrypoint.sh
+-------------------code----------------------
+
+- So this is how we can migrate the database. Now to verify this is
+working, let's go back to the terminal, stop this process.
+Now we're going to bring down the application.
+So, this has removed our containers, like API, db, and web, as well
+as our network. 
+-------------------code----------------------
+$ docker compose down
+WARN[0000] /6-Running_Multi-container_Applications/vidly/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion
+[+] Running 4/4
+ ✔ Container vidly-db-1   Removed                                                                                                                  0.0s
+ ✔ Container vidly-api-1  Removed                                                                                                                  0.0s
+ ✔ Container vidly-web-1  Removed                                                                                                                  0.0s
+ ✔ Network vidly_default  Removed
+-------------------code----------------------
+
+- But our volume is not deleted. So docker compose doesn't automatically delete the volume
+in case we have some data we don't want to lose. So, let's look at all
+our volumes. Alright, here we have vidly underline vidly, so
+the first vidly represents our application, and the second vidly
+is the name of our volume.
+-------------------code----------------------
+$ docker volume ls
+DRIVER    VOLUME NAME
+local     4eb76cfa52dd141cbc45cac3bb72a3152718cb57a8803fc4ada64c77e1147d9b
+local     32ddcdc706c70b215fbe12068bbf576191d1a9e292be049ca465546b06ef0cae
+local     87258496aa00549dec5f97a24fc03af621c3bfbef74cdc6a08410037936a05ee
+local     app-data
+local     ce7ee13364e253b6c4d2d04cace0de306c57d88a0221ee1499dcf3ed2d0bd0e3
+local     f30924af344e75e6ee72cb3098a1e414f40b385f9f4da85e66a9ba77cbb0c009
+local     vidly_vidly
+-------------------code----------------------
+
+
+- So, let's go ahead and remove it.
+-------------------code----------------------
+$ docker volume rm vidly_vidly
+vidly_vidly
+-------------------code----------------------
+
+- So now our mongodb database is gone.
+So now let's restart the application, and see if we get a fresh mongodb database
+populated with our movies. So, docker compose,
+up. Alright, we think we're almost ready.
+Okay, so, back to the browser, we can go to localhost
+port 3001 slash api, slash movies. That's our end point. So all these movies are here.
+-------------------code----------------------
+http://localhost:3001/api/movies
 -------------------code----------------------
