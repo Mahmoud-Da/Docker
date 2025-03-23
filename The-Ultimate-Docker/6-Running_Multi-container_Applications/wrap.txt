@@ -1378,3 +1378,210 @@ You can now view vidly-frontend in the browser.
   Local:            http://localhost:3000
   On Your Network:  http://172.18.0.3:3000
 -------------------code----------------------
+
+*** 11- Publishing Changes ***
+
+- Alright, let's talk about publishing changes. So obviously we don't want to rebuild our application images every time we change our code.
+So we're going to map our project directory like the backend directory
+to the app directory inside our container exactly like before.
+This way any changes we make in this directory are immediately visible inside our container.
+And of course we have to do the same with the frontend directory separately.
+
+- So, let's open up our compose file.
+Here's the definition of our API service. In this definition
+we're going to add a new property, volumes.
+Now we can have one or more volume mappings, so here we need the list
+or array syntax. Now here we can type a relative path.
+So, starting from the current directory, we go to the backend directory
+and map this to the app directory inside the container.
+-------------------code----------------------
+volumes:
+  - ./backend:/app
+-------------------code----------------------
+
+- Now in contrast, earlier, when we started our containers manually
+we had to type an absolute path. So there, we had to use this syntax to get the current working directory
+and map it to the app directory.
+-------------------code----------------------
+docker run -v $(pwd):/app
+-------------------code----------------------
+
+- with compose files, we don't have to do this.
+So, we can type a relative path.
+-------------------code----------------------
+api:
+    build: ./backend
+    ports:
+      - 3001:3001
+    environment:
+      DB_URL: mongodb://db/vidly
+    volumes:
+      - ./backend:/app
+-------------------code----------------------
+
+
+- So that's pretty much all we have to do to share our source code with our container. 
+
+- There's just one tiny problem. Let's go ahead and start our application.
+So docker compose up, and we're not going to use the detached option
+because we're going to encounter an error and we want to see that immediately.
+So, let's bring up the application.
+we saw the error. it says node mon not found.
+-------------------code----------------------
+$ docker compose up
+WARN[0000] /6-Running_Multi-container_Applications/vidly/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion
+[+] Running 1/4
+ ✔ Network vidly_default  Created                                                                                                                  0.0s
+ ⠋ Container vidly-web-1  Creating                                                                                                                 0.0s
+ ⠋ Container vidly-db-1   Creating                                                                                                                 0.0s
+ ⠋ Container vidly-api-1  Creating                                                                                                                 0.0s
+Error response from daemon: node mon not found
+-------------------code----------------------
+
+- What is this?
+Well, node mon is one of the packages that our backend project is dependent on.
+So, back to our project, here in the backend folder,
+we have this package.json and if we pay close attention,
+we can see under dev dependencies or development dependencies,
+we have a dependency to node mon or node monitor. node mon is a utility
+that watches all of our files and anytime it detects a change,
+it restarts our node server.
+-------------------code----------------------
+"devDependencies": {
+    "jest": "^26.6.3",
+    "migrate-mongo": "^8.1.4",
+    "nodemon": "^2.0.7",
+    "supertest": "^6.1.3"
+  }
+-------------------code----------------------
+
+- Now, this error is saying that node mon cannot be found.
+Can we tell why? Here's the reason. In the backend folder,
+we don't have the node modules folder. Right?
+Because we haven't installed npm dependencies on this machine.
+These dependencies were only installed inside the docker container.
+But now that we're sharing our application's code with our container,
+what the container sees is essentially this directory. And here we don't have the node modules folder.
+So, back to the terminal, let's stop this by pressing ctrl and c.
+First we go to the backend directory and run npm install.
+We can also type npm i. All right.
+All our dependencies are installed.
+-------------------code----------------------
+$ cd backend
+$ npm i
+npm WARN old lockfile
+npm WARN old lockfile The package-lock.json file was created with an old version of npm,
+npm WARN old lockfile so supplemental metadata must be fetched from the registry.
+npm WARN old lockfile
+npm WARN old lockfile This is a one-time fix-up, please be patient...
+npm WARN old lockfile
+npm WARN deprecated is-data-descriptor@0.1.4: Please upgrade to v0.1.5
+npm WARN deprecated is-accessor-descriptor@0.1.6: Please upgrade to v0.1.7
+npm WARN deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if we want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm WARN deprecated is-accessor-descriptor@1.0.0: Please upgrade to v1.0.1
+npm WARN deprecated is-data-descriptor@1.0.0: Please upgrade to v1.0.1
+npm WARN deprecated is-data-descriptor@1.0.0: Please upgrade to v1.0.1
+npm WARN deprecated is-accessor-descriptor@1.0.0: Please upgrade to v1.0.1
+npm WARN deprecated is-accessor-descriptor@1.0.0: Please upgrade to v1.0.1
+npm WARN deprecated is-data-descriptor@1.0.0: Please upgrade to v1.0.1
+npm WARN deprecated is-data-descriptor@1.0.0: Please upgrade to v1.0.1
+npm WARN deprecated is-accessor-descriptor@1.0.0: Please upgrade to v1.0.1
+npm WARN deprecated source-map-url@0.4.1: See https://github.com/lydell/source-map-url#deprecated
+npm WARN deprecated request-promise-native@1.0.9: request-promise-native has been deprecated because it extends the now deprecated request package, see https://github.com/request/request/issues/3142
+npm WARN deprecated urix@0.1.0: Please see https://github.com/lydell/urix#deprecated
+npm WARN deprecated har-validator@5.1.5: this library is no longer supported
+npm WARN deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+npm WARN deprecated abab@2.0.5: Use our platform's native atob() and btoa() methods instead
+npm WARN deprecated resolve-url@0.2.1: https://github.com/lydell/resolve-url#deprecated
+npm WARN deprecated source-map-resolve@0.5.3: See https://github.com/lydell/source-map-resolve#deprecated
+npm WARN deprecated glob@7.1.6: Glob versions prior to v9 are no longer supported
+npm WARN deprecated domexception@2.0.1: Use our platform's native DOMException instead
+npm WARN deprecated w3c-hr-time@1.0.2: Use our platform's native performance.now() and performance.timeOrigin.
+npm WARN deprecated sane@4.1.0: some dependency vulnerabilities fixed, support for node < 10 dropped, and newer ECMAScript syntax/features added
+npm WARN deprecated uuid@3.4.0: Please upgrade  to version 7 or higher.  Older versions may use Math.random() in certain circumstances, which is known to be problematic.  See https://v8.dev/blog/math-random for details.
+npm WARN deprecated formidable@1.2.2: Please upgrade to latest, formidable@v2 or formidable@v3! Check these notes: https://bit.ly/2ZEqIau
+npm WARN deprecated request@2.88.2: request has been deprecated, see https://github.com/request/request/issues/3142
+npm WARN deprecated superagent@6.1.0: Please upgrade to v9.0.0+ as we have fixed a public vulnerability with formidable dependency. Note that v9.0.0+ requires Node.js v14.18.0+. See https://github.com/ladjs/superagent/pull/1800 for insight. This project is supported and maintained by the team at Forward Email @ https://forwardemail.net
+
+added 771 packages, and audited 772 packages in 10s
+
+35 packages are looking for funding
+  run `npm fund` for details
+
+59 vulnerabilities (3 low, 33 moderate, 18 high, 5 critical)
+-------------------code----------------------
+
+- So, let's bring up the app one more time. All right.
+Over here we can see node mon is starting our node process.
+-------------------code----------------------
+$ docker compose up
+WARN[0000] /Users/mahmouddabbbagh/moody/Docker/The-Ultimate-Docker/6-Running_Multi-container_Applications/vidly/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion
+[+] Running 1/1
+ ✔ Container vidly-api-1  Created                                                                                                                  0.0s
+Attaching to api-1, db-1, web-1
+db-1   | 2025-03-23T05:59:20.606+0000 CONTROL  [main] Automatically disabling TLS 1.0, to force-enable TLS 1.0 specify --sslDisabledProtocols 'none'
+db-1   | 2025-03-23T05:59:20.615+0000 CONTROL  [initandlisten] MongoDB starting : pid=1 port=27017 dbpath=/data/db 64-bit host=0c87cfea2ecb
+db-1   | 2025-03-23T05:59:20.615+0000 CONTROL  [initandlisten] db version v4.0.28
+db-1   | 2025-03-23T05:59:20.615+0000 CONTROL  [initandlisten] git version: af1a9dc12adcfa83cc19571cb3faba26eeddac92
+db-1   | 2025-03-23T05:59:20.615+0000 CONTROL  [initandlisten] OpenSSL version: OpenSSL 1.0.2g  1 Mar 2016
+db-1   | 2025-03-23T05:59:20.615+0000 CONTROL  [initandlisten] allocator: tcmalloc
+db-1   | 2025-03-23T05:59:20.615+0000 CONTROL  [initandlisten] modules: none
+db-1   | 2025-03-23T05:59:20.615+0000 CONTROL  [initandlisten] build environment:
+db-1   | 2025-03-23T05:59:20.615+0000 CONTROL  [initandlisten]     distmod: ubuntu1604
+db-1   | 2025-03-23T05:59:20.615+0000 CONTROL  [initandlisten]     distarch: aarch64
+db-1   | 2025-03-23T05:59:20.615+0000 CONTROL  [initandlisten]     target_arch: aarch64
+db-1   | 2025-03-23T05:59:20.615+0000 CONTROL  [initandlisten] options: { net: { bindIpAll: true } }
+db-1   | 2025-03-23T05:59:20.617+0000 STORAGE  [initandlisten] Detected data files in /data/db created by the 'wiredTiger' storage engine, so setting the active storage engine to 'wiredTiger'.
+db-1   | 2025-03-23T05:59:20.617+0000 STORAGE  [initandlisten]
+db-1   | 2025-03-23T05:59:20.617+0000 STORAGE  [initandlisten] ** WARNING: Using the XFS filesystem is strongly recommended with the WiredTiger storage engine
+db-1   | 2025-03-23T05:59:20.617+0000 STORAGE  [initandlisten] **          See http://dochub.mongodb.org/core/prodnotes-filesystem
+db-1   | 2025-03-23T05:59:20.617+0000 STORAGE  [initandlisten] wiredtiger_open config: create,cache_size=474M,cache_overflow=(file_max=0M),session_max=20000,eviction=(threads_min=4,threads_max=4),config_base=false,statistics=(fast),log=(enabled=true,archive=true,path=journal,compressor=snappy),file_manager=(close_idle_time=100000),statistics_log=(wait=0),verbose=(recovery_progress),
+api-1  |
+api-1  | > vidly-backend@1.0.0 start /app
+api-1  | > nodemon --ignore './tests' index.js
+api-1  |
+web-1  |
+web-1  | > vidly-frontend@0.1.0 start /app
+web-1  | > react-scripts start
+-------------------code----------------------
+
+- So, let's go to our browser and head over to local host
+port 3001 slash API.
+This is like the homepage of our API. So, our API is running.
+-------------------code----------------------
+http://localhost:3001/api
+-------------------code----------------------
+
+- Now, let's make a small change in our code
+and see if that change is visible here or not.
+So, back to our project. Here in the backend folder,
+let's go to route and then index.js. This is where we can change that message.
+So, API is running. we're going to add a few exclamation marks,
+save the changes.
+- vidly/backend/routes/index.js
+-------------------code----------------------
+res.send("<h1>Api is running!!!!</h1>");
+-------------------code----------------------
+
+
+- Now, in the terminal, we can see node mon detected our change
+and restarted our web server. So, back to the browser, refresh,
+we can see the changes.
+
+- Now, we can apply the same technique to our frontend project.
+first we install the npm for the node
+-------------------code----------------------
+$ cd frontend
+$ npm i
+npm WARN old lockfile
+npm WARN old lockfile The package-lock.json file was created with an old version of npm,
+npm WARN old lockfile so supplemental metadata must be fetched from the registry.
+npm WARN old lockfile
+npm WARN old lockfile This is a one-time fix-up, please be patient...
+-------------------code----------------------
+
+- then we set the volumes
+-------------------code----------------------
+volumes:
+  - ./frontend:/app
+-------------------code----------------------
