@@ -1,7 +1,7 @@
 *** 1- Introduction ***
 
 - this the last section of the Ultimate Docker course.
-In this section, we're going to learn how to deploy your dockerized applications.
+In this section, we're going to learn how to deploy our dockerized applications.
 
 - So we're going to take the same application we have been working with and put it in the cloud.
 We'll be talking about various deployment options, getting a virtual private server or VPS,
@@ -15,3 +15,40 @@ creating optimized production images, and of course, deploying the application a
 • Creating optimized production images
 • Deploying the application
 -------------------code----------------------
+
+*** 2- Deployment Options ***
+
+-------------------code----------------------
+CLUSTER SOLUTIONS
+• Docker Swarm
+• Kubernetes
+-------------------code----------------------
+
+- To deploy our Docker S applications, we have two options.
+We can deploy our application to a single host or a cluster, which means
+a group of servers. As we might guess, deploying to a single host is really
+easy, but the problem with a single host deployment is that if our server
+goes offline, our application will not be accessible. And also, if our
+application grows rapidly and we get hundreds of thousands of users,
+a single server is not able to handle that load. That's why we use
+clusters. So with clusters, we get high availability and scalability.
+-------------------code----------------------
+DEPLOYMENT OPTIONS
+• Single-host deployment
+• Cluster deployment
+-------------------code----------------------
+
+- Now, to run clusters, we need special tools called orchestration tools.
+Docker has its own orchestration tool built into it called Docker Swarm,
+but as far as we know, it's not really that popular. we've done some research.
+Most people these days use another tool called Kubernetes, which is
+a Google product. Initially, we thought that would be a waste
+of time and that would delay the production of this course. So we decided to drop
+Docker Swarm. 
+
+- Now, why didn't we include Kubernetes in this course? Because
+Kubernetes is fairly complex and really requires its own course or book. And quite
+frankly, it's not something that we know a lot about. So in this section, our focus
+will be on a single host deployment, which works for a lot of people. Don't assume
+that we need a cluster right from the get-go. we can always start simple and if
+needed, we can transition to a cluster.
