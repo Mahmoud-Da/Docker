@@ -76,3 +76,31 @@ we to provide a credit or a debit card to get a VPS.
 - So to execute all the steps we're going to show we in this section, we will need a debit or a credit card
 unless we already have access to a VPS.
 
+*** 4- Installing Docker Machine ***
+
+- Once we have a server, we need to use a tool called Docker Machine to talk to the Docker engine on that server.
+So this way we can execute Docker commands in our terminal and our commands will be sent to the Docker engine
+on our server. 
+
+- So, head over to github.com
+slash docker slash machine slash releases. On this page
+you can find the latest release. At the time it's version 0.16.2. Now down below you can find
+the installation instructions for various platforms.
+-------------------code----------------------
+github.com/docker/machine/releases
+-------------------code----------------------
+
+- It's super easy,
+we just have to copy this command and execute it in the terminal.
+So copy, base it here, done.
+-------------------code----------------------
+$ curl -L https://github.com/docker/machine/releases/download/v0.16.2/docker-machine-`uname -s`-`uname -m` >/usr/local/bin/docker-machine && \
+  chmod +x /usr/local/bin/docker-machine
+-------------------code----------------------
+
+- Alright, Docker Machine is installed.
+Let's verify it.
+-------------------code----------------------
+$ docker-machine --version
+docker-machine version 0.16.2, build bd45ab13
+-------------------code----------------------
