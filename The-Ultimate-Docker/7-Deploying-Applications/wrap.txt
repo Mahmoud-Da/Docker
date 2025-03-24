@@ -1,0 +1,17 @@
+*** 1- Introduction ***
+
+- this the last section of the Ultimate Docker course.
+In this section, we're going to learn how to deploy your dockerized applications.
+
+- So we're going to take the same application we have been working with and put it in the cloud.
+We'll be talking about various deployment options, getting a virtual private server or VPS,
+using Docker machine to provision hosts and connect with them,
+creating optimized production images, and of course, deploying the application and its updates.
+
+-------------------code----------------------
+• Deployment options
+• Getting a Virtual Private Server (VPS)
+• Using Docker Machine
+• Creating optimized production images
+• Deploying the application
+-------------------code----------------------
