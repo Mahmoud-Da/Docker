@@ -52,3 +52,27 @@ frankly, it's not something that we know a lot about. So in this section, our fo
 will be on a single host deployment, which works for a lot of people. Don't assume
 that we need a cluster right from the get-go. we can always start simple and if
 needed, we can transition to a cluster.
+
+*** 3- Getting a Virtual Private Server ***
+
+So to deploy our application,
+we need a virtual private server or a VPS. Now there are a ton of options
+to get a VPS. We have DigitalOcean, Google Cloud Platform,
+Microsoft Azure, Amazon Web Services, and of course many many more.
+-------------------code----------------------
+VPS OPTIONS
+• Digital Ocean
+• Google Cloud Platform (GCP)
+• Microsoft Azure
+• Amazon Web Services (AWS)
+-------------------code----------------------
+
+- Now out of these, DigitalOcean is the simplest and most beginner friendly one, and
+as we go down this list, we get more features, but at the cost of complexity.
+So we decided to choose DigitalOcean because we didn't want us to get distracted
+from Docker and go somewhere else. Now, all these platforms require
+we to provide a credit or a debit card to get a VPS.
+
+- So to execute all the steps we're going to show we in this section, we will need a debit or a credit card
+unless we already have access to a VPS.
+
