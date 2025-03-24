@@ -84,7 +84,7 @@ on our server.
 
 - So, head over to github.com
 slash docker slash machine slash releases. On this page
-you can find the latest release. At the time it's version 0.16.2. Now down below you can find
+we can find the latest release. At the time it's version 0.16.2. Now down below we can find
 the installation instructions for various platforms.
 -------------------code----------------------
 github.com/docker/machine/releases
@@ -104,3 +104,99 @@ Let's verify it.
 $ docker-machine --version
 docker-machine version 0.16.2, build bd45ab13
 -------------------code----------------------
+
+
+*** 5- Provisioning a Host ***
+
+- Alright, now we're going to use docker machine to create a virtual private server
+on DigitalOcean. So, we type docker machine
+create. Now, this is going to be a long command, so we're going to
+split it onto multiple lines. Now, if we're on Linux, we can do this
+by typing a backslash at the end. If we're on Windows, we need
+to type a back tick, And of course this only works in
+PowerShell, not command prompt
+-------------------code----------------------
+docker-machine create \
+> 
+-------------------code----------------------
+
+-so,  backslash, now on the second line we type dash dash driver. Now, docker machine
+has drivers for different platforms. If we google docker machine drivers, we'll find this page. So, we have drivers
+for AWS, Microsoft Azure, DigitalOcean and so on. Now, if we have a server in our own network and not in one of these platforms,
+we can set the driver to none. But here we're going to use
+DigitalOcean. Now, another backslash or back tick to go to the next line.
+Now, here we need to supply an option specific to DigitalOcean.
+So, if we use AWS or another platform, our options are going to be different. So, that
+option is double hyphens, DigitalOcean, hyphen, access, hyphen, token.
+-------------------code----------------------
+docker-machine create \
+> --driver digitalocean \
+-------------------code----------------------
+
+- So, now we need to go to
+DigitalOcean and get an access token so docker machine
+can talk remotely with DigitalOcean. So, here on DigitalOcean.com
+on the left panel, we expand account and go to API.
+And of course, this user interface might change in the future.
+So, if we cannot find it, just search for API on DigitalOcean, okay.
+Now, here we can generate a personal access token.
+Let's go ahead. We're going to give this a name, vidly, the name of our application.
+Generate token.
+-------------------code----------------------
+docs.docker.com/machine/drivers/
+-------------------code----------------------
+PS:this token is visible only once,
+so once we move away from this page and come back,
+we're not going to be able to see.
+So, copy this, and keep it somewhere safe if we want to reuse it in the future.
+
+
+- Now, Docker machine is going to create a virtual machine by that name,
+and on that machine, it's going to install
+Docker. So, then we'll be able to
+talk to that Docker engine remotely on our machine. 
+-------------------code----------------------
+docker-machine create \
+        --driver digitalocean \
+        --digitalocean-access-token $DOTOKEN \
+        --engine-install-url "https://releases.rancher.com/install-docker/19.03.9.sh" \
+        name;
+-------------------code----------------------
+
+- Alright, our server is ready.
+Now, look at the output. Docker machine
+was provisioning this with Ubuntu. This is the default
+image. Now, if we don't want to use Ubuntu, we can use a different image.
+So, back to this page where we can see the list of drivers.
+Let's look at the DigitalOcean driver. Now, down below,
+we can see all the available options. So, we have an option
+for specifying the image to use. 
+-------------------code----------------------
+docker-machine create \
+> --driver digitalocean \
+> --digitalocean-access-token here add the token
+--engine-install-url "https://releases.rancher.com/install-docker/
+> vidly
+-------------------code----------------------
+
+- Now, once Ubuntu was installed, then
+Docker machine tried to install Docker. So now we have Docker
+up and running on this machine, and we can talk to it remotely. Also,
+if we go to the homepage of our account on DigitalOcean, we can see a new
+droplet called Whitley. A droplet on DigitalOcean
+means a server. Now, over here, we can see the public IP address
+of the server. So, we can copy this, open it in the browser, currently
+there is nothing there because we haven't deployed our application yet.
+So, now that we have a server up and running, next we will see 
+how to connect with the server.
+-------------------code----------------------
+Provisioning with ubuntu(systemd)...
+Installing Docker...
+Copying certs to the local machine directory...
+Copying certs to the remote machine...
+Setting Docker configuration on the remote daemon...
+Checking connection to Docker…..
+Docker is up and running!
+To see how to connect our Docker Client to the Docker Engine runnin on this virtual machine, run: docker-machine env vidly
+-------------------code----------------------
+
