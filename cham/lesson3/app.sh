@@ -77,11 +77,21 @@
 
 
 # 'cd' to navigate 
-# go to 'home' directory 
+# cd ~ go to 'home' directory  (~ called telda)
 # NOTE: home == Desktop
 # -------------------code----------------------
 # root@da53c7e78fef:/# cd ~
 # -------------------code----------------------
+
+# PS: when using the root user the home directory is "root"
+# but when using other user the "cd ~" which is take to navigate to home directory
+# take you to "home" 
+# -------------------code----------------------
+# root@e97087e56636:/# ls
+# bin   dev  home  media  opt   root  sbin  sys  usr
+# boot  etc  lib   mnt    proc  run   srv   tmp  var
+# -------------------code----------------------
+
 
 # create a new file using 'touch'
 # -------------------code----------------------

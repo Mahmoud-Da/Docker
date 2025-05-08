@@ -34,4 +34,4 @@ apt install nano # apt install package-name
 # NOTE:
 # always update apt package manger before install a new package
 # EX:
-# apt update && apt install nano
+apt update && apt install nano
