@@ -1,5 +1,3 @@
-Here's a more organized and structured version of your README file:
-
 # Docker Cleanup Commands
 
 This document provides commands to clean up Docker resources in your workspace.
