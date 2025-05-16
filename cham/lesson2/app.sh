@@ -27,6 +27,10 @@ docker ps # 起動しているコンテナを確認
 docker ps -a # 起動しているコンテナ　+　止まっているコンテナ　を確認
 
 
+docker image ls
+docker images
+# 既存しているイメージを確認
+
 apt # package manger
 
 apt install nano # apt install package-name
