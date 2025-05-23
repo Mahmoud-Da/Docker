@@ -168,3 +168,12 @@
 # -rwxr-xr-x 1 root root     67752 Mar 31  2024 apt
 # -rwxr-xr-x 1 root root    133440 Mar 31  2024 apt-cache
 # -------------------code----------------------
+#
+# write multiple commands with linux he backslash "\"" is used to indicate that a command continues
+# on the next line. This allows you to write long commands over multiple lines for better readability.
+# -------------------code----------------------
+# mkdir new_project && \
+# cd new_project && \
+# touch README.md && \
+# echo "# New Project" > README.md
+# -------------------code----------------------
