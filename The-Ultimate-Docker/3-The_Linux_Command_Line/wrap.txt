@@ -1519,6 +1519,41 @@ root@8a65a7f2dd58:~# mkdir hello;\
 done
 -------------------code---------------------
 
+- In Linux (or any Unix-like shell such as Bash), the **backslash `\`** is used to indicate that a command continues on the next line. This allows you to write long commands over multiple lines for better readability.
+
+### Basic Syntax:
+
+-------------------code---------------------
+command1 && \
+command2 && \
+command3
+-------------------code---------------------
+
+Each line ends with a **backslash** (`\`) to tell the shell that the command continues on the next line.
+
+### Example:
+
+-------------------code---------------------
+mkdir new_project && \
+cd new_project && \
+touch README.md && \
+echo "# New Project" > README.md
+-------------------code---------------------
+
+This will:
+
+1. Create a directory named `new_project`
+2. Enter the directory
+3. Create a `README.md` file
+4. Add a heading to the file
+
+### Important Notes:
+
+* There should be **no space or characters after the backslash**—it must be the **last character** on the line.
+* It works in interactive shells, scripts, or when writing Dockerfiles and other bash-based environments.
+
+
+
 *** 13- Environment Variables ***
 
 - Let's talk about environment variables. This is one of the areas that a lot
