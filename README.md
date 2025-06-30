@@ -20,9 +20,6 @@ docker network prune
 # Remove the build cache
 docker builder prune
 
-# Remove all unused images
-docker image prune -a
-
 # Clean up everything (all-in-one)
 docker system prune
 
