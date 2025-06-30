@@ -13,6 +13,21 @@ docker image prune -a
 
 # Remove all unused volumes
 docker volume prune
+
+# Remove all unused networks
+docker network prune
+
+# Remove the build cache
+docker builder prune
+
+# Remove all unused images
+docker image prune -a
+
+# Clean up everything (all-in-one)
+docker system prune
+
+# Clean up EVERYTHING AGGRESSIVELY
+docker system prune -a --volumes
 ```
 
 ## Forceful Cleanup (Advanced)
@@ -32,6 +47,9 @@ docker rmi -f $(docker images -aq)
 For a thorough cleanup (stops and removes all containers, then all images):
 
 ```bash
+# Remove a specific image
+docker rmi <image_name:tag>
+
 # Stop all running containers
 docker stop $(docker ps -aq)
 
@@ -40,9 +58,6 @@ docker rm $(docker ps -aq)
 
 # Remove all images
 docker rmi -f $(docker images -aq)
-
-# Remove all unused networks
-docker network prune
 ```
 
 ## Notes
